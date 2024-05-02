@@ -197,7 +197,6 @@ void	work_client_event(struct kevent* event_occurred, struct Server* server)
 
 int	main()
 {
-
 	struct Server	server;
 	memset(server.clients, 0, sizeof(server.clients));
 
