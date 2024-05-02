@@ -1,16 +1,21 @@
+#include <signal.h>
 #include <iostream>
+#include "Network.hpp"
 #include "Error.hpp"
 #include "Parser.hpp"
 
-unsigned short	port_num;
 std::string		password;
 
 int	main(int argc, char** argv)
 {
 	int	err_no = 0;
+	signal(SIGINT, SIG_IGN);
+
 	try
 	{
-		Parser::checkArgValidity(argc, argv);
+		Network	network(Parser::checkArgValidity(argc, argv));
+		network.boot();
+		for(;;);
 	}
 	catch (Error& err)
 	{

@@ -7,16 +7,19 @@ Error::Error(enum errType type, const char* title) : err_no(type), err_title(tit
 
 enum Error::errType	Error::getErrNo(void) const
 {
-	return this->err_no;
+	return err_no;
 }
 
 void	Error::ft_perror() const
 {
 	std::cerr << "\033[31m[ERROR]\033[0m ";
-	if (this->err_title)
+	if (err_title)
 		std::cerr << err_title << ": ";
-	switch (this->err_no)
+	switch (err_no)
 	{
+		case ESYSERR:
+			std::cerr << "Syscall failed" << std::endl;
+			break;
 		case EARGC:
 			std::cerr << "Enter 2 arguments: <port> <password>" << std::endl;
 			break;

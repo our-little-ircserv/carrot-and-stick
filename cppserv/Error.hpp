@@ -9,6 +9,7 @@ class	Error
 		enum	errType
 		{
 			ENOERR = 0,
+			ESYSERR,
 			EARGC,
 			EAPORT,
 			EAPASS

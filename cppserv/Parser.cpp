@@ -4,10 +4,9 @@
 #include <iostream>
 #include <sstream>
 
-extern unsigned short	port_num;
 extern std::string		password;
 
-void	Parser::checkArgValidity(int argc, char** argv) throw(Error)
+uint16_t	Parser::checkArgValidity(int argc, char** argv) throw(Error)
 {
 	if (argc != 3)
 	{
@@ -24,6 +23,6 @@ void	Parser::checkArgValidity(int argc, char** argv) throw(Error)
 		throw Error(Error::EAPORT, NULL);
 	}
 
-	port_num = (unsigned short)port_checker;
 	password = argv[2];
+	return (uint16_t)port_checker;
 }

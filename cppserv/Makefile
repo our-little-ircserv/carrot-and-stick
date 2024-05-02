@@ -7,6 +7,7 @@ SRCS= \
 	 main.cpp \
 	 Error.cpp \
 	 Parser.cpp \
+	 Network.cpp \
 
 OBJS=$(SRCS:.cpp=.o)
 DEPS=$(SRCS:.cpp=.d)
