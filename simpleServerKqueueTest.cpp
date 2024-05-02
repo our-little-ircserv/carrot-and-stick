@@ -10,7 +10,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <vector>
+#include <deque>
 #include <algorithm>
 
 #define PORT 4242
@@ -20,21 +20,58 @@
 #define MAX_MESSAGE 512
 
 int server_fd, kq;
-std::vector<struct ClientInfo*> client_vec;
-std::vector<struct kevent> change_list;
-std::vector<struct kevent> event_list(MAX_EVENTS);
+std::deque<struct ClientInfo*> client_vec;
+std::deque<struct kevent> change_list;
+std::deque<struct kevent> event_list(MAX_EVENTS);
 
 struct ClientInfo
 {
 	int sd;
 	std::string read_buf;
     bool is_writable = false;
-	std::vector<std::string> write_buf;
+	std::deque<std::string> write_buf;
 };
 
-void clientWriteEvent()
+// MessegeInfo
+// from
+// to
+// msg
+
+// MessegeQueue
+// list of MessegeInfo
+
+void clientWriteEvent(struct kevent& cur_event)
 {
-    //
+    int sd;
+    struct ClientInfo* info;
+
+    info = (struct ClientInfo*)cur_event.udata;
+    sd = info->sd;
+
+    if (info->is_writable == false)
+        return ;
+
+    // 버퍼의 가장 맨 앞 메세지를 하나씩 보낸다, 최적화가 이유
+    // 보낸 메세지는 버퍼에서 제거한다
+    send(sd, (info->write_buf[0]).c_str(), info->write_buf[0].size(), 0);
+    info->write_buf.erase(info->write_buf.begin());
+}
+
+void clientWriteCheck(struct kevent& cur_event)
+{
+    int sd;
+    struct ClientInfo* info;
+    struct kevent event;
+
+    info = (struct ClientInfo*)cur_event.udata;
+    sd = info->sd;
+
+    if (info->is_writable == true && info->write_buf.size() == 0)
+        EV_SET(&event, sd, EVFILT_WRITE, EV_DISABLE, 0, 0, info);
+    else if (info->is_writable == false && info->write_buf.size() > 0)
+        EV_SET(&event, sd, EVFILT_WRITE, EV_ENABLE, 0, 0, info);
+
+    change_list.emplace_back(event);
 }
 
 void clientReadEvent(struct kevent& cur_event)
@@ -48,7 +85,7 @@ void clientReadEvent(struct kevent& cur_event)
     // 연결 종료
     if (cur_event.data <= 0)
     {
-        std::vector<struct ClientInfo*>::iterator it = std::find(client_vec.begin(), client_vec.end(), info);
+        std::deque<struct ClientInfo*>::iterator it = std::find(client_vec.begin(), client_vec.end(), info);
         client_vec.erase(it);
         delete info;
         close(sd);
@@ -141,11 +178,6 @@ int main()
 
 	init(server_addr, server_addrlen, kq);
 
-    struct kevent event_set[MAX_EVENTS];
-    struct kevent event;
-
-	const char* echo = "Echo from server: ";
-
 	std::cout << "Server is listening on port " << PORT << "...\n";
 
     while (true)
@@ -157,25 +189,41 @@ int main()
 		
 		change_list.clear();
 
-        for (int i = 0; i < n; i++) {
-            int sd = event_set[i].ident;
+        for (int i = 0; i < n; i++)
+        {
+            int sd = event_list[i].ident;
 
+            // server의 event
             if (sd == server_fd)
 			{
                 serverReadEvent();
             }
-			else if (event_set[i].filter == EVFILT_READ)
-			{
-				clientReadEvent(event_list[i]);
+            // client의 event
+            else
+            {
+                if (event_list[i].filter == EVFILT_READ)
+                {
+                    clientReadEvent(event_list[i]);
+
+                    // 해당 클라이언트의 read buf를 파싱한다
+                    // command를 수행한다
+                        // 다른 클라이언트의 write buf를 채운다
+                }
+                clientWriteCheck(event_list[i]);
             }
-			else if (event_set[i].filter == EVFILT_WRITE)
-			{
-				//
-			}
         }
 
         // 이벤트 감지 여부와 상관없이 send 가능한 메세지들은 send를 수행한다.
-        clientWriteEvent();
+        // 이 부분은 추후 MessegeQueue 에서 일괄적으로 담당한다
+        for (int i = 0; i < n; i++)
+        {
+            int sd = event_list[i].ident;
+
+            if (sd == server_fd)
+                continue;
+
+            clientWriteEvent(event_list[i]);
+        }
     }
 
     close(server_fd);
