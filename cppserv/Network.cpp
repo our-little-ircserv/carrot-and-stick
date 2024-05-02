@@ -21,19 +21,21 @@ int	Network::getServerSocketFd() const
 	return server_sockfd;
 }
 
+// open server socket
+// save server socket file descriptor to server_sockfd
+
+// set sockaddr: port, loopback ip
+// bind server_sockfd to sockaddr
+
+// listen to the socket!
 void	Network::boot()
 {
-	// open server socket
-	// save server socket file descriptor to server_sockfd
 	setUpSocket();
 
-	// set sockaddr: port, loopback ip
-	// bind server_sockfd to sockaddr
 	struct sockaddr_in	server_sockaddr;
 	server_sockaddr = setSockAddrIn(AF_INET);
 	wrapSyscall(bind(server_sockfd, (struct sockaddr*)(&server_sockaddr), sizeof(struct sockaddr_in)), "bind");
 
-	// listen to the socket!
 	wrapSyscall(listen(server_sockfd, MAX_CLIENTS), "listen");
 
 	std::cout << "\033[32m[SERVER STARTED]\033[0m" << std::endl;

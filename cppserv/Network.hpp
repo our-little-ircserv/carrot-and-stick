@@ -4,6 +4,7 @@
 # include "Error.hpp"
 
 # define MAX_CLIENTS 128
+# define MAX_EVENTS 10
 
 // SocketManager
 class	Network

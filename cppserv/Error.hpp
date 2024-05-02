@@ -1,6 +1,7 @@
 #ifndef ERROR_HPP
 # define ERROR_HPP
 
+// error 종류가 많아지지 않는다면.
 // 추후에 Error를 상속받는 파생 errors 정의하기.
 // errno 아쉽지만 버려~~
 class	Error
