@@ -24,4 +24,12 @@ class	Error
 		const char*	err_title;
 };
 
+inline int	wrapSyscall(int syscall_ret, const char* syscall) throw(Error)
+{
+	if (syscall_ret == -1)
+		throw Error(Error::ESYSERR, syscall);
+
+	return syscall_ret;
+}
+
 #endif

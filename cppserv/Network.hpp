@@ -3,11 +3,14 @@
 
 # include "Error.hpp"
 
+# define MAX_CLIENTS 128
+
 // SocketManager
 class	Network
 {
 	public:
-		Network(uint16_t port);
+		Network(uint16_t _port);
+		~Network();
 		void	boot();
 
 		int	getServerSocketFd() const;
