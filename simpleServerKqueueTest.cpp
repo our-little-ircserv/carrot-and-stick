@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
 #include <deque>
 #include <algorithm>
 
@@ -20,9 +21,9 @@
 #define MAX_MESSAGE 512
 
 int server_fd, kq;
-std::deque<struct ClientInfo*> client_vec;
-std::deque<struct kevent> change_list;
-std::deque<struct kevent> event_list(MAX_EVENTS);
+std::deque<struct ClientInfo*> client_deq;
+std::vector<struct kevent> change_list;
+std::vector<struct kevent> event_list(MAX_EVENTS);
 
 struct ClientInfo
 {
@@ -85,8 +86,8 @@ void clientReadEvent(struct kevent& cur_event)
     // 연결 종료
     if (cur_event.data <= 0)
     {
-        std::deque<struct ClientInfo*>::iterator it = std::find(client_vec.begin(), client_vec.end(), info);
-        client_vec.erase(it);
+        std::deque<struct ClientInfo*>::iterator it = std::find(client_deq.begin(), client_deq.end(), info);
+        client_deq.erase(it);
         delete info;
         close(sd);
 
@@ -123,7 +124,7 @@ void serverReadEvent()
 	}
 
 	info = new struct ClientInfo;
-	client_vec.push_back(info);
+	client_deq.push_back(info);
 
 	// 새 클라이언트에 대한 이벤트 추가
 	EV_SET(&event, client_fd, EVFILT_READ, EV_ADD, 0, 0, info);
