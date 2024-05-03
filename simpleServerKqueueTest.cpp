@@ -30,7 +30,7 @@ struct ClientInfo
 	int sd;
 	std::string read_buf;
     bool is_writable = false;
-	std::deque<std::string> write_buf;
+	std::vector<std::string> write_buf;
 };
 
 // MessegeInfo
@@ -51,10 +51,14 @@ void clientWriteEvent(struct kevent& cur_event)
 
     if (info->is_writable == false)
         return ;
+    
+    const char* msg;
+    msg = info->write_buf[0].c_str();
 
+    std::cout << "1\n";
     // 버퍼의 가장 맨 앞 메세지를 하나씩 보낸다, 최적화가 이유
     // 보낸 메세지는 버퍼에서 제거한다
-    send(sd, (info->write_buf[0]).c_str(), info->write_buf[0].size(), 0);
+    send(sd, msg, strlen(msg), 0);
     info->write_buf.erase(info->write_buf.begin());
 }
 
@@ -67,19 +71,21 @@ void clientWriteCheck(struct kevent& cur_event)
     info = (struct ClientInfo*)cur_event.udata;
     sd = info->sd;
 
+    std::cout << "client: " << sd << "'s write_buf size: " << info->write_buf.size() << "\n";
     if (info->is_writable == true && info->write_buf.size() == 0)
     {
         EV_SET(&event, sd, EVFILT_WRITE, EV_DISABLE, 0, 0, info);
         info->is_writable = false;
+        std::cout << "client: " << sd << " writable toggled\n";
+        change_list.push_back(event);
     }
     else if (info->is_writable == false && info->write_buf.size() > 0)
     {
         EV_SET(&event, sd, EVFILT_WRITE, EV_ENABLE, 0, 0, info);
         info->is_writable = true;
+        std::cout << "client: " << sd << " writable toggled\n";
+        change_list.push_back(event);
     }
-
-    std::cout << "client: " << sd << "writable toggled\n";
-    change_list.push_back(event);
 }
 
 void sendReadToWrite(struct kevent& cur_event)
@@ -90,7 +96,7 @@ void sendReadToWrite(struct kevent& cur_event)
 
     info = (struct ClientInfo*)cur_event.udata;
     sd = info->sd;
-    msg_str = info->read_buf.c_str();
+    msg_str = info->read_buf;
     info->read_buf = "";
 
     for (int i = 0; i < client_deq.size(); i++)
@@ -99,6 +105,7 @@ void sendReadToWrite(struct kevent& cur_event)
             continue;
 
         client_deq[i]->write_buf.push_back(msg_str);
+        std::cout << "client[" << client_deq[i]->sd << "] receive msg from client[" << sd << "]\n";
     }
 }
 
@@ -109,7 +116,7 @@ void clientReadEvent(struct kevent& cur_event)
 
     info = (struct ClientInfo*)cur_event.udata;
     sd = info->sd;
-    std::cout << "hi\n";
+
     // 연결 종료
     if (cur_event.data <= 0)
     {
@@ -131,7 +138,6 @@ void clientReadEvent(struct kevent& cur_event)
             buf_size = MAX_READ;
         char buffer[buf_size + 1];
         int bytes_read = read(sd, buffer, buf_size);
-        std::cout << "bye\n";
         buffer[bytes_read] = '\0';
 
         info->read_buf += std::string(buffer);
@@ -240,7 +246,7 @@ int main()
             // client의 event
             else
             {
-                std::cout << "1\n";
+                // std::cout << "1\n";
                 if (event_list[i].filter == EVFILT_READ)
                 {
                     clientReadEvent(event_list[i]);
