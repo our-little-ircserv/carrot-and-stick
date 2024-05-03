@@ -62,13 +62,11 @@ void clientWriteEvent(struct kevent& cur_event)
     info->write_buf.erase(info->write_buf.begin());
 }
 
-void clientWriteCheck(struct kevent& cur_event)
+void clientWriteCheck(struct ClientInfo* info)
 {
     int sd;
-    struct ClientInfo* info;
     struct kevent event;
 
-    info = (struct ClientInfo*)cur_event.udata;
     sd = info->sd;
 
     std::cout << "client: " << sd << "'s write_buf size: " << info->write_buf.size() << "\n";
@@ -77,6 +75,7 @@ void clientWriteCheck(struct kevent& cur_event)
         EV_SET(&event, sd, EVFILT_WRITE, EV_DISABLE, 0, 0, info);
         info->is_writable = false;
         std::cout << "client: " << sd << " writable toggled\n";
+        std::cout << "client's is_writable: " << info->is_writable << "\n";
         change_list.push_back(event);
     }
     else if (info->is_writable == false && info->write_buf.size() > 0)
@@ -84,6 +83,7 @@ void clientWriteCheck(struct kevent& cur_event)
         EV_SET(&event, sd, EVFILT_WRITE, EV_ENABLE, 0, 0, info);
         info->is_writable = true;
         std::cout << "client: " << sd << " writable toggled\n";
+        std::cout << "client's is_writable: " << info->is_writable << "\n";
         change_list.push_back(event);
     }
 }
@@ -223,8 +223,10 @@ int main()
     while (true)
 	{
         timespec ts;
-        ts.tv_nsec = 500;
+        ts.tv_sec = 3;
+        ts.tv_nsec = 0;
         int n = kevent(kq, &(*change_list.begin()), change_list.size(), &(*event_list.begin()), MAX_EVENTS, &ts);
+        std::cout << "n: " << n << "\n";
 
         if (n < 0)
         {
@@ -257,9 +259,13 @@ int main()
                     // 다른 클라이언트의 write buf를 채운다
                     sendReadToWrite(event_list[i]);
                 }
-                clientWriteCheck(event_list[i]);
             }
         }
+
+        // 현재 write_buf에 따라 write event를 toggle 할 client가 있는지 확인한다
+        // event_list에서 찾으려고 했던 실수 -> 이벤트 발생전까지는 토글을 할 수 없음 ㅋㅋ;
+        for (int i = 0; i < client_deq.size(); i++)
+            clientWriteCheck(client_deq[i]);
 
         // 이벤트 감지 여부와 상관없이 send 가능한 메세지들은 send를 수행한다.
         // 이 부분은 추후 MessegeQueue 에서 일괄적으로 담당한다
@@ -267,7 +273,7 @@ int main()
         {
             int sd = event_list[i].ident;
 
-            if (sd == server_fd)
+            if (sd == server_fd || event_list[i].filter != EVFILT_WRITE)
                 continue;
 
             clientWriteEvent(event_list[i]);
