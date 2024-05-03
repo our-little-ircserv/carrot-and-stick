@@ -29,7 +29,7 @@ struct ClientInfo
 {
 	int sd;
 	std::string read_buf;
-    bool is_writable = false;
+    bool is_writable;
 	std::vector<std::string> write_buf;
 };
 
@@ -99,7 +99,7 @@ void sendReadToWrite(struct kevent& cur_event)
     msg_str = info->read_buf;
     info->read_buf = "";
 
-    for (int i = 0; i < client_deq.size(); i++)
+    for (size_t i = 0; i < client_deq.size(); i++)
     {
         if (sd == client_deq[i]->sd)
             continue;
@@ -161,6 +161,7 @@ void serverReadEvent()
 
 	info = new struct ClientInfo;
     info->sd = client_fd;
+    info->is_writable = false;
 	client_deq.push_back(info);
 
 	// 새 클라이언트에 대한 이벤트 추가
@@ -187,9 +188,10 @@ void init(struct sockaddr_in& address, socklen_t& addrlen, int& kq)
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = inet_addr("127.0.0.1");;
     address.sin_port = htons(PORT);
+    addrlen = sizeof(address);
 
     // 소켓 바인드
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+    if (bind(server_fd, (struct sockaddr *)&address, addrlen) < 0) {
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
@@ -264,7 +266,7 @@ int main()
 
         // 현재 write_buf에 따라 write event를 toggle 할 client가 있는지 확인한다
         // event_list에서 찾으려고 했던 실수 -> 이벤트 발생전까지는 토글을 할 수 없음 ㅋㅋ;
-        for (int i = 0; i < client_deq.size(); i++)
+        for (size_t i = 0; i < client_deq.size(); i++)
             clientWriteCheck(client_deq[i]);
 
         // 이벤트 감지 여부와 상관없이 send 가능한 메세지들은 send를 수행한다.
