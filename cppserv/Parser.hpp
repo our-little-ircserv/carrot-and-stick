@@ -2,7 +2,6 @@
 # define PARSER_HPP
 
 # include <inttypes.h>
-# include <exception>
 
 namespace	Parser
 {
