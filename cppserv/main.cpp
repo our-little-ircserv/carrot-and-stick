@@ -28,7 +28,9 @@ int	main(int argc, char** argv)
 	{
 		Network	network(Parser::checkArgValidity(argc, argv));
 		network.boot();
+
 		signal(SIGINT, handleSignals);
+
 		IRC event_handler;
 		event_handler.handleEvents(network);
 	}
