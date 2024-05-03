@@ -4,10 +4,12 @@
 #include <iostream>
 #include "IRC.hpp"
 #include "Error.hpp"
+#include "Signal.hpp"
 
+extern volatile sig_atomic_t g_signo;
 extern int	kq;
 
-IRC::IRC() : eventlist(1), clients_number(0)
+IRC::IRC() : eventlist(1)
 {
 }
 
@@ -62,7 +64,6 @@ void	IRC::acceptClient(Network& network)
 
 	Client*	accepted_client = new Client(wrapSyscall(accept(network.getServerSocketFd(), (struct sockaddr*)&client_addr, &socklen), "accept"));
 	clients[accepted_client->getSocketFd()] = accepted_client;
-	++clients_number;
 
 	EV_SET(&event, accepted_client->getSocketFd(), EVFILT_READ, EV_ADD, 0, 0, NULL);
 	changelist.push_back(event);
@@ -111,5 +112,3 @@ std::string	IRC::receiveMessages(struct kevent* event_occurred)
 	buf[recv_len] = '\0';
 	return buf;
 }
-
-

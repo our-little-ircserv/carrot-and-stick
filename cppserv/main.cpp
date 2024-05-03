@@ -8,6 +8,7 @@
 #include "Error.hpp"
 #include "Parser.hpp"
 #include "IRC.hpp"
+#include "Signal.hpp"
 
 volatile sig_atomic_t g_signo = 0;
 std::string		password;
@@ -27,15 +28,22 @@ int	main(int argc, char** argv)
 	{
 		Network	network(Parser::checkArgValidity(argc, argv));
 		network.boot();
-//		signal(SIGINT, handleSignals);
+		signal(SIGINT, handleSignals);
 		IRC event_handler;
 		event_handler.handleEvents(network);
+	}
+	catch (Signal& signal)
+	{
+		std::cout << "\033[2D";
+//		int	received_signal = signal.getSignal();
+//		if (received_signal == SIGINT || received_signal == SIGQUIT)
+//			goto TERMINATE_PROGRAM;
 	}
 	catch (Error& err)
 	{
 		err.ft_perror();
 		err_no = err.getErrNo();
-//
+
 //		goto TERMINATE_PROGRAM;
 	}
 
