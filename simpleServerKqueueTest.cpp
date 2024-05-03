@@ -68,11 +68,38 @@ void clientWriteCheck(struct kevent& cur_event)
     sd = info->sd;
 
     if (info->is_writable == true && info->write_buf.size() == 0)
+    {
         EV_SET(&event, sd, EVFILT_WRITE, EV_DISABLE, 0, 0, info);
+        info->is_writable = false;
+    }
     else if (info->is_writable == false && info->write_buf.size() > 0)
+    {
         EV_SET(&event, sd, EVFILT_WRITE, EV_ENABLE, 0, 0, info);
+        info->is_writable = true;
+    }
 
-    change_list.emplace_back(event);
+    std::cout << "client: " << sd << "writable toggled\n";
+    change_list.push_back(event);
+}
+
+void sendReadToWrite(struct kevent& cur_event)
+{
+    int sd;
+    struct ClientInfo* info;
+    std::string msg_str;
+
+    info = (struct ClientInfo*)cur_event.udata;
+    sd = info->sd;
+    msg_str = info->read_buf.c_str();
+    info->read_buf = "";
+
+    for (int i = 0; i < client_deq.size(); i++)
+    {
+        if (sd == client_deq[i]->sd)
+            continue;
+
+        client_deq[i]->write_buf.push_back(msg_str);
+    }
 }
 
 void clientReadEvent(struct kevent& cur_event)
@@ -82,10 +109,11 @@ void clientReadEvent(struct kevent& cur_event)
 
     info = (struct ClientInfo*)cur_event.udata;
     sd = info->sd;
-
+    std::cout << "hi\n";
     // 연결 종료
     if (cur_event.data <= 0)
     {
+        std::cout << "disconnected\n";
         std::deque<struct ClientInfo*>::iterator it = std::find(client_deq.begin(), client_deq.end(), info);
         client_deq.erase(it);
         delete info;
@@ -96,15 +124,17 @@ void clientReadEvent(struct kevent& cur_event)
 	// 데이터 읽기
     else
     {
+        std::cout << "sd: " << sd << "\n";
         int buf_size;
+        buf_size = cur_event.data;
         if (cur_event.data > MAX_READ)
             buf_size = MAX_READ;
         char buffer[buf_size + 1];
         int bytes_read = read(sd, buffer, buf_size);
+        std::cout << "bye\n";
         buffer[bytes_read] = '\0';
 
         info->read_buf += std::string(buffer);
-
         return ;
     }
 }
@@ -124,17 +154,20 @@ void serverReadEvent()
 	}
 
 	info = new struct ClientInfo;
+    info->sd = client_fd;
 	client_deq.push_back(info);
 
 	// 새 클라이언트에 대한 이벤트 추가
 	EV_SET(&event, client_fd, EVFILT_READ, EV_ADD, 0, 0, info);
-	change_list.emplace_back(event);
+	change_list.push_back(event);
 
 	EV_SET(&event, client_fd, EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, info);
-	change_list.emplace_back(event);
+	change_list.push_back(event);
+
+    std::cout << "Welcome New Client\n";
 }
 
-void init(struct sockaddr_in& address, socklen_t& addrlen, int kq)
+void init(struct sockaddr_in& address, socklen_t& addrlen, int& kq)
 {
 	struct kevent event;
 
@@ -169,7 +202,7 @@ void init(struct sockaddr_in& address, socklen_t& addrlen, int kq)
 
     // 소켓을 감시할 이벤트 추가
     EV_SET(&event, server_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-	change_list.emplace_back(event);
+	change_list.push_back(event);
 }
 
 int main()
@@ -183,10 +216,15 @@ int main()
 
     while (true)
 	{
-        int n = kevent(kq, &(*change_list.begin()), change_list.size(), &(*event_list.begin()), MAX_EVENTS, NULL);
+        timespec ts;
+        ts.tv_nsec = 500;
+        int n = kevent(kq, &(*change_list.begin()), change_list.size(), &(*event_list.begin()), MAX_EVENTS, &ts);
 
         if (n < 0)
+        {
+            perror(strerror(errno));
             exit(EXIT_FAILURE);
+        }
 		
 		change_list.clear();
 
@@ -202,13 +240,16 @@ int main()
             // client의 event
             else
             {
+                std::cout << "1\n";
                 if (event_list[i].filter == EVFILT_READ)
                 {
                     clientReadEvent(event_list[i]);
 
                     // 해당 클라이언트의 read buf를 파싱한다
                     // command를 수행한다
-                        // 다른 클라이언트의 write buf를 채운다
+
+                    // 다른 클라이언트의 write buf를 채운다
+                    sendReadToWrite(event_list[i]);
                 }
                 clientWriteCheck(event_list[i]);
             }
