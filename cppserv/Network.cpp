@@ -13,7 +13,6 @@ Network::Network(uint16_t _port) : port(_port), ip_addr("127.0.0.1")
 Network::~Network()
 {
 	close(server_sockfd);
-//	std::cout << "Network shut down" << std::endl;
 }
 
 int	Network::getServerSocketFd() const
@@ -21,13 +20,6 @@ int	Network::getServerSocketFd() const
 	return server_sockfd;
 }
 
-// open server socket
-// save server socket file descriptor to server_sockfd
-
-// set sockaddr: port, loopback ip
-// bind server_sockfd to sockaddr
-
-// listen to the socket!
 void	Network::boot()
 {
 	setUpSocket();
