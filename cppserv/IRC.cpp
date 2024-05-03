@@ -23,7 +23,7 @@ IRC::~IRC()
 	clients.clear();
 }
 
-void	IRC::handleEvents(Network& network)
+void	IRC::handleEvents(Network& network_handler)
 {
 	struct kevent	event;
 	struct timespec	time;
@@ -31,7 +31,7 @@ void	IRC::handleEvents(Network& network)
 	time.tv_nsec = 0;
 
 	kq = wrapSyscall(kqueue(), "kqueue");
-	EV_SET(&event, network.getServerSocketFd(), EVFILT_READ, EV_ADD, 0, 0, NULL);
+	EV_SET(&event, network_handler.getServerSocketFd(), EVFILT_READ, EV_ADD, 0, 0, NULL);
 	changelist.push_back(event);
 
 	while (true)
@@ -48,21 +48,21 @@ void	IRC::handleEvents(Network& network)
 
 		for (int i = 0; i < real_events; i++)
 		{
-			if ((int)eventlist[i].ident == network.getServerSocketFd())
-				acceptClient(network);
+			if ((int)eventlist[i].ident == network_handler.getServerSocketFd())
+				acceptClient(network_handler);
 			else
 				recvSendMesssages(&eventlist[i]);
 		}
 	}
 }
 
-void	IRC::acceptClient(Network& network)
+void	IRC::acceptClient(Network& network_handler)
 {
 	struct kevent	event;
 	struct sockaddr_in	client_addr;
 	socklen_t	socklen = sizeof(struct sockaddr_in);
 
-	Client*	accepted_client = new Client(wrapSyscall(accept(network.getServerSocketFd(), (struct sockaddr*)&client_addr, &socklen), "accept"));
+	Client*	accepted_client = new Client(wrapSyscall(accept(network_handler.getServerSocketFd(), (struct sockaddr*)&client_addr, &socklen), "accept"));
 	clients[accepted_client->getSocketFd()] = accepted_client;
 
 	EV_SET(&event, accepted_client->getSocketFd(), EVFILT_READ, EV_ADD, 0, 0, NULL);

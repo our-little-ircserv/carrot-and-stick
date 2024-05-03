@@ -26,27 +26,23 @@ int	main(int argc, char** argv)
 
 	try
 	{
-		Network	network(Parser::checkArgValidity(argc, argv));
-		network.boot();
+		Network	network_handler(Parser::checkArgValidity(argc, argv));
+		network_handler.boot();
 
 		signal(SIGINT, handleSignals);
 
 		IRC event_handler;
-		event_handler.handleEvents(network);
+		event_handler.handleEvents(network_handler);
 	}
 	catch (Signal& signal)
 	{
 		std::cout << "\033[2D";
-//		int	received_signal = signal.getSignal();
-//		if (received_signal == SIGINT || received_signal == SIGQUIT)
-//			goto TERMINATE_PROGRAM;
 	}
 	catch (Error& err)
 	{
 		err.ft_perror();
 		err_no = err.getErrNo();
 
-//		goto TERMINATE_PROGRAM;
 	}
 
 //TERMINATE_PROGRAM:
