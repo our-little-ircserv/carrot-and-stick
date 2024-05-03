@@ -18,11 +18,11 @@ class	Error
 
 		Error(enum errType type, const char* title);
 		enum errType	getErrNo(void) const;
-		void	ft_perror() const;
+		void			ft_perror() const;
 
 	private:
-		enum errType err_no;
-		const char*	err_title;
+		enum errType	err_no;
+		const char*		err_title;
 };
 
 inline int	wrapSyscall(int syscall_ret, const char* syscall) throw(Error)

@@ -13,15 +13,14 @@ class	Network
 		Network(uint16_t _port);
 		~Network();
 		void	boot();
-
-		int	getServerSocketFd() const;
+		int		getServerSocketFd() const;
 
 	private:
-		int	server_sockfd;
+		int			server_sockfd;
 		uint16_t	port;
 		const char*	ip_addr;
 
-		void	setUpSocket() throw(Error);
+		void				setUpSocket() throw(Error);
 		struct sockaddr_in	setSockAddrIn(int domain) throw(Error);
 };
 

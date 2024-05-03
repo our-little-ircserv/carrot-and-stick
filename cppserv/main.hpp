@@ -1,5 +1,5 @@
-#ifndef MINI_SERV_HPP
-# define MINI_SERV_HPP
+#ifndef MAIN_HPP
+# define MAIN_HPP
 
 # include <string>
 

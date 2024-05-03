@@ -8,6 +8,8 @@ SRCS= \
 	 Error.cpp \
 	 Parser.cpp \
 	 Network.cpp \
+	 IRC.cpp \
+	 Client.cpp \
 
 OBJS=$(SRCS:.cpp=.o)
 DEPS=$(SRCS:.cpp=.d)
