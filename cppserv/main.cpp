@@ -22,7 +22,7 @@ void	handleSignals(int signo)
 int	main(int argc, char** argv)
 {
 	int	err_no = 0;
-//	signal(SIGINT, SIG_IGN);
+	signal(SIGINT, SIG_IGN);
 
 	try
 	{
