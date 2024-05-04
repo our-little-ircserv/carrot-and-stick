@@ -42,7 +42,6 @@ int	main(int argc, char** argv)
 	{
 		err.ftPerror();
 		err_no = err.getErrNo();
-
 	}
 
 //TERMINATE_PROGRAM:
