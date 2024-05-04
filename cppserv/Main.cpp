@@ -7,7 +7,7 @@
 #include "Network.hpp"
 #include "Error.hpp"
 #include "Parser.hpp"
-#include "IRC.hpp"
+#include "Server.hpp"
 #include "Signal.hpp"
 
 volatile sig_atomic_t g_signo = 0;
@@ -31,8 +31,8 @@ int	main(int argc, char** argv)
 
 		signal(SIGINT, handleSignals);
 
-		IRC server_manager;
-		server_manager.runIRC(network_manager);
+		Server server_manager;
+		server_manager.runServer(network_manager);
 	}
 	catch (Signal& signal)
 	{

@@ -6,7 +6,7 @@ CXXFLAGS=-Wall -Wextra -Werror --std=c++98 -MMD -MP
 SRCS= \
 	 Main.cpp \
 	 Network.cpp \
-	 IRC.cpp \
+	 Server.cpp \
 	 Client.cpp \
 	 Error.cpp \
 	 Parser.cpp \

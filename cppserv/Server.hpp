@@ -1,5 +1,5 @@
-#ifndef IRC_HPP
-# define IRC_HPP
+#ifndef Server_HPP
+# define Server_HPP
 
 #include <sys/types.h>
 #include <sys/event.h>
@@ -9,12 +9,12 @@
 #include "Network.hpp"
 #include "Client.hpp"
 
-class	IRC
+class	Server
 {
 	public:
-		~IRC();
+		~Server();
 
-		void	runIRC(Network& network) throw(Signal, Error);
+		void	runServer(Network& network) throw(Signal, Error);
 	
 	private:
 		std::vector<struct kevent>	m_changelist;
