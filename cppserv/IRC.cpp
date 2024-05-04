@@ -23,7 +23,7 @@ IRC::~IRC()
 	clients.clear();
 }
 
-void	IRC::handleEvents(Network& network_handler)
+void	IRC::handleEvents(Network& network_handler) throw(Signal, Error)
 {
 	struct kevent	event;
 	struct timespec	time;
@@ -60,7 +60,7 @@ void	IRC::handleEvents(Network& network_handler)
 	}
 }
 
-void	IRC::acceptClient(Network& network_handler)
+void	IRC::acceptClient(Network& network_handler) throw(Signal, Error)
 {
 	struct kevent	event;
 	struct sockaddr_in	client_addr;
@@ -75,7 +75,7 @@ void	IRC::acceptClient(Network& network_handler)
 	changelist.push_back(event);
 }
 
-void	IRC::handleMesssages(struct kevent* event_occurred)
+void	IRC::handleMesssages(struct kevent* event_occurred) throw(Signal, Error)
 {
 	if ((int)event_occurred->filter == EVFILT_READ)
 	{
@@ -97,7 +97,7 @@ void	IRC::handleMesssages(struct kevent* event_occurred)
 	}
 }
 
-std::string	IRC::receiveMessages(struct kevent* event_occurred)
+std::string	IRC::receiveMessages(struct kevent* event_occurred) throw(Signal, Error)
 {
 	std::map<int, Client*>::iterator	it = clients.find((int)event_occurred->ident);
 	if (it == clients.end())

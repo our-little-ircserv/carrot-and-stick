@@ -4,7 +4,7 @@ NAME=irctest
 CXX=c++
 CXXFLAGS=-Wall -Wextra -Werror --std=c++98 -MMD -MP
 SRCS= \
-	 main.cpp \
+	 Main.cpp \
 	 Network.cpp \
 	 IRC.cpp \
 	 Client.cpp \
