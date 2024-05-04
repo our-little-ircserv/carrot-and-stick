@@ -10,7 +10,7 @@ enum Error::errType	Error::getErrNo(void) const
 	return err_no;
 }
 
-void	Error::ft_perror() const
+void	Error::ftPerror() const
 {
 	std::cerr << "\033[31m[ERROR]\033[0m ";
 

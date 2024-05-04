@@ -54,7 +54,7 @@ void	IRC::handleEvents(Network& network_handler)
 			}
 			else
 			{
-				recvSendMesssages(&eventlist[i]);
+				handleMesssages(&eventlist[i]);
 			}
 		}
 	}
@@ -75,7 +75,7 @@ void	IRC::acceptClient(Network& network_handler)
 	changelist.push_back(event);
 }
 
-void	IRC::recvSendMesssages(struct kevent* event_occurred)
+void	IRC::handleMesssages(struct kevent* event_occurred)
 {
 	if ((int)event_occurred->filter == EVFILT_READ)
 	{

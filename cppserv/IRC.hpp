@@ -23,7 +23,7 @@ class	IRC
 		std::map<int, Client*>		clients;
 
 		void		acceptClient(Network& network);
-		void		recvSendMesssages(struct kevent* event_occurred);
+		void		handleMesssages(struct kevent* event_occurred);
 		std::string	receiveMessages(struct kevent* event_occurred);
 };
 
