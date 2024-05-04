@@ -55,7 +55,7 @@ void	IRC::handleEvents(Network& network_manager) throw(Signal, Error)
 			}
 			else
 			{
-				handleMesssages(&m_eventlist[i]);
+				handleMessages(&m_eventlist[i]);
 			}
 		}
 	}
@@ -83,7 +83,7 @@ void	IRC::deleteClient(Client* client) throw(Signal, Error)
 	delete client;
 }
 
-void	IRC::handleMesssages(struct kevent* event_occurred) throw(Signal, Error)
+void	IRC::handleMessages(struct kevent* event_occurred) throw(Signal, Error)
 {
 	std::map<int, Client*>::iterator	it = m_clients.find((int)event_occurred->ident);
 	if (it == m_clients.end())

@@ -24,7 +24,7 @@ class	IRC
 		void		handleEvents(Network& network) throw(Signal, Error);
 		void		acceptClient(Network& network) throw(Signal, Error);
 		void		deleteClient(Client* client) throw(Signal, Error);
-		void		handleMesssages(struct kevent* event_occurred) throw(Signal, Error);
+		void		handleMessages(struct kevent* event_occurred) throw(Signal, Error);
 		std::string	receiveMessages(std::map<int, Client*>::iterator& it, struct kevent* event_occurred) throw(Signal, Error);
 		void		sendMessages(Client* client) throw(Signal, Error);
 
