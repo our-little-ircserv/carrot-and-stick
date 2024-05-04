@@ -20,6 +20,11 @@
 #define MAX_READ 1000
 #define MAX_MESSAGE 512
 
+#define RED "\033[1;31m"
+#define GREEN "\033[0;32m"
+#define YELLOW "\033[1;33m"
+#define EOC "\033[0;0m"
+
 int server_fd, kq;
 std::deque<struct ClientInfo*> client_deq;
 std::vector<struct kevent> change_list;
@@ -33,6 +38,18 @@ struct ClientInfo
 	std::vector<std::string> write_buf;
 };
 
+/*
+
+    sockInfo
+    {
+        int                 fd
+        struct sockaddr_in  addr;
+        socklen_t           addrlen;
+    }
+    // 이 정보는 Server, Client 구분없이 필요로 한다.
+
+*/
+
 // MessegeInfo
 // from
 // to
@@ -40,6 +57,16 @@ struct ClientInfo
 
 // MessegeQueue
 // list of MessegeInfo
+
+/*
+
+    출력 접두사
+
+    [LOG] - 디버깅시 필요한 정보 표시
+    [BUG] - 예외상황에 대한 정보 표시
+    [INFO] - 사용자에게 필요한 정보 표시
+
+*/
 
 void clientWriteEvent(struct kevent& cur_event)
 {
@@ -55,7 +82,6 @@ void clientWriteEvent(struct kevent& cur_event)
     const char* msg;
     msg = info->write_buf[0].c_str();
 
-    std::cout << "1\n";
     // 버퍼의 가장 맨 앞 메세지를 하나씩 보낸다, 최적화가 이유
     // 보낸 메세지는 버퍼에서 제거한다
     send(sd, msg, strlen(msg), 0);
@@ -69,21 +95,26 @@ void clientWriteCheck(struct ClientInfo* info)
 
     sd = info->sd;
 
-    std::cout << "client: " << sd << "'s write_buf size: " << info->write_buf.size() << "\n";
     if (info->is_writable == true && info->write_buf.size() == 0)
     {
         EV_SET(&event, sd, EVFILT_WRITE, EV_DISABLE, 0, 0, info);
         info->is_writable = false;
-        std::cout << "client: " << sd << " writable toggled\n";
-        std::cout << "client's is_writable: " << info->is_writable << "\n";
+
+        std::cout << "\n[LOG] ";
+        std::cout << "Client " << YELLOW << "( sd: " << sd << " )" << EOC << " writable toggled\n";
+        std::cout << "From " << YELLOW << !info->is_writable << EOC << " TO " << YELLOW << info->is_writable << "\n\n" << EOC;
+
         change_list.push_back(event);
     }
     else if (info->is_writable == false && info->write_buf.size() > 0)
     {
         EV_SET(&event, sd, EVFILT_WRITE, EV_ENABLE, 0, 0, info);
         info->is_writable = true;
-        std::cout << "client: " << sd << " writable toggled\n";
-        std::cout << "client's is_writable: " << info->is_writable << "\n";
+
+        std::cout << "\n[LOG] ";
+        std::cout << "Client " << YELLOW << "( sd: " << sd << " )" << EOC << " writable toggled\n";
+        std::cout << "From " << YELLOW << !info->is_writable << EOC << " TO " << YELLOW << info->is_writable << "\n\n" << EOC;
+
         change_list.push_back(event);
     }
 }
@@ -96,6 +127,7 @@ void sendReadToWrite(struct kevent& cur_event)
 
     info = (struct ClientInfo*)cur_event.udata;
     sd = info->sd;
+    // 나중에 발신자 정보도 추가한다
     msg_str = info->read_buf;
     info->read_buf = "";
 
@@ -105,7 +137,8 @@ void sendReadToWrite(struct kevent& cur_event)
             continue;
 
         client_deq[i]->write_buf.push_back(msg_str);
-        std::cout << "client[" << client_deq[i]->sd << "] receive msg from client[" << sd << "]\n";
+        std::cout << "\n[LOG] ";
+        std::cout << "client " << YELLOW << "( sd: " << client_deq[i]->sd << " )" << EOC << " receive msg from client " << YELLOW << "( sd: " << sd << " )\n\n" << EOC;
     }
 }
 
@@ -120,7 +153,9 @@ void clientReadEvent(struct kevent& cur_event)
     // 연결 종료
     if (cur_event.data <= 0)
     {
-        std::cout << "disconnected\n";
+        std::cout << GREEN << "\n[INFO] ";
+        std::cout << EOC << "Client " << YELLOW << "( sd: " << sd << " )" << RED << " disconnected" << EOC << "...\n\n";
+
         std::deque<struct ClientInfo*>::iterator it = std::find(client_deq.begin(), client_deq.end(), info);
         client_deq.erase(it);
         delete info;
@@ -131,7 +166,9 @@ void clientReadEvent(struct kevent& cur_event)
 	// 데이터 읽기
     else
     {
-        std::cout << "sd: " << sd << "\n";
+        std::cout << EOC << "\n[LOG] ";
+        std::cout << "ReadEvent from sd: " << sd << "\n\n";
+
         int buf_size;
         buf_size = cur_event.data;
         if (cur_event.data > MAX_READ)
@@ -153,6 +190,8 @@ void serverReadEvent()
 	struct kevent event;
 	struct ClientInfo* info;
 
+    std::stringstream ss;
+
 	// 새로운 연결 수락
 	client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &client_addrlen);
 	if (client_fd < 0) {
@@ -171,7 +210,13 @@ void serverReadEvent()
 	EV_SET(&event, client_fd, EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, info);
 	change_list.push_back(event);
 
-    std::cout << "Welcome New Client\n";
+    // 유저가 연결되었다는 log를 기록
+    std::cout << GREEN << "\n[INFO] ";
+    std::cout << EOC << "New Client " << YELLOW << "( sd: " << client_fd << " )" << EOC << " has connected Server!\n\n";
+
+    // 해당 client에게 환영 메세지를 보냄
+    ss << "[Server] Welcome New Client! Now Your sd: " << YELLOW << client_fd << "\n" << EOC;
+    info->write_buf.push_back(ss.str());
 }
 
 void init(struct sockaddr_in& address, socklen_t& addrlen, int& kq)
@@ -220,7 +265,8 @@ int main()
 
 	init(server_addr, server_addrlen, kq);
 
-	std::cout << "Server is listening on port " << PORT << "...\n";
+    std::cout << GREEN << "[LOG] ";
+	std::cout << GREEN << "Server is listening on port " << YELLOW << PORT << GREEN << "...\n\n" << EOC;
 
     while (true)
 	{
@@ -228,7 +274,8 @@ int main()
         ts.tv_sec = 3;
         ts.tv_nsec = 0;
         int n = kevent(kq, &(*change_list.begin()), change_list.size(), &(*event_list.begin()), MAX_EVENTS, &ts);
-        std::cout << "n: " << n << "\n";
+        std::cout << "[LOG] ";
+        std::cout << "number of detected events: " << YELLOW << n << "\n" << EOC;
 
         if (n < 0)
         {
