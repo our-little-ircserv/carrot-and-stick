@@ -49,9 +49,13 @@ void	IRC::handleEvents(Network& network_handler)
 		for (int i = 0; i < real_events; i++)
 		{
 			if ((int)eventlist[i].ident == network_handler.getServerSocketFd())
+			{
 				acceptClient(network_handler);
+			}
 			else
+			{
 				recvSendMesssages(&eventlist[i]);
+			}
 		}
 	}
 }
@@ -79,7 +83,9 @@ void	IRC::recvSendMesssages(struct kevent* event_occurred)
 		// parse received_msg
 
 		if (clients[event_occurred->ident])
-			std::cout << clients[event_occurred->ident]->getSocketFd() << " - " << received_msg << std::endl;
+		{
+//			std::cout << clients[event_occurred->ident]->getSocketFd() << " - " << received_msg << std::endl;
+		}
 
 		// fill write buf to other clients
 		// other clients: EVFILT_WRITE, EV_ADD | EV_ENABLE
@@ -95,7 +101,10 @@ std::string	IRC::receiveMessages(struct kevent* event_occurred)
 {
 	std::map<int, Client*>::iterator	it = clients.find((int)event_occurred->ident);
 	if (it == clients.end())
+	{
 		return "";
+	}
+
 	Client*	client = it->second;
 	char	buf[event_occurred->data];
 
@@ -106,7 +115,6 @@ std::string	IRC::receiveMessages(struct kevent* event_occurred)
 		close(client->getSocketFd());
 		clients.erase(client->getSocketFd());
 		delete client;
-		return "";
 	}
 
 	buf[recv_len] = '\0';

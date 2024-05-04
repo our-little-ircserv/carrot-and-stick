@@ -13,8 +13,12 @@ enum Error::errType	Error::getErrNo(void) const
 void	Error::ft_perror() const
 {
 	std::cerr << "\033[31m[ERROR]\033[0m ";
+
 //	if (err_title)
+//	{
 //		std::cerr << err_title << ": ";
+//	}
+
 	switch (err_no)
 	{
 		case ESYSERR:
