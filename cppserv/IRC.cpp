@@ -75,17 +75,19 @@ void	IRC::acceptClient(Network& network_handler) throw(Signal, Error)
 	changelist.push_back(event);
 }
 
+void	IRC::deleteClient(Client* client) throw(Signal, Error)
+{
+	wrapSyscall(close(client->getSocketFd()), "close");
+	clients.erase(client->getSocketFd());
+	delete client;
+}
+
 void	IRC::handleMesssages(struct kevent* event_occurred) throw(Signal, Error)
 {
 	if ((int)event_occurred->filter == EVFILT_READ)
 	{
 		std::string received_msg = receiveMessages(event_occurred);
 		// parse received_msg
-
-		if (clients[event_occurred->ident])
-		{
-//			std::cout << clients[event_occurred->ident]->getSocketFd() << " - " << received_msg << std::endl;
-		}
 
 		// fill write buf to other clients
 		// other clients: EVFILT_WRITE, EV_ADD | EV_ENABLE
@@ -112,9 +114,7 @@ std::string	IRC::receiveMessages(struct kevent* event_occurred) throw(Signal, Er
 	wrapSyscall(recv_len, "recv");
 	if (recv_len == 0)
 	{
-		close(client->getSocketFd());
-		clients.erase(client->getSocketFd());
-		delete client;
+		deleteClient(client);
 	}
 
 	buf[recv_len] = '\0';
