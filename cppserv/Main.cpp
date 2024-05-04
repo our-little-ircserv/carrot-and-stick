@@ -26,13 +26,13 @@ int	main(int argc, char** argv)
 
 	try
 	{
-		Network	network_handler(Parser::checkArgValidity(argc, argv));
-		network_handler.boot();
+		Network	network_manager(Parser::checkArgValidity(argc, argv));
+		network_manager.boot();
 
 		signal(SIGINT, handleSignals);
 
-		IRC event_handler;
-		event_handler.handleEvents(network_handler);
+		IRC server_manager;
+		server_manager.runIRC(network_manager);
 	}
 	catch (Signal& signal)
 	{
