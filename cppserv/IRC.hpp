@@ -26,7 +26,11 @@ class	IRC
 		void		acceptClient(Network& network) throw(Signal, Error);
 		void		deleteClient(Client* client) throw(Signal, Error);
 		void		handleMesssages(struct kevent* event_occurred) throw(Signal, Error);
-		std::string	receiveMessages(struct kevent* event_occurred) throw(Signal, Error);
+		std::string	receiveMessages(std::map<int, Client*>::iterator& it, struct kevent* event_occurred) throw(Signal, Error);
+		void		sendMessages(Client* client) throw(Signal, Error);
+
+		void	addReceivedMessagesToWriteBuffers(std::map<int, Client*>::iterator& msg_owner);
+		void	moveReadBufferToWriteBuffer(std::vector<std::string>& rdbuf, std::vector<std::string>& wrbuf);
 };
 
 #endif

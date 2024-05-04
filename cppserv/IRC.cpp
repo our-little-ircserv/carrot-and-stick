@@ -89,29 +89,38 @@ void	IRC::deleteClient(Client* client) throw(Signal, Error)
 
 void	IRC::handleMesssages(struct kevent* event_occurred) throw(Signal, Error)
 {
-	if ((int)event_occurred->filter == EVFILT_READ)
-	{
-		std::string received_msg = receiveMessages(event_occurred);
-		// parse received_msg
-
-		// fill write buf to other clients
-		// other clients: EVFILT_WRITE, EV_ADD | EV_ENABLE
-	}
-	else if ((int)event_occurred->filter == EVFILT_WRITE)
-	{
-		// send write buf
-		// send clients: EVFILT_WRITE, EV_ADD | EV_DISABLE
-	}
-}
-
-std::string	IRC::receiveMessages(struct kevent* event_occurred) throw(Signal, Error)
-{
 	std::map<int, Client*>::iterator	it = clients.find((int)event_occurred->ident);
 	if (it == clients.end())
 	{
-		return "";
+		return;
 	}
 
+	Client*	client = it->second;
+	if ((int)event_occurred->filter == EVFILT_READ)
+	{
+		std::string received_msg = receiveMessages(it, event_occurred);
+		if (received_msg.empty())
+		{
+			return;
+		}
+
+		client->read_buf.push_back(received_msg);
+		addReceivedMessagesToWriteBuffers(it);
+		client->read_buf.clear();
+	}
+	else if ((int)event_occurred->filter == EVFILT_WRITE)
+	{
+		sendMessages(client);
+		client->write_buf.clear();
+
+		struct kevent	event;
+		EV_SET(&event, client->getSocketFd(), EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, NULL);
+		changelist.push_back(event);
+	}
+}
+
+std::string	IRC::receiveMessages(std::map<int, Client*>::iterator& it, struct kevent* event_occurred) throw(Signal, Error)
+{
 	Client*	client = it->second;
 	char	buf[event_occurred->data];
 
@@ -124,4 +133,37 @@ std::string	IRC::receiveMessages(struct kevent* event_occurred) throw(Signal, Er
 
 	buf[recv_len] = '\0';
 	return buf;
+}
+
+void	IRC::sendMessages(Client* client) throw(Signal, Error)
+{
+	for (std::vector<std::string>::iterator it = client->write_buf.begin(); it != client->write_buf.end(); it++)
+	{
+		wrapSyscall(send(client->getSocketFd(), it->c_str(), it->length(), 0), "send");
+	}
+}
+
+void	IRC::addReceivedMessagesToWriteBuffers(std::map<int, Client*>::iterator& msg_owner)
+{
+	struct kevent	event;
+	std::vector<std::string>& owner_rdbuf = msg_owner->second->read_buf;
+
+	for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		if (it != msg_owner)
+		{
+			Client*	client = it->second;
+			moveReadBufferToWriteBuffer(owner_rdbuf, client->write_buf);
+			EV_SET(&event, client->getSocketFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
+			changelist.push_back(event);
+		}
+	}
+}
+
+void	IRC::moveReadBufferToWriteBuffer(std::vector<std::string>& rdbuf, std::vector<std::string>& wrbuf)
+{
+	for (std::vector<std::string>::iterator it = rdbuf.begin(); it != rdbuf.end(); it++)
+	{
+		wrbuf.push_back(*it);
+	}
 }
