@@ -40,7 +40,7 @@ int	main(int argc, char** argv)
 	}
 	catch (Error& err)
 	{
-		err.ft_perror();
+		err.ftPerror();
 		err_no = err.getErrNo();
 
 	}

@@ -23,7 +23,7 @@ class	Error
 
 		Error(enum errType type, const char* title);
 		enum errType	getErrNo(void) const;
-		void			ft_perror() const;
+		void			ftPerror() const;
 
 	private:
 		enum errType	err_no;

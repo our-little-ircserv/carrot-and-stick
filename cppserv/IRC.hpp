@@ -15,16 +15,16 @@ class	IRC
 		IRC();
 		~IRC();
 
-		void	handleEvents(Network& network);
+		void	handleEvents(Network& network) throw(Signal, Error);
 	
 	private:
 		std::vector<struct kevent>	changelist;
 		std::vector<struct kevent>	eventlist;
 		std::map<int, Client*>		clients;
 
-		void		acceptClient(Network& network);
-		void		handleMesssages(struct kevent* event_occurred);
-		std::string	receiveMessages(struct kevent* event_occurred);
+		void		acceptClient(Network& network) throw(Signal, Error);
+		void		handleMesssages(struct kevent* event_occurred) throw(Signal, Error);
+		std::string	receiveMessages(struct kevent* event_occurred) throw(Signal, Error);
 };
 
 #endif
