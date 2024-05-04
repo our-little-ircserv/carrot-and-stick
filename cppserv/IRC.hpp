@@ -12,17 +12,14 @@
 class	IRC
 {
 	public:
-		IRC();
 		~IRC();
 
 		void	runIRC(Network& network) throw(Signal, Error);
 	
 	private:
-		std::vector<struct kevent>	changelist;
-		std::vector<struct kevent>	eventlist;
-		std::map<int, Client*>		clients;
-
-		bool	writable;
+		std::vector<struct kevent>	m_changelist;
+		struct kevent				m_eventlist[MAX_EVENTS];
+		std::map<int, Client*>		m_clients;
 
 		void		handleEvents(Network& network) throw(Signal, Error);
 		void		acceptClient(Network& network) throw(Signal, Error);

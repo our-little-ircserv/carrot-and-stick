@@ -1,28 +1,28 @@
 #include <iostream>
 #include "Error.hpp"
 
-Error::Error(enum errType type, const char* title) : err_no(type), err_title(title)
+Error::Error(enum errType _err_no, const char* _err_title) : m_err_no(_err_no), m_err_title(_err_title)
 {
 }
 
 enum Error::errType	Error::getErrNo(void) const
 {
-	return err_no;
+	return m_err_no;
 }
 
 void	Error::ftPerror() const
 {
 	std::cerr << "\033[31m[ERROR]\033[0m ";
 
-//	if (err_title)
+//	if (m_err_title)
 //	{
-//		std::cerr << err_title << ": ";
+//		std::cerr << m_err_title << ": ";
 //	}
 
-	switch (err_no)
+	switch (m_err_no)
 	{
 		case ESYSERR:
-			std::perror(err_title);
+			std::perror(m_err_title);
 			break;
 		case EARGC:
 			std::cerr << "Enter 2 arguments: <port> <password>" << std::endl;

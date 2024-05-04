@@ -16,9 +16,9 @@ class	Network
 		int		getServerSocketFd() const;
 
 	private:
-		int			server_sockfd;
-		uint16_t	port;
-		const char*	ip_addr;
+		int			m_server_sockfd;
+		uint16_t	m_port;
+		const char*	m_ip_addr;
 
 		void				setUpSocket() throw(Error);
 		struct sockaddr_in	setSockAddrIn(int domain) throw(Error);

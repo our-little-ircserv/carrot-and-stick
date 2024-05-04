@@ -8,7 +8,7 @@ class	Signal
 		int	getSignal(void) const;
 	
 	private:
-		int	signo;
+		int	m_signo;
 };
 
 #endif

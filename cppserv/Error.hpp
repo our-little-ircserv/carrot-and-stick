@@ -21,13 +21,13 @@ class	Error
 			EAPASS
 		};
 
-		Error(enum errType type, const char* title);
+		Error(enum errType _err_no, const char* _err_title);
 		enum errType	getErrNo(void) const;
 		void			ftPerror() const;
 
 	private:
-		enum errType	err_no;
-		const char*		err_title;
+		enum errType	m_err_no;
+		const char*		m_err_title;
 };
 
 inline int	wrapSyscall(int syscall_ret, const char* syscall) throw(Signal, Error)

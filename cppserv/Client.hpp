@@ -9,14 +9,17 @@
 class	Client
 {
 	public:
-		std::vector<std::string>	read_buf;
-		std::vector<std::string>	write_buf;
+		std::vector<std::string>	m_read_buf;
+		std::vector<std::string>	m_write_buf;
 
 		Client(int _sockfd);
 		int	getSocketFd() const;
+		int	getWritable() const;
+		void	setWritable(bool _writable);
 
 	private:
-		int	sockfd;
+		int		m_sockfd;
+		bool	m_writable;
 };
 
 #endif
