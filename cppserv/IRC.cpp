@@ -9,7 +9,7 @@
 extern volatile sig_atomic_t g_signo;
 extern int	kq;
 
-IRC::IRC() : eventlist(1)
+IRC::IRC() : eventlist(1), writable(false)
 {
 }
 
@@ -101,6 +101,7 @@ void	IRC::handleMesssages(struct kevent* event_occurred) throw(Signal, Error)
 		std::string received_msg = receiveMessages(it, event_occurred);
 		if (received_msg.empty())
 		{
+			deleteClient(client);
 			return;
 		}
 
@@ -116,6 +117,7 @@ void	IRC::handleMesssages(struct kevent* event_occurred) throw(Signal, Error)
 		struct kevent	event;
 		EV_SET(&event, client->getSocketFd(), EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, NULL);
 		changelist.push_back(event);
+		writable = false;
 	}
 }
 
@@ -126,10 +128,6 @@ std::string	IRC::receiveMessages(std::map<int, Client*>::iterator& it, struct ke
 
 	ssize_t recv_len = recv(client->getSocketFd(), buf, event_occurred->data, 0);
 	wrapSyscall(recv_len, "recv");
-	if (recv_len == 0)
-	{
-		deleteClient(client);
-	}
 
 	buf[recv_len] = '\0';
 	return buf;
@@ -154,8 +152,12 @@ void	IRC::addReceivedMessagesToWriteBuffers(std::map<int, Client*>::iterator& ms
 		{
 			Client*	client = it->second;
 			moveReadBufferToWriteBuffer(owner_rdbuf, client->write_buf);
-			EV_SET(&event, client->getSocketFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
-			changelist.push_back(event);
+			if (writable == false)
+			{
+				EV_SET(&event, client->getSocketFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, NULL);
+				changelist.push_back(event);
+				writable = true;
+			}
 		}
 	}
 }

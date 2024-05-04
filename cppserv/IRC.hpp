@@ -22,6 +22,8 @@ class	IRC
 		std::vector<struct kevent>	eventlist;
 		std::map<int, Client*>		clients;
 
+		bool	writable;
+
 		void		handleEvents(Network& network) throw(Signal, Error);
 		void		acceptClient(Network& network) throw(Signal, Error);
 		void		deleteClient(Client* client) throw(Signal, Error);
