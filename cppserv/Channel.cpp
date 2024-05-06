@@ -64,7 +64,8 @@ const std::string	Channel::getCurrentMode() const
 
 void	Channel::addMember(Client* client)
 {
-	m_members.push_back(client);
+	if (isMember(client) == false)
+		m_members.push_back(client);
 }
 
 bool	Channel::isMember(const Client* client) const
@@ -74,13 +75,28 @@ bool	Channel::isMember(const Client* client) const
 
 void	Channel::addOperator(Client* client)
 {
-	if (isMember(client))
+	if (isMember(client) == true && isOperator(client) == false)
 		m_operators.push_back(client);
 }
 
 bool	Channel::isOperator(const Client* client) const
 {
 	return std::find(m_operators.begin(), m_operators.end(), client) != m_operators.end();
+}
+
+void	Channel::delMember(Client* client)
+{
+	if (isMember(client) == true)
+	{
+		delOperator(client);
+		m_members.erase(std::find(m_members.begin(), m_members.end(), client));
+	}
+}
+
+void	Channel::delOperator(Client* client)
+{
+	if (isOperator(client) == true)
+		m_operators.erase(std::find(m_operators.begin(), m_operators.end(), client));
 }
 
 void	Channel::sendMessageToMembers(const std::vector<std::string> message) const throw(Signal, Error)

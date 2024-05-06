@@ -29,6 +29,8 @@ class	Channel
 		bool	isMember(const Client* client) const;
 		void	addOperator(Client* client);
 		bool	isOperator(const Client* client) const;
+		void	delMember(Client* client);
+		void	delOperator(Client* client);
 
 		void	sendMessageToMembers(const std::vector<std::string> message) const throw(Signal, Error);
 	
