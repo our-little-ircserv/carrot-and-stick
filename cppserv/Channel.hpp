@@ -2,9 +2,9 @@
 # define CHANNEL_HPP
 
 # include <vector>
-#include "Client.hpp"
-#include "Signal.hpp"
-#include "Error.hpp"
+# include "Client.hpp"
+# include "Signal.hpp"
+# include "Error.hpp"
 
 class	Channel
 {
@@ -27,6 +27,7 @@ class	Channel
 
 		void	addMember(Client* client);
 		bool	isMember(const Client* client) const;
+		void	addOperator(Client* client);
 		bool	isOperator(const Client* client) const;
 
 		void	sendMessageToMembers(const std::vector<std::string> message) const throw(Signal, Error);
@@ -38,8 +39,6 @@ class	Channel
 		size_t					m_modes;
 		std::vector<Client*>	m_members;
 		std::vector<Client*>	m_operators;
-
-		void	addOperator(Client* client);
 };
 
 #endif

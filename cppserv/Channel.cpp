@@ -67,15 +67,15 @@ void	Channel::addMember(Client* client)
 	m_members.push_back(client);
 }
 
+bool	Channel::isMember(const Client* client) const
+{
+	return std::find(m_members.begin(), m_members.end(), client) != m_members.end();
+}
+
 void	Channel::addOperator(Client* client)
 {
 	if (isMember(client))
 		m_operators.push_back(client);
-}
-
-bool	Channel::isMember(const Client* client) const
-{
-	return std::find(m_members.begin(), m_members.end(), client) != m_members.end();
 }
 
 bool	Channel::isOperator(const Client* client) const
