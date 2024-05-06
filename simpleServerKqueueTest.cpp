@@ -11,8 +11,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <deque>
-#include <algorithm>
+#include <map>
 
 #define PORT 4242
 #define MAX_EVENTS 5
@@ -26,16 +25,16 @@
 #define EOC "\033[0;0m"
 
 int server_fd, kq;
-std::deque<struct ClientInfo*> client_deq;
+std::map<int, struct ClientInfo> client_map;
 std::vector<struct kevent> change_list;
 std::vector<struct kevent> event_list(MAX_EVENTS);
 
 struct ClientInfo
 {
-	int sd;
-	std::string read_buf;
-    bool is_writable;
-	std::vector<std::string> write_buf;
+	int                         sd;
+    bool                        is_writable;
+	std::string                 read_buf;
+	std::vector<std::string>    write_buf;
 };
 
 /*
@@ -71,84 +70,85 @@ struct ClientInfo
 void clientWriteEvent(struct kevent& cur_event)
 {
     int sd;
-    struct ClientInfo* info;
+    struct ClientInfo& info = client_map[cur_event.ident];
 
-    info = (struct ClientInfo*)cur_event.udata;
-    sd = info->sd;
+    sd = info.sd;
 
-    if (info->is_writable == false)
+    if (info.is_writable == false)
         return ;
     
     const char* msg;
-    msg = info->write_buf[0].c_str();
+    msg = info.write_buf[0].c_str();
 
     // 버퍼의 가장 맨 앞 메세지를 하나씩 보낸다, 최적화가 이유
     // 보낸 메세지는 버퍼에서 제거한다
     send(sd, msg, strlen(msg), 0);
-    info->write_buf.erase(info->write_buf.begin());
+    info.write_buf.erase(info.write_buf.begin());
 }
 
-void clientWriteCheck(struct ClientInfo* info)
+void clientWriteCheck(struct ClientInfo& info)
 {
     int sd;
     struct kevent event;
 
-    sd = info->sd;
+    sd = info.sd;
 
-    if (info->is_writable == true && info->write_buf.size() == 0)
+    if (info.is_writable == true && info.write_buf.size() == 0)
     {
-        EV_SET(&event, sd, EVFILT_WRITE, EV_DISABLE, 0, 0, info);
-        info->is_writable = false;
+        EV_SET(&event, sd, EVFILT_WRITE, EV_DISABLE, 0, 0, NULL);
+        info.is_writable = false;
 
         std::cout << "\n[LOG] ";
         std::cout << "Client " << YELLOW << "( sd: " << sd << " )" << EOC << " writable toggled\n";
-        std::cout << "From " << YELLOW << !info->is_writable << EOC << " TO " << YELLOW << info->is_writable << "\n\n" << EOC;
+        std::cout << "From " << YELLOW << !info.is_writable << EOC << " TO " << YELLOW << info.is_writable << "\n\n" << EOC;
 
         change_list.push_back(event);
     }
-    else if (info->is_writable == false && info->write_buf.size() > 0)
+    else if (info.is_writable == false && info.write_buf.size() > 0)
     {
-        EV_SET(&event, sd, EVFILT_WRITE, EV_ENABLE, 0, 0, info);
-        info->is_writable = true;
+        EV_SET(&event, sd, EVFILT_WRITE, EV_ENABLE, 0, 0, NULL);
+        info.is_writable = true;
 
         std::cout << "\n[LOG] ";
         std::cout << "Client " << YELLOW << "( sd: " << sd << " )" << EOC << " writable toggled\n";
-        std::cout << "From " << YELLOW << !info->is_writable << EOC << " TO " << YELLOW << info->is_writable << "\n\n" << EOC;
+        std::cout << "From " << YELLOW << !info.is_writable << EOC << " TO " << YELLOW << info.is_writable << "\n\n" << EOC;
 
         change_list.push_back(event);
     }
 }
 
+// disconnect시 발생하는 server쪽 event가 여기에 걸린다
+// server에서 비어있는 메세지를 client들에게 전송한다
 void sendReadToWrite(struct kevent& cur_event)
 {
     int sd;
-    struct ClientInfo* info;
+    struct ClientInfo& info = client_map[cur_event.ident];
     std::string msg_str;
 
-    info = (struct ClientInfo*)cur_event.udata;
-    sd = info->sd;
+    sd = info.sd;
     // 나중에 발신자 정보도 추가한다
-    msg_str = info->read_buf;
-    info->read_buf = "";
+    msg_str = info.read_buf;
+    info.read_buf = "";
 
-    for (size_t i = 0; i < client_deq.size(); i++)
+    std::map<int, ClientInfo>::iterator it = client_map.begin();
+    std::map<int, ClientInfo>::iterator ite = client_map.end();
+    for (; it != ite; it++)
     {
-        if (sd == client_deq[i]->sd)
+        if (sd == it->second.sd)
             continue;
 
-        client_deq[i]->write_buf.push_back(msg_str);
+        it->second.write_buf.push_back(msg_str);
         std::cout << "\n[LOG] ";
-        std::cout << "client " << YELLOW << "( sd: " << client_deq[i]->sd << " )" << EOC << " receive msg from client " << YELLOW << "( sd: " << sd << " )\n\n" << EOC;
+        std::cout << "client " << YELLOW << "( sd: " << it->second.sd << " )" << EOC << " receive msg from client " << YELLOW << "( sd: " << sd << " )\n\n" << EOC;
     }
 }
 
 void clientReadEvent(struct kevent& cur_event)
 {
     int sd;
-    struct ClientInfo* info;
+    struct ClientInfo& info = client_map[cur_event.ident];
 
-    info = (struct ClientInfo*)cur_event.udata;
-    sd = info->sd;
+    sd = info.sd;
 
     // 연결 종료
     if (cur_event.data <= 0)
@@ -156,9 +156,8 @@ void clientReadEvent(struct kevent& cur_event)
         std::cout << GREEN << "\n[INFO] ";
         std::cout << EOC << "Client " << YELLOW << "( sd: " << sd << " )" << RED << " disconnected" << EOC << "...\n\n";
 
-        std::deque<struct ClientInfo*>::iterator it = std::find(client_deq.begin(), client_deq.end(), info);
-        client_deq.erase(it);
-        delete info;
+        std::map<int, struct ClientInfo>::iterator it = client_map.find(sd);
+        client_map.erase(it);
         close(sd);
 
         return ;
@@ -177,7 +176,7 @@ void clientReadEvent(struct kevent& cur_event)
         int bytes_read = read(sd, buffer, buf_size);
         buffer[bytes_read] = '\0';
 
-        info->read_buf += std::string(buffer);
+        info.read_buf += std::string(buffer);
         return ;
     }
 }
@@ -188,7 +187,7 @@ void serverReadEvent()
 	struct sockaddr_in client_addr;
 	socklen_t client_addrlen;
 	struct kevent event;
-	struct ClientInfo* info;
+	struct ClientInfo info;
 
     std::stringstream ss;
 
@@ -198,16 +197,17 @@ void serverReadEvent()
 		exit(EXIT_FAILURE);
 	}
 
-	info = new struct ClientInfo;
-    info->sd = client_fd;
-    info->is_writable = false;
-	client_deq.push_back(info);
+    info.sd = client_fd;
+    info.is_writable = false;
+    info.read_buf = "";
+
+    client_map[client_fd] = info;
 
 	// 새 클라이언트에 대한 이벤트 추가
-	EV_SET(&event, client_fd, EVFILT_READ, EV_ADD, 0, 0, info);
+	EV_SET(&event, client_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
 	change_list.push_back(event);
 
-	EV_SET(&event, client_fd, EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, info);
+	EV_SET(&event, client_fd, EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, NULL);
 	change_list.push_back(event);
 
     // 유저가 연결되었다는 log를 기록
@@ -216,7 +216,7 @@ void serverReadEvent()
 
     // 해당 client에게 환영 메세지를 보냄
     ss << "[Server] Welcome New Client! Now Your sd: " << YELLOW << client_fd << "\n" << EOC;
-    info->write_buf.push_back(ss.str());
+    client_map[client_fd].write_buf.push_back(ss.str());
 }
 
 void init(struct sockaddr_in& address, socklen_t& addrlen, int& kq)
@@ -313,8 +313,14 @@ int main()
 
         // 현재 write_buf에 따라 write event를 toggle 할 client가 있는지 확인한다
         // event_list에서 찾으려고 했던 실수 -> 이벤트 발생전까지는 토글을 할 수 없음 ㅋㅋ;
-        for (size_t i = 0; i < client_deq.size(); i++)
-            clientWriteCheck(client_deq[i]);
+        {
+            std::map<int, ClientInfo>::iterator it = client_map.begin();
+            std::map<int, ClientInfo>::iterator ite = client_map.end();
+            for (; it != ite; it++)
+            {
+                clientWriteCheck(it->second);
+            }
+        }
 
         // 이벤트 감지 여부와 상관없이 send 가능한 메세지들은 send를 수행한다.
         // 이 부분은 추후 MessegeQueue 에서 일괄적으로 담당한다
