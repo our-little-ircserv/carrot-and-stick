@@ -2,14 +2,14 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <iostream>
-#include "Server.hpp"
+#include "IRC.hpp"
 #include "Error.hpp"
 #include "Signal.hpp"
 
 extern volatile sig_atomic_t g_signo;
 extern int	kq;
 
-Server::~Server()
+IRC::~IRC()
 {
 	for (std::map<int, Client*>::iterator it = m_clients.begin(); it != m_clients.end(); it++)
 	{
@@ -19,7 +19,7 @@ Server::~Server()
 	m_clients.clear();
 }
 
-void	Server::runServer(Network& network_manager) throw(Signal, Error)
+void	IRC::runIRC(Network& network_manager) throw(Signal, Error)
 {
 	struct kevent	event;
 
@@ -29,7 +29,7 @@ void	Server::runServer(Network& network_manager) throw(Signal, Error)
 	handleEvents(network_manager);
 }
 
-void	Server::handleEvents(Network& network_manager) throw(Signal, Error)
+void	IRC::handleEvents(Network& network_manager) throw(Signal, Error)
 {
 	struct timespec	time;
 	time.tv_sec = 3;
@@ -61,7 +61,7 @@ void	Server::handleEvents(Network& network_manager) throw(Signal, Error)
 	}
 }
 
-void	Server::acceptClient(Network& network_manager) throw(Signal, Error)
+void	IRC::acceptClient(Network& network_manager) throw(Signal, Error)
 {
 	struct kevent	event;
 	struct sockaddr_in	client_addr;
@@ -76,14 +76,14 @@ void	Server::acceptClient(Network& network_manager) throw(Signal, Error)
 	m_changelist.push_back(event);
 }
 
-void	Server::deleteClient(Client* client) throw(Signal, Error)
+void	IRC::deleteClient(Client* client) throw(Signal, Error)
 {
 	wrapSyscall(close(client->getSocketFd()), "close");
 	m_clients.erase(client->getSocketFd());
 	delete client;
 }
 
-void	Server::handleMessages(struct kevent* event_occurred) throw(Signal, Error)
+void	IRC::handleMessages(struct kevent* event_occurred) throw(Signal, Error)
 {
 	std::map<int, Client*>::iterator	it = m_clients.find((int)event_occurred->ident);
 	if (it == m_clients.end())
@@ -117,7 +117,7 @@ void	Server::handleMessages(struct kevent* event_occurred) throw(Signal, Error)
 	}
 }
 
-std::string	Server::receiveMessages(std::map<int, Client*>::iterator& it, struct kevent* event_occurred) throw(Signal, Error)
+std::string	IRC::receiveMessages(std::map<int, Client*>::iterator& it, struct kevent* event_occurred) throw(Signal, Error)
 {
 	Client*	client = it->second;
 	const int	BUFSIZE = event_occurred->data;
@@ -130,7 +130,7 @@ std::string	Server::receiveMessages(std::map<int, Client*>::iterator& it, struct
 	return buf;
 }
 
-void	Server::sendMessages(Client* client) throw(Signal, Error)
+void	IRC::sendMessages(Client* client) throw(Signal, Error)
 {
 	for (std::vector<std::string>::iterator it = client->m_write_buf.begin(); it != client->m_write_buf.end(); it++)
 	{
@@ -138,7 +138,7 @@ void	Server::sendMessages(Client* client) throw(Signal, Error)
 	}
 }
 
-void	Server::addReceivedMessagesToWriteBuffers(std::map<int, Client*>::iterator& msg_owner)
+void	IRC::addReceivedMessagesToWriteBuffers(std::map<int, Client*>::iterator& msg_owner)
 {
 	struct kevent	event;
 	std::vector<std::string>& owner_rdbuf = msg_owner->second->m_read_buf;
@@ -161,7 +161,7 @@ void	Server::addReceivedMessagesToWriteBuffers(std::map<int, Client*>::iterator&
 	}
 }
 
-void	Server::moveReadBufferToWriteBuffer(std::vector<std::string>& rdbuf, std::vector<std::string>& wrbuf)
+void	IRC::moveReadBufferToWriteBuffer(std::vector<std::string>& rdbuf, std::vector<std::string>& wrbuf)
 {
 	for (std::vector<std::string>::iterator it = rdbuf.begin(); it != rdbuf.end(); it++)
 	{
