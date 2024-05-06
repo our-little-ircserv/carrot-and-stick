@@ -117,8 +117,6 @@ void clientWriteCheck(struct ClientInfo& info)
     }
 }
 
-// disconnect시 발생하는 server쪽 event가 여기에 걸린다
-// server에서 비어있는 메세지를 client들에게 전송한다
 void sendReadToWrite(struct kevent& cur_event)
 {
     int sd;
@@ -297,10 +295,13 @@ int main()
             // client의 event
             else
             {
-                // std::cout << "1\n";
                 if (event_list[i].filter == EVFILT_READ)
                 {
                     clientReadEvent(event_list[i]);
+
+                    // disconnect시에 별도의 추가 진행없이 바로 다음 루프로 넘어간다
+                    if (event_list[i].data == 0)
+                        continue ;
 
                     // 해당 클라이언트의 read buf를 파싱한다
                     // command를 수행한다
