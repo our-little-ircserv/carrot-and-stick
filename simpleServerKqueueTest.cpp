@@ -124,8 +124,16 @@ void sendReadToWrite(struct kevent& cur_event)
     std::string msg_str;
 
     sd = info.sd;
-    // 나중에 발신자 정보도 추가한다
-    msg_str = info.read_buf;
+
+    // 발신자 정보
+    msg_str = "[Client ";
+    msg_str += std::to_string(sd);
+    msg_str += "] ";
+
+    // 발신 내용
+    msg_str += info.read_buf;
+
+    // read_buf 초기화
     info.read_buf = "";
 
     std::map<int, ClientInfo>::iterator it = client_map.begin();
