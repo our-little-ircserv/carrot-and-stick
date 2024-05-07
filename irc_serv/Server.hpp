@@ -1,5 +1,5 @@
-#ifndef SERVER_H
-# define SERVER_H
+#ifndef SERVER_HPP
+# define SERVER_HPP
 
 # include <sys/types.h>
 # include <sys/event.h>
@@ -24,12 +24,12 @@ class Server
 		void run();
 	
 	private:
-		int							port;
-		std::string					password;
-		std::vector<struct kevent>	change_list;
-		std::vector<struct kevent>	event_list;
-		std::map<int, Client>		client_map;
-		std::map<int, Channel>		channel_map;
+		int							_port;
+		std::string					_password;
+		std::vector<struct kevent>	_change_list;
+		std::vector<struct kevent>	_event_list;
+		std::map<int, Client>		_client_map;
+		std::map<int, Channel>		_channel_map;
 };
 
 #endif
