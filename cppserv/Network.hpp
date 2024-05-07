@@ -10,15 +10,15 @@
 class	Network
 {
 	public:
-		Network(uint16_t _port);
+		Network(uint16_t t_port);
 		~Network();
 		void	boot();
 		int		getServerSocketFd() const;
 
 	private:
-		int			m_server_sockfd;
-		uint16_t	m_port;
-		const char*	m_ip_addr;
+		int			_server_sockfd;
+		uint16_t	_port;
+		const char*	_ip_addr;
 
 		void				setUpSocket() throw(Error);
 		struct sockaddr_in	setSockAddrIn(int domain) throw(Error);

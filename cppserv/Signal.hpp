@@ -4,11 +4,11 @@
 class	Signal
 {
 	public:
-		Signal(int _signo);
+		Signal(int t_signo);
 		int	getSignal(void) const;
 	
 	private:
-		int	m_signo;
+		int	_signo;
 };
 
 #endif

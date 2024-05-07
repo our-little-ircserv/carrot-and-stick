@@ -1,11 +1,11 @@
 #include <signal.h>
 #include "Signal.hpp"
 
-Signal::Signal(int _signo) : m_signo(_signo)
+Signal::Signal(int t_signo) : _signo(t_signo)
 {
 }
 
 int	Signal::getSignal(void) const
 {
-	return m_signo;
+	return _signo;
 }

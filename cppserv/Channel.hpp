@@ -32,15 +32,15 @@ class	Channel
 		void	delMember(Client* client);
 		void	delOperator(Client* client);
 
-		void	sendMessageToMembers(const std::vector<std::string> message) const throw(Signal, Error);
+//		void	sendMessageToMembers(const std::vector<std::string> message) const throw(Signal, Error);
 	
 	private:
 		static const std::string	st_valid_modes;
 
-		const std::string		m_name;
-		size_t					m_modes;
-		std::vector<Client*>	m_members;
-		std::vector<Client*>	m_operators;
+		const std::string		_name;
+		size_t					_modes;
+		std::vector<Client*>	_members;
+		std::vector<Client*>	_operators;
 };
 
 #endif

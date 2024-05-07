@@ -5,7 +5,7 @@
 
 const std::string	Channel::st_valid_modes = "oitkl";
 
-Channel::Channel(Client* client, enum Channel::Prefix prefix, std::string _name, std::string _modes) : m_name(_name), m_modes(0)
+Channel::Channel(Client* client, enum Channel::Prefix prefix, std::string _name, std::string _modes) : _name(_name), _modes(0)
 {
 	addMember(client);
 
@@ -17,7 +17,7 @@ Channel::Channel(Client* client, enum Channel::Prefix prefix, std::string _name,
 
 const std::string&	Channel::getChannelName() const
 {
-	return m_name;
+	return _name;
 }
 
 void	Channel::addMode(std::string mode_in_str)
@@ -27,7 +27,7 @@ void	Channel::addMode(std::string mode_in_str)
 	for (std::string::iterator it = mode_in_str.begin() + 1; it != mode_in_str.end(); it++)
 	{
 		if ((shift = st_valid_modes.find(*it, 0)) != std::string::npos)
-			m_modes |= (1 << shift);
+			_modes |= (1 << shift);
 	}
 }
 
@@ -38,7 +38,7 @@ void	Channel::delMode(std::string mode_in_str)
 	for (std::string::iterator it = mode_in_str.begin() + 1; it != mode_in_str.end(); it++)
 	{
 		if ((shift = st_valid_modes.find(*it, 0)) != std::string::npos)
-			m_modes ^= (1 << shift);
+			_modes ^= (1 << shift);
 	}
 }
 
@@ -46,7 +46,7 @@ bool	Channel::checkModeSet(const char mode) const
 {
 	size_t	mode_bit = (1 << st_valid_modes.find(mode, 0));
 
-	return mode_bit == (m_modes & mode_bit);
+	return mode_bit == (_modes & mode_bit);
 }
 
 const std::string	Channel::getCurrentMode() const
@@ -65,23 +65,23 @@ const std::string	Channel::getCurrentMode() const
 void	Channel::addMember(Client* client)
 {
 	if (isMember(client) == false)
-		m_members.push_back(client);
+		_members.push_back(client);
 }
 
 bool	Channel::isMember(const Client* client) const
 {
-	return std::find(m_members.begin(), m_members.end(), client) != m_members.end();
+	return std::find(_members.begin(), _members.end(), client) != _members.end();
 }
 
 void	Channel::addOperator(Client* client)
 {
 	if (isMember(client) == true && isOperator(client) == false)
-		m_operators.push_back(client);
+		_operators.push_back(client);
 }
 
 bool	Channel::isOperator(const Client* client) const
 {
-	return std::find(m_operators.begin(), m_operators.end(), client) != m_operators.end();
+	return std::find(_operators.begin(), _operators.end(), client) != _operators.end();
 }
 
 void	Channel::delMember(Client* client)
@@ -89,26 +89,26 @@ void	Channel::delMember(Client* client)
 	if (isMember(client) == true)
 	{
 		delOperator(client);
-		m_members.erase(std::find(m_members.begin(), m_members.end(), client));
+		_members.erase(std::find(_members.begin(), _members.end(), client));
 	}
 }
 
 void	Channel::delOperator(Client* client)
 {
 	if (isOperator(client) == true)
-		m_operators.erase(std::find(m_operators.begin(), m_operators.end(), client));
+		_operators.erase(std::find(_operators.begin(), _operators.end(), client));
 }
-
-void	Channel::sendMessageToMembers(const std::vector<std::string> message) const throw(Signal, Error)
-{
-	for (std::vector<std::string>::const_iterator it = message.begin(); it != message.end(); it++)
-	{
-		for (std::vector<Client*>::const_iterator jt = m_members.begin(); jt != m_members.end(); jt++)
-		{
-			wrapSyscall(send((*jt)->getSocketFd(), it->c_str(), it->size(), 0), "send");
-		}
-	}
-}
+//
+//void	Channel::sendMessageToMembers(const std::vector<std::string> message) const throw(Signal, Error)
+//{
+//	for (std::vector<std::string>::const_iterator it = message.begin(); it != message.end(); it++)
+//	{
+//		for (std::vector<Client*>::const_iterator jt = _members.begin(); jt != _members.end(); jt++)
+//		{
+//			wrapSyscall(send((*jt)->getSocketFd(), it->c_str(), it->size(), 0), "send");
+//		}
+//	}
+//}
 //
 //int	main()
 //{

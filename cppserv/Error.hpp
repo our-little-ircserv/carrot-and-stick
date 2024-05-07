@@ -27,8 +27,8 @@ class	Error
 		void			ftPerror() const;
 
 	private:
-		enum errType	m_err_no;
-		const char*		m_err_title;
+		enum errType	_err_no;
+		const char*		_err_title;
 };
 
 inline int	wrapSyscall(int syscall_ret, const char* syscall) throw(Signal, Error)

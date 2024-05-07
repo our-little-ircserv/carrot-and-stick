@@ -18,9 +18,9 @@ class	IRC
 		void	runIRC(Network& network) throw(Signal, Error);
 	
 	private:
-		std::vector<struct kevent>	m_changelist;
-		struct kevent				m_eventlist[MAX_EVENTS];
-		std::map<int, Client*>		m_clients;
+		std::vector<struct kevent>	_changelist;
+		struct kevent				_eventlist[MAX_EVENTS];
+		std::map<int, Client*>		_clients;
 
 		void		handleEvents(Network& network) throw(Signal, Error);
 		void		acceptClient(Network& network) throw(Signal, Error);

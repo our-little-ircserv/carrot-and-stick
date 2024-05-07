@@ -1,22 +1,22 @@
 #include <fcntl.h>
 #include "Client.hpp"
 
-Client::Client(int _sockfd) : m_sockfd(_sockfd)
+Client::Client(int t_sockfd) : _sockfd(t_sockfd)
 {
-	fcntl(m_sockfd, F_SETFL, O_NONBLOCK);
+	fcntl(_sockfd, F_SETFL, O_NONBLOCK);
 }
 
 int	Client::getSocketFd() const
 {
-	return m_sockfd;
+	return _sockfd;
 }
 
 int	Client::getWritable() const
 {
-	return m_writable;
+	return _writable;
 }
 
-void	Client::setWritable(bool _writable)
+void	Client::setWritable(bool t_writable)
 {
-	m_writable = _writable;
+	_writable = t_writable;
 }
