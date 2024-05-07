@@ -3,8 +3,19 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <iostream>
-int main()
+#include <string>
+
+std::string password;
+
+int main(int argc, char** argv)
 {
+	if (argc == 1)
+	{
+		std::cout << "error\n";
+		return 1;
+	}
+	password = std::string(argv[1]);
+
 	while (true)
 	{
 		struct Parser::MsgToken mt;
@@ -61,6 +72,7 @@ int main()
 		}
 
 		// extract parameteres
+		// newline은 제외한다
 		while (idx < str.length() - 1)
 		{
 			std::string tmp;
@@ -94,7 +106,11 @@ int main()
 			}
 		}
 
+		// delete last newline
+		mt.params[mt.params.size() - 1].resize((mt.params[mt.params.size() - 1]).size() - 1);
+
 		std::cout << "-----------\n";
+
 		std::cout << "prefix : " << mt.prefix << "\n";
 		std::cout << "command: " << mt.command << "\n";
 		std::cout << "params :\n";
@@ -109,6 +125,13 @@ int main()
 			}
 			std::cout << *it;
 		}
+
+		std::cout << "\n-----------\n";
+
+		int cmd_type;
+		cmd_type = Command::getCmdType(mt.command);
+		Command::excuteCmd(mt.command, mt.params);
+
 		std::cout << "-----------\n\n";
 	}
 }
