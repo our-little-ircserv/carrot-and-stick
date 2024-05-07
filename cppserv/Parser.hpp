@@ -1,7 +1,7 @@
 #ifndef PARSER_HPP
 # define PARSER_HPP
 
-# include <inttypes.h>
+# include <cinttypes>
 
 namespace	Parser
 {
