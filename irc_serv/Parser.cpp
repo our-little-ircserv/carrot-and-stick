@@ -130,7 +130,7 @@ int main(int argc, char** argv)
 
 		int cmd_type;
 		cmd_type = Command::getCmdType(mt.command);
-		Command::excuteCmd(mt.command, mt.params);
+		Command::executeCmd(mt.command, mt.params);
 
 		std::cout << "-----------\n\n";
 	}
