@@ -128,9 +128,7 @@ int main(int argc, char** argv)
 
 		std::cout << "\n-----------\n";
 
-		int cmd_type;
-		cmd_type = Command::getCmdType(mt.command);
-		Command::executeCmd(mt.command, mt.params);
+		Command::execute(mt.command, mt.params);
 
 		std::cout << "-----------\n\n";
 	}

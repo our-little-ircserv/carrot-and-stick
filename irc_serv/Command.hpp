@@ -23,9 +23,11 @@ namespace Command
 
 	// 추후에 함수 배열 추가
 
-	int		getCmdType(std::string& command);
-	void	executeCmd(std::string cmd, std::vector< std::string >& params);
-	void	CmdPass(std::vector< std::string >& params);
+	int		getType(std::string& command);
+	void	execute(std::string cmd, std::vector< std::string >& params);
+
+	// command implementations
+	void	pass(std::vector< std::string >& params);
 };
 
 #endif
