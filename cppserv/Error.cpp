@@ -30,6 +30,9 @@ void	Error::ftPerror() const
 		case EAPORT:
 			std::cerr << "Enter a valid port number: 0~65535" << std::endl;
 			break;
+		case ECRLF:
+			std::cerr << "Line must end with crlf" << std::endl;
+			break;
 		default: // not yet
 			break;
 	}

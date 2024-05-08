@@ -18,7 +18,9 @@ class	Error
 			ESYSERR,
 			EARGC,
 			EAPORT,
-			EAPASS
+			EAPASS,
+			ENOCMD,
+			ECRLF
 		};
 
 		Error(enum errType _err_no, const char* _err_title);
