@@ -23,7 +23,7 @@ $(NAME): $(OBJS)
 	$(CXX) -o $@ $^
 
 %.o: %.cpp
-	$(COMPILE.cpp) -c $< -o $@
+	$(COMPILE.cpp) $< -o $@
 
 clean:
 	rm -fr $(OBJS) $(DEPS)
