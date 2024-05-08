@@ -53,7 +53,6 @@ std::vector<struct Parser::Token>	Parser::splitTokens(const std::string message)
 	std::string							t_token_data;
 
 	size_t	i = 0;
-	size_t	msg_len = message.length();
 	while (true)
 	{
 		if (message[i] == ' ')
