@@ -16,6 +16,8 @@ int main(int argc, char** argv)
 	}
 	password = std::string(argv[1]);
 
+	Command::init();
+
 	while (true)
 	{
 		struct Parser::MsgToken mt;
