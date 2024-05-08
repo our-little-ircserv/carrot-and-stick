@@ -21,13 +21,17 @@ namespace Command
 		"PASS", "NICK",	"USER"
 	};
 
+	// 여기선 reference 변수를 사용 할 수 없다. 어째서...?
+	static std::vector< void (*)(std::vector< std::string >) > cmdFunctions;
+
 	// 추후에 함수 배열 추가
 
+	void	init();
 	int		getType(std::string& command);
 	void	execute(std::string cmd, std::vector< std::string >& params);
 
 	// command implementations
-	void	pass(std::vector< std::string >& params);
+	void	pass(std::vector< std::string > params);
 };
 
 #endif

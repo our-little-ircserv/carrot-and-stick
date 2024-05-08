@@ -4,6 +4,11 @@
 
 extern std::string password;
 
+void Command::init()
+{
+	Command::cmdFunctions.push_back(Command::pass);
+}
+
 int Command::getType(std::string& command)
 {
 	for (size_t i = 0; i < command.size(); i++)
@@ -24,19 +29,11 @@ void Command::execute(std::string cmd, std::vector< std::string >& params)
 	int cmd_type;
 
 	cmd_type = getType(cmd);
-	switch (cmd_type)
-	{
-		case Command::PASS :
-			Command::pass(params);
-			break;
-		
-		default:
-			std::cout << "wrong cmd\n";
-			break;
-	}
+
+	Command::cmdFunctions[cmd_type](params);
 }
 
-void Command::pass(std::vector< std::string >& params)
+void Command::pass(std::vector< std::string > params)
 {
 	std::cout << "PASS command Executed!\n";
 
