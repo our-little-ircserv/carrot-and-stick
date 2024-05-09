@@ -18,8 +18,12 @@ class	Client
 		void	setWritable(bool t_writable);
 
 	private:
-		int		_sockfd;
-		bool	_writable;
+		int					_sockfd;
+		bool				_writable;
+		struct sockaddr_in	_host;
+		std::string			_nickname;
+		std::string			_username;
+		std::string			_realname;
 };
 
 #endif
