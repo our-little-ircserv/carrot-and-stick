@@ -44,4 +44,7 @@ class	Channel
 		std::map<Client*, bool>	_members;
 };
 
+bool	operator<(const Client& a, const Client& b);
+bool	operator>(const Client& a, const Client& b);
+
 #endif
