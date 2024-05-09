@@ -49,7 +49,6 @@ static inline void	addDataToToken(std::string& token_data, std::vector<struct Pa
 std::vector<struct Parser::Token>	Parser::splitTokens(const std::string message)
 {
 	std::vector<struct Parser::Token>	tokens;
-	struct Parser::Token				t_token;
 	std::string							t_token_data;
 
 	size_t	i = 0;
