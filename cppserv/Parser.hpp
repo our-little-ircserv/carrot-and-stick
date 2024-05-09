@@ -4,6 +4,7 @@
 # include <cinttypes>
 # include <vector>
 # include "Command.hpp"
+# include "Error.hpp"
 
 namespace	Parser
 {
