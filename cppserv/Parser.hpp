@@ -11,7 +11,6 @@ namespace	Parser
 	{
 		COLON,
 		NOCOLON,
-		CRLF
 	};
 
 	struct	Token

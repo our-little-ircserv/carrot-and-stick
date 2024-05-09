@@ -91,11 +91,6 @@ enum Parser::TokenType	Parser::extractTokenType(const std::string& token)
 		return Parser::COLON;
 	}
 
-	if (token == "\r\n")
-	{
-		return Parser::CRLF;
-	}
-
 	return Parser::NOCOLON;
 }
 //
