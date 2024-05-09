@@ -32,6 +32,8 @@ namespace Parser
 	};
 
 	// fucntions...
+	void			checkArgValid();
+	struct MsgToken	parseMessage(std::string msg);
 }
 
 #endif
