@@ -2,25 +2,25 @@
 # define COMMAND_HPP
 
 # include <string>
+# include <vector>
+# include "Error.hpp"
 
 namespace	Command
 {
-	enum	Type
-	{
-		PASS,
-		JOIN
-	};
-
 	struct	Data
 	{
-		// ?prefix
-//		enum Type	command;
-		std::string	command;
-		void*		parameters;
+		std::string					prefix;
+		std::string					command;
+		std::vector<std::string>	parameters;
 	};
 
-	int	executeCommand(struct Command::Data data);
-	int	pass(struct Command::Data* data);
+	struct	Join
+	{
+		std::vector<std::string>	channels;
+		std::vector<std::string>	keys;
+	};
+
+	void	join(const std::vector<std::string>& params) throw (Error);
 };
 
 #endif

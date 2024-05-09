@@ -19,7 +19,8 @@ class	Error
 			EARGC,
 			EAPORT,
 			EAPASS,
-			ENOCMD,
+			EWRPARM,
+			EWRCMD,
 			ECRLF
 		};
 

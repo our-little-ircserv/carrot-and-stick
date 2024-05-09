@@ -25,6 +25,8 @@ namespace	Parser
 	struct Command::Data				parseClientMessage(const std::string& message) throw(Error);
 	std::vector<struct Parser::Token>	splitTokens(const std::string message);
 	enum Parser::TokenType				extractTokenType(const std::string& token);
+
+	struct Command::Join	join(const std::vector<std::string>& params) throw(Error);
 };
 
 #endif
