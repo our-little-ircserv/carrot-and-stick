@@ -223,6 +223,13 @@ void serverReadEvent()
     // 해당 client에게 환영 메세지를 보냄
     ss << "[Server] Welcome New Client! Now Your sd: " << YELLOW << client_fd << "\n" << EOC;
     client_map[client_fd].write_buf.push_back(ss.str());
+
+    std::cout << "\n";
+    std::cout << "htons: " << htons(client_addr.sin_port) << "\n";
+    std::cout << "htonl: " << htonl(client_addr.sin_addr.s_addr) << "\n";
+    std::cout << "ntohs: " << ntohs(client_addr.sin_port) << "\n";
+    std::cout << "ntohl: " << ntohl(client_addr.sin_addr.s_addr) << "\n";
+    std::cout << "inet_ntoa: " << inet_ntoa(client_addr.sin_addr) << "\n";
 }
 
 void init(struct sockaddr_in& address, socklen_t& addrlen, int& kq)
