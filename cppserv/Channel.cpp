@@ -1,11 +1,10 @@
 #include <sys/socket.h>
 #include <iostream>
-#include <algorithm>
 #include "Channel.hpp"
 
 const std::string	Channel::st_valid_modes = "oitkl";
 
-Channel::Channel(Client* client, enum Channel::Prefix prefix, std::string _name, std::string _modes) : _name(_name), _modes(0)
+Channel::Channel(Client& client, enum Channel::Prefix prefix, std::string _name, std::string _modes) : _name(_name), _modes(0)
 {
 	addMember(client);
 
@@ -62,69 +61,52 @@ const std::string	Channel::getCurrentMode() const
 	return current_mode;
 }
 
-void	Channel::addMember(Client* client)
+bool	Channel::isMember(Client& client) const
+{
+	return _members.find(&client) != _members.end();
+}
+
+bool	Channel::isOperator(Client& client) const
+{
+	return isMember(client) == true && _members.find(&client)->second == true;
+}
+
+void	Channel::addMember(Client& client)
 {
 	if (isMember(client) == false)
-		_members.push_back(client);
+		_members[&client] = false;
 }
 
-bool	Channel::isMember(const Client* client) const
+void	Channel::addOperator(Client& client)
 {
-	return std::find(_members.begin(), _members.end(), client) != _members.end();
-}
-
-void	Channel::addOperator(Client* client)
-{
-	if (isMember(client) == true && isOperator(client) == false)
-		_operators.push_back(client);
-}
-
-bool	Channel::isOperator(const Client* client) const
-{
-	return std::find(_operators.begin(), _operators.end(), client) != _operators.end();
-}
-
-void	Channel::delMember(Client* client)
-{
-	if (isMember(client) == true)
+	if (isOperator(client) == false)
 	{
-		delOperator(client);
-		_members.erase(std::find(_members.begin(), _members.end(), client));
+		_members[&client] = true;
 	}
 }
 
-void	Channel::delOperator(Client* client)
+void	Channel::delMember(Client& client)
+{
+	if (isMember(client) == true)
+	{
+		_members.erase(_members.find(&client));
+	}
+}
+
+void	Channel::delOperator(Client& client)
 {
 	if (isOperator(client) == true)
-		_operators.erase(std::find(_operators.begin(), _operators.end(), client));
+	{
+		_members[&client] = false;
+	}
 }
-//
-//void	Channel::sendMessageToMembers(const std::vector<std::string> message) const throw(Signal, Error)
-//{
-//	for (std::vector<std::string>::const_iterator it = message.begin(); it != message.end(); it++)
-//	{
-//		for (std::vector<Client*>::const_iterator jt = _members.begin(); jt != _members.end(); jt++)
-//		{
-//			wrapSyscall(send((*jt)->getSocketFd(), it->c_str(), it->size(), 0), "send");
-//		}
-//	}
-//}
-//
-//int	main()
-//{
-//	Client client(3);
-//	Channel ch(&client, Channel::P_HASH, "#channel", "+tkil");
-//	std::cout << ch.getCurrentMode() << std::endl;
-//	ch.addMode("+ko");
-//	std::cout << ch.getCurrentMode() << std::endl;
-//	ch.delMode("-li");
-//	std::cout << ch.getCurrentMode() << std::endl;
-//
-//	std::cout << std::boolalpha << ch.isOperator(&client) << std::endl;
-//	std::cout << std::boolalpha << ch.isMember(&client) << std::endl;
-//
-//	Client yonghyle(2);
-//	ch.addMember(&yonghyle);
-//	std::cout << std::boolalpha << ch.isOperator(&yonghyle) << std::endl;
-//	std::cout << std::boolalpha << ch.isMember(&yonghyle) << std::endl;
-//}
+
+bool	operator<(const Client& a, const Client& b)
+{
+	return a.getSocketFd() < b.getSocketFd();
+}
+
+bool	operator>(const Client& a, const Client& b)
+{
+	return a.getSocketFd() > b.getSocketFd();
+}

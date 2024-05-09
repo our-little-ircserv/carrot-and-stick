@@ -1,6 +1,7 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
+# include <netinet/ip.h>
 # include <string>
 # include <vector>
 
