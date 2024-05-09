@@ -1,6 +1,6 @@
 #include "Client.hpp"
 
-Client::Client(int t_sockfd, struct sockaddr_in addr) : _sockfd(t_sockfd), _host(addr)
+Client::Client(int t_sockfd, struct sockaddr_in t_addr) : _sockfd(t_sockfd), _addr(t_addr)
 {
 	//
 }
@@ -10,25 +10,23 @@ int Client::getSocketFd() const
 	return (_sockfd);
 }
 
-// in the progress...
-// std::string Client::getHostname() const
-// {
-// 	{
-// 		struct sockaddr_in t_addr;
-// 		socklen_t addr_len;
+std::string Client::getPrefix() const
+{
+	std::string ret;
 
-// 		addr_len = sizeof(t_addr);
-// 		getsockname(_sockfd, (struct sockaddr*)&t_addr, &addr_len);
-// 		//
-// 	}
+	ret += ":";
+	ret += getNickname();
+	ret += "!";
+	ret += getUsername();
+	ret += "@";
+	ret += getHostname();
+	return (ret);
+}
 
-// 	{
-// 		struct addrinfo hints, *res;
-// 		memset(&hints, 0, sizeof(hints));
-// 		hints.ai_family = AF_UNSPEC; // IPv4와 IPv6 허용
-// 		getaddrinfo("www.example.com", "http", &hints, &res);
-// 	}
-// }
+std::string Client::getHostname() const
+{
+	return (inet_ntoa(_addr.sin_addr));
+}
 
 void Client::setNickname(std::string t_nickname)
 {
