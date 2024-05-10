@@ -25,10 +25,11 @@ int	main(int argc, char** argv)
 
 	try
 	{
-		signal(SIGINT, handleSignals);
-
 		IRC	network_manager(Parser::checkArgValidity(argc, argv));
 		network_manager.boot();
+
+		signal(SIGINT, handleSignals);
+		std::cout << "\033[32m[SERVER STARTED]\033[0m" << std::endl;
 	}
 	catch (Signal& signal)
 	{

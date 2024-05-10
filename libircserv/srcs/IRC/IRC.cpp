@@ -37,8 +37,6 @@ void	IRC::boot()
 	kq = wrapSyscall(kqueue(), "kqueue");
 	EV_SET(&event, _server_sockfd, EVFILT_READ, EV_ADD, 0, 0, NULL);
 	_changelist.push_back(event);
-
-	std::cout << "\033[32m[SERVER STARTED]\033[0m" << std::endl;
 }
 
 void	IRC::setUpSocket() throw(Error)
