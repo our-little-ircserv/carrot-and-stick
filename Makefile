@@ -1,51 +1,35 @@
 .DEFAULT_GOAL=all
 
-DIR_SRCS=srcs/
-DIR_INCLUDES=includes/
-DIR_OBJS=objs/
-
-NAME=libircserv.a
+NAME=irctest
 CXX=c++
 CXXFLAGS=#-Wall -Wextra -Werror
-CPPFLAGS=-MMD -MP -I$(DIR_INCLUDES)
+CPPFLAGS=-MMD -MP -Ilibircserv/includes
 
 RM=rm -fr
-AR=ar
-ARFLAGS=rc
--include $(DEPS)
 
-SRCS= $(addprefix $(DIR_SRCS), \
-	  Channel/Channel.cpp \
-	  Client/Client.cpp \
-	  Command/Command.cpp \
-	  Command/Join.cpp \
-	  Error/Error.cpp \
-	  IRC/IRC.cpp \
-	  Parser/Parser.cpp \
-	  Signal/Signal.cpp \
-	  Client/Client.cpp )
+SRCS= \
+	  main.cpp \
 
 OBJS=$(SRCS:.cpp=.o)
 DEPS=$(OBJS:.o=.d)
 
-#OBJS=$(addprefix .objs/, $(notdir $(SRCS:.cpp=.o)))
-
-
-#.objs:
-#	mkdir -p $@
-
-%.o: %.cpp
-	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
+-include $(DEPS)
 
 all: $(NAME)
 
+%.o: %.cpp
+	make -C libircserv
+	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
+
 $(NAME): $(OBJS)
-	$(AR) $(ARFLAGS) $(NAME) $(OBJS)
+	$(CXX) -o $(NAME) $(OBJS) -lircserv -Llibircserv
 
 clean:
+	make clean -C libircserv
 	$(RM) $(OBJS) $(DEPS)
 
 fclean: clean
+	make fclean -C libircserv
 	$(RM) $(NAME)
 
 re: fclean all
