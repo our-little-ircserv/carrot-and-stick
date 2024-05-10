@@ -22,6 +22,7 @@ SRCS= $(addprefix $(DIR_SRCS), \
 	  Error/Error.cpp \
 	  IRC/IRC.cpp \
 	  Parser/Parser.cpp \
+	  Signal/Signal.cpp \
 	  Client/Client.cpp )
 
 OBJS=$(SRCS:.cpp=.o)
