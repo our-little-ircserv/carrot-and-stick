@@ -29,11 +29,39 @@ namespace	Parser
 
 	uint16_t	checkArgValidity(int argc, char** argv) throw(Error);
 	
-	struct Parser::Data				parseClientMessage(const std::string& message) throw(Error);
+	struct Parser::Data		 			parseClientMessage(const std::string& message) throw(Error);
 	std::vector<struct Parser::Token>	splitTokens(const std::string message);
 	enum Parser::TokenType				extractTokenType(const std::string& token);
 
 	struct Command::Join	join(const std::vector< std::string > params) throw(Error);
+	std::string				nick(const std::vector< std::string > params) throw(Error);
+
+	static bool	isAlpha(char c)
+	{
+		return std::isalpha(static_cast<unsigned char>(c)) != 0;
+	}
+
+	static bool	isSpecial(char c)
+	{
+		const char*	special_characters = "[]\\`_^{|}";
+
+		size_t	i = 0;
+		while (special_characters[i] != '\0')
+		{
+			if (c == special_characters[i])
+			{
+				return true;
+			}
+			++i;
+		}
+
+		return false;
+	}
+
+	static bool	isDigit(char c)
+	{
+		return std::isdigit(static_cast<unsigned char>(c)) != 0;
+	}
 };
 
 #endif
