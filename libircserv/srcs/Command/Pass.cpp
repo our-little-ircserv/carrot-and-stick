@@ -10,7 +10,7 @@
 
 void	Command::pass(const IRC server, const std::vector< std::string > params) throw (Error)
 {
-	if (server._password == params.back())
+	if (server._password == params[0])
 	{
 		// 이미 register 되었다면 무시한다
 		// 그렇지 않다면 등록절차를 진행한다
