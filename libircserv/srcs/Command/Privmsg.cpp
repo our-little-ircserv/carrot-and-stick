@@ -5,8 +5,13 @@ struct Command::Privmsg	Parser::privmsg(const std::vector< std::string > params)
 {
 	struct Command::Privmsg	data;
 	std::string				t_msg_targets = params[0];
-	std::string				t_text_to_be_sent = params[1];
 	std::string				t_target;
+
+	if (params.size() < 2)
+	{
+		std::string	concat_params = Parser::concat_string_vector(params);
+		throw Error(Error::ENEPARM, concat_params.c_str());
+	}
 
 	size_t	i = 0;
 	size_t	offset;
@@ -25,7 +30,7 @@ struct Command::Privmsg	Parser::privmsg(const std::vector< std::string > params)
 		i += offset + 1;
 	}
 
-	data.text_to_be_sent = t_text_to_be_sent;
+	data.text_to_be_sent = params[1];;
 
 	return data;
 }
