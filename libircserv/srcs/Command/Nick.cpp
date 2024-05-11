@@ -4,10 +4,16 @@
 
 std::string	Parser::nick(const std::vector< std::string > params) throw(Error)
 {
-	const std::string&	t_nickname = params[0];
 	std::string			nickname;
-	char				c = t_nickname[0];
 
+	if (params.size() < 1)
+	{
+		std::string	concat_params = Parser::concat_string_vector(params);
+		throw Error(Error::ENEPARM, concat_params.c_str());
+	}
+
+	const std::string&	t_nickname = params[0];
+	char				c = t_nickname[0];
 	if (Parser::isAlpha(c) == false \
 			&& Parser::isSpecial(c) == false)
 	{

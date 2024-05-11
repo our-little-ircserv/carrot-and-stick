@@ -5,7 +5,12 @@ struct Command::Join	Parser::join(const std::vector< std::string > params) throw
 {
 	struct Command::Join	data;
 	const std::string&			t_channels = params[0];
-	const std::string&			t_keys = params[1];
+
+	if (params.size() < 2)
+	{
+		std::string	concat_params = Parser::concat_string_vector(params);
+		throw Error(Error::ENEPARM, concat_params.c_str());
+	}
 
 	size_t	i = 0;
 	size_t	offset;
@@ -33,8 +38,9 @@ struct Command::Join	Parser::join(const std::vector< std::string > params) throw
 		i += offset + 1;
 	}
 
+	const std::string&	t_keys = params[1];
+	std::string			key_value;
 	i = 0;
-	std::string	key_value;
 	while (t_keys[i] != '\0')
 	{
 		offset = t_keys.find_first_of(',', i) - i;
