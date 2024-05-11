@@ -14,15 +14,15 @@ void	Error::ftPerror() const
 {
 	std::cerr << "\033[31m[ERROR]\033[0m ";
 
-//	if (_err_title)
-//	{
-//		std::cerr << _err_title << ": ";
-//	}
+	if (_err_title)
+	{
+		std::cerr << _err_title << ": ";
+	}
 
 	switch (_err_no)
 	{
 		case ESYSERR:
-			std::perror(_err_title);
+			std::perror(NULL);
 			break;
 		case EARGC:
 			std::cerr << "Enter 2 arguments: <port> <password>" << std::endl;
@@ -32,6 +32,9 @@ void	Error::ftPerror() const
 			break;
 		case ECRLF:
 			std::cerr << "Line must end with crlf" << std::endl;
+			break;
+		case EWRPARM:
+			std::cerr << "Wrong parameters" << std::endl;
 			break;
 		default: // not yet
 			break;
