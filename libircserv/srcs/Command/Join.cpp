@@ -10,23 +10,27 @@ struct Command::Join	Parser::join(const std::vector< std::string > params) throw
 	size_t	i = 0;
 	size_t	offset;
 	std::string	channel_name;
-	while (t_channels[i] != '\0')
+	while (i < t_channels.size())
 	{
-		offset = t_channels.find_first_of(',', i) - i;
-		if (offset >= t_channels.size())
+		offset = t_channels.find_first_of(',', i);
+		if (offset > t_channels.size())
 		{
-			offset = t_channels.size() - i;
+			offset = t_channels.size();
+		}
+		offset -= i;
+
+		if (offset > 50)
+		{
+			offset = 50;
 		}
 
 		channel_name = t_channels.substr(i, offset);
-		char	prefix = channel_name[0];
-		if (prefix != '#' && prefix != '&' && prefix != '+')
+		if (Parser::isValidChannelName(channel_name) == false)
 		{
 			throw Error(Error::EWRPARM, channel_name.c_str());
 		}
 
-		data.channels.push_back(channel_name);
-		i += offset;
+		i += offset + 1;
 	}
 
 	i = 0;
