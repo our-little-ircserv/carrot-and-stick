@@ -1,5 +1,4 @@
 #include <cctype>
-#include <iostream>
 #include "Parser.hpp"
 #include "Command.hpp"
 
