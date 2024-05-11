@@ -36,6 +36,12 @@ namespace Command
 		std::string	real_name;
 	};
 
+	struct	Topic
+	{
+		std::string					channel;
+		std::vector< std::string >	topics;
+	};
+
 	static std::string CmdList[3] = {
 		"PASS", "NICK",	"USER"
 	};
