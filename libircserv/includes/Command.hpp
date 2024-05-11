@@ -20,8 +20,14 @@ namespace Command
 
 	struct	Join
 	{
-		std::vector<std::string>	channels;
-		std::vector<std::string>	keys;
+		std::vector< std::string >	channels;
+		std::vector< std::string >	keys;
+	};
+
+	struct	Privmsg
+	{
+		std::vector< std::string >	msg_targets;
+		std::string					text_to_be_sent;
 	};
 
 	static std::string CmdList[3] = {
