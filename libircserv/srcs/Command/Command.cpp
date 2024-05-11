@@ -32,17 +32,3 @@ void Command::execute(std::string cmd, std::vector< std::string >& params)
 	Command::cmdFunctions[cmd_type](params);
 }
 
-void Command::pass(std::vector< std::string > params) throw(Error)
-{
-	std::cout << "PASS command Executed!\n";
-
-	if (password == params[0])
-	{
-		std::cout << "correct password!\n";
-	}
-	else
-	{
-		std::cout << "wrong password!\n";
-	}
-}
-
