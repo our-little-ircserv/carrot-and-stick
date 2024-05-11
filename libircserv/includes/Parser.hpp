@@ -36,6 +36,7 @@ namespace	Parser
 	struct Command::Join	join(const std::vector< std::string > params) throw(Error);
 	std::string				nick(const std::vector< std::string > params) throw(Error);
 	struct Command::Privmsg	privmsg(const std::vector< std::string > params);
+	struct Command::User	user(const std::vector< std::string > params);
 
 	static bool	isAlpha(char c)
 	{
@@ -100,6 +101,20 @@ namespace	Parser
 		}
 
 		return true;
+	}
+
+	static	std::string	concat_string_vector(const std::vector< std::string >& vec)
+	{
+		std::string	concat_params;
+
+		size_t	i = 0;
+		while (i < vec.size())
+		{
+			concat_params += vec[i];
+			++i;
+		}
+
+		return concat_params;
 	}
 };
 

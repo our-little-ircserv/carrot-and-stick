@@ -30,6 +30,12 @@ namespace Command
 		std::string					text_to_be_sent;
 	};
 
+	struct	User
+	{
+		std::string	username;
+		std::string	real_name;
+	};
+
 	static std::string CmdList[3] = {
 		"PASS", "NICK",	"USER"
 	};
