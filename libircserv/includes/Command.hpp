@@ -47,7 +47,7 @@ namespace Command
 
 	void	init();
 	int		getType(std::string& command);
-	void	execute(IRC& server, Client& client, struct Data& data)
+	void	execute(IRC& server, Client& client, struct Data& data);
 
 	// command implementations
 	void	pass(IRC& server, Client& client, const std::vector< std::string > params) throw (Error);
