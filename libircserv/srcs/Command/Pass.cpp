@@ -10,11 +10,18 @@
 
 void	Command::pass(const IRC& server, int sd, const std::vector< std::string > params) throw (Error)
 {
+	Client* info;
+
+	info = &(server._clients[sd]);
+
+	// 이미 authorized 되었다면 무시한다
+	if (info->_register_level > 0)
+		return ;
+
+	// 그렇지 않다면 authorization을 수행한다
 	if (server._password == params[0])
 	{
-		// 이미 register 되었다면 무시한다
-		// 그렇지 않다면 등록절차를 진행한다
-		// nick, user 필요
+		info->_register_level = 1;
 	}
 	else
 	{
