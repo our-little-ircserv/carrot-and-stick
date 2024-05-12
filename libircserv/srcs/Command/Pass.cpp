@@ -8,7 +8,7 @@
 // 	//
 // }
 
-void	Command::pass(const IRC server, const std::vector< std::string > params) throw (Error)
+void	Command::pass(const IRC server, int sd, const std::vector< std::string > params) throw (Error)
 {
 	if (server._password == params[0])
 	{
