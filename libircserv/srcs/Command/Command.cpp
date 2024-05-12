@@ -23,12 +23,12 @@ int Command::getType(std::string& command)
 	return (-1);
 }
 
-void Command::execute(std::string cmd, std::vector< std::string >& params)
+void Command::execute(IRC& server, Client& client, struct Data& data)
 {
 	int cmd_type;
 
-	cmd_type = getType(cmd);
+	cmd_type = getType(data.command);
 
-	Command::cmdFunctions[cmd_type](params);
+	Command::cmdFunctions[cmd_type](server, client, data.parameters);
 }
 
