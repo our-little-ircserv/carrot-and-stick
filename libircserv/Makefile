@@ -22,6 +22,7 @@ SRCS= $(addprefix $(DIR_SRCS), \
 	  Command/Nick.cpp \
 	  Command/Privmsg.cpp \
 	  Command/User.cpp \
+	  Command/Topic.cpp \
 	  Error/Error.cpp \
 	  IRC/IRC.cpp \
 	  Parser/Parser.cpp \

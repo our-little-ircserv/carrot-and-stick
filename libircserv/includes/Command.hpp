@@ -38,8 +38,8 @@ namespace Command
 
 	struct	Topic
 	{
-		std::string					channel;
-		std::vector< std::string >	topics;
+		std::string	channel;
+		std::string	topic;
 	};
 
 	static std::string CmdList[3] = {
