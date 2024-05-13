@@ -58,6 +58,7 @@ namespace Command
 
 	// command implementations
 	void	pass(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
+	void	join(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
 };
 
 #endif
