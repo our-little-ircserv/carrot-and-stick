@@ -4,7 +4,6 @@
 struct Command::Join	Parser::join(const std::vector< std::string > params) throw(Error)
 {
 	struct Command::Join	data;
-	const std::string&			t_channels = params[0];
 
 	if (params.size() < 2)
 	{
@@ -12,13 +11,14 @@ struct Command::Join	Parser::join(const std::vector< std::string > params) throw
 		throw Error(Error::ENEPARM, concat_params.c_str());
 	}
 
-	size_t	i = 0;
-	size_t	offset;
-	std::string	channel_name;
+	size_t				i = 0;
+	size_t				offset;
+	const std::string&	t_channels = params[0];
+	std::string			channel_name;
 	while (i < t_channels.size())
 	{
 		offset = t_channels.find_first_of(',', i);
-		if (offset > t_channels.size())
+		if (offset == std::string::npos)
 		{
 			offset = t_channels.size();
 		}
@@ -35,6 +35,7 @@ struct Command::Join	Parser::join(const std::vector< std::string > params) throw
 			throw Error(Error::EWRPARM, channel_name.c_str());
 		}
 
+		data.channels.push_back(channel_name);
 		i += offset + 1;
 	}
 
@@ -43,14 +44,16 @@ struct Command::Join	Parser::join(const std::vector< std::string > params) throw
 	i = 0;
 	while (t_keys[i] != '\0')
 	{
-		offset = t_keys.find_first_of(',', i) - i;
-		if (offset >= t_keys.size())
+		offset = t_keys.find_first_of(',', i);
+		if (offset == std::string::npos)
 		{
-			offset = t_keys.size() - i;
+			offset = t_keys.size();
 		}
+		offset -= i;
+
 		key_value = t_keys.substr(i, offset);
 		data.keys.push_back(key_value);
-		i += offset;
+		i += offset + 1;
 	}
 
 	return data;

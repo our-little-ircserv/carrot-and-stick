@@ -18,7 +18,13 @@
 class	IRC
 {
 	public:
-		IRC(uint16_t t_port);
+		struct	AccessData
+		{
+			uint16_t	port;
+			std::string	password;
+		};
+
+		IRC(struct IRC::AccessData access_data);
 		~IRC();
 		void	boot();
 		int		getServerSocketFd() const;

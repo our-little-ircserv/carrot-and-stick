@@ -5,9 +5,7 @@
 #include <exception>
 #include "Parser.hpp"
 
-extern std::string		password;
-
-uint16_t	Parser::checkArgValidity(int argc, char** argv) throw(Error)
+struct IRC::AccessData	Parser::checkArgValidity(int argc, char** argv) throw(Error)
 {
 	if (argc != 3)
 	{
@@ -24,8 +22,11 @@ uint16_t	Parser::checkArgValidity(int argc, char** argv) throw(Error)
 		throw Error(Error::EAPORT, NULL);
 	}
 
-	password = argv[2];
-	return (uint16_t)port_checker;
+	struct IRC::AccessData	data_to_return;
+	data_to_return.port = (uint16_t)port_checker;
+	data_to_return.password = argv[2];
+
+	return data_to_return;
 }
 
 //Tokens:
@@ -120,6 +121,100 @@ enum Parser::TokenType	Parser::extractTokenType(const std::string& token)
 	}
 
 	return Parser::NOCOLON;
+}
+
+static bool	isAlpha(char c)
+{
+	return std::isalpha(static_cast<unsigned char>(c)) != 0;
+}
+
+static bool	isSpecial(char c)
+{
+	const char*	special_characters = "[]\\`_^{|}";
+
+	size_t	i = 0;
+	while (special_characters[i] != '\0')
+	{
+		if (c == special_characters[i])
+		{
+			return true;
+		}
+		++i;
+	}
+
+	return false;
+}
+
+static bool	isDigit(char c)
+{
+	return std::isdigit(static_cast<unsigned char>(c)) != 0;
+}
+
+static bool	checkChannelPrefixes(char c)
+{
+	const char*	prefixes = "#&+";
+
+	size_t	i = 0;
+	while (prefixes[i] != '\0')
+	{
+		if (c == prefixes[i])
+		{
+			return true;
+		}
+		++i;
+	}
+
+	return false;
+}
+
+static bool	isValidChannelName(const std::string& channel_name)
+{
+	if (checkChannelPrefixes(channel_name[0]) == false)
+	{
+		return false;
+	}
+
+	size_t	i = 1;
+	while (channel_name[i] != '\0')
+	{
+		char c = channel_name[i];
+		if (c == ' ' || c == '\a' || c == ',' || c == ':')
+		{
+			return false;
+		}
+		++i;
+	}
+
+	return true;
+}
+
+static bool	isValidUserName(const std::string& username)
+{
+	size_t	i = 0;
+	while (i < username.size())
+	{
+		if (username[i] == '@' || username[i] == '\n')
+		{
+			return false;
+		}
+		++i;
+	}
+
+	return true;
+}
+
+static	std::string	concat_string_vector(const std::vector< std::string >& vec)
+{
+	std::string	concat_params;
+
+	size_t	i = 0;
+	while (i < vec.size())
+	{
+		concat_params += vec[i];
+		++i;
+	}
+
+	return concat_params;
 }
 
 //int	main()
