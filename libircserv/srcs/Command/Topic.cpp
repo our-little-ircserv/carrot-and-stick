@@ -7,7 +7,7 @@ struct	Command::Topic	Parser::topic(const std::vector< std::string > params)
 
 	if (params.size() < 1)
 	{
-		throw Error(Error::ENOEPARM, concat_params.c_str());
+		throw Error(Error::ENEPARM, Parser::concat_string_vector(params).c_str());
 	}
 
 	data.channel = params[0];
