@@ -46,7 +46,8 @@ struct Command::Kick	Parser::Kick(const std::vector< std::string >& params) thro
 		i += offset + 1;
 	}
 
-	if (data.channels.size() != data.users_nick.size())
+	size_t	channels_size = data.channels.size();
+	if (channels_size > 1 && channels_size != data.users_nick.size())
 	{
 		std::string	concat_params = Parser::concat_string_vector(params);
 		throw Error(Error::EWRPARM, concat_params.c_str());
