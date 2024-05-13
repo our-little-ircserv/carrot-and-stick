@@ -40,6 +40,7 @@ namespace	Parser
 	struct Command::User	user(const std::vector< std::string >& params) throw(Error);
 	struct Command::Topic	topic(const std::vector< std::string >& params) throw(Error);
 	struct Command::Invite	invite(const std::vector< std::string >& params) throw(Error);
+	struct Command::Kick	Kick(const std::vector< std::string >& params) throw(Error);
 
 	static bool	isAlpha(char c)
 	{

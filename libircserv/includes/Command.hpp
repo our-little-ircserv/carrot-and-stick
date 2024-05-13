@@ -52,6 +52,12 @@ namespace Command
 		std::string	channel;
 	};
 
+	struct	Kick
+	{
+		std::vector< std::string >	channels;
+		std::vector< std::string >	users_nick;
+	};
+
 	static std::string CmdList[3] = {
 		"PASS", "NICK",	"USER"
 	};
