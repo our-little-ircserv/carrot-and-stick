@@ -29,6 +29,16 @@ std::string Client::getHostname() const
 	return inet_ntoa(_addr.sin_addr);
 }
 
+int Client::getRegisterLevel() const
+{
+	return _register_level;
+}
+
+void Client::setRegisterLevel(int t_register_level)
+{
+	_register_level = t_register_level;
+}
+
 void Client::setNickname(std::string t_nickname)
 {
 	_nickname = t_nickname;

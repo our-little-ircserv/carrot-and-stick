@@ -4,9 +4,9 @@
 # include <cctype>
 # include <string>
 # include <vector>
-# include "Error.hpp"
 
-// #include "Server.hpp"
+# include "Error.hpp"
+# include "IRC.hpp"
 
 namespace Command
 {
@@ -53,11 +53,10 @@ namespace Command
 
 	void	init();
 	int		getType(std::string& command);
-	void	execute(std::string cmd, std::vector< std::string >& params);
+	void	execute(IRC& server, Client& client, struct Data& data);
 
 	// command implementations
-	void	pass(const std::vector< std::string > params) throw(Error);
-	void	join(const std::vector< std::string > params) throw(Error);
+	void	pass(IRC& server, Client& client, const std::vector< std::string > params) throw (Error);
 };
 
 #endif
