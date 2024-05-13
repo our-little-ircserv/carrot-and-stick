@@ -4,10 +4,13 @@
 # include <cctype>
 # include <string>
 # include <vector>
-
 # include "Error.hpp"
 # include "IRC.hpp"
-# include "Parser.hpp"
+
+namespace	Parser
+{
+	struct Data;
+};
 
 namespace Command
 {
@@ -49,6 +52,12 @@ namespace Command
 		std::string	channel;
 	};
 
+	struct	Kick
+	{
+		std::vector< std::string >	channels;
+		std::vector< std::string >	users_nick;
+	};
+
 	static std::string CmdList[3] = {
 		"PASS", "NICK",	"USER"
 	};
@@ -64,6 +73,7 @@ namespace Command
 
 	// command implementations
 	void	pass(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
+	void	join(const std::vector< std::string >& params) throw (Error);
 };
 
 #endif

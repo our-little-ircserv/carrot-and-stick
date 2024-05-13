@@ -35,6 +35,15 @@ class	Error
 		const char*		_err_title;
 };
 
-inline int	wrapSyscall(int syscall_ret, const char* syscall) throw(Signal, Error);
+inline int	wrapSyscall(int syscall_ret, const char* syscall) throw(Signal, Error)
+{
+	if (g_signo == SIGINT)
+		throw Signal(SIGINT);
+
+	if (syscall_ret == -1)
+		throw Error(Error::ESYSERR, syscall);
+
+	return syscall_ret;
+}
 
 #endif

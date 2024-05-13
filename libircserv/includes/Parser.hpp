@@ -40,14 +40,101 @@ namespace	Parser
 	struct Command::User	user(const std::vector< std::string >& params) throw(Error);
 	struct Command::Topic	topic(const std::vector< std::string >& params) throw(Error);
 	struct Command::Invite	invite(const std::vector< std::string >& params) throw(Error);
+	struct Command::Kick	Kick(const std::vector< std::string >& params) throw(Error);
 
-	static bool			isAlpha(char c);
-	static bool			isSpecial(char c);
-	static bool			isDigit(char c);
-	static bool			checkChannelPrefixes(char c);
-	static bool			isValidChannelName(const std::string& channel_name);
-	static bool			isValidUserName(const std::string& username);
-	static std::string	concat_string_vector(const std::vector< std::string >& vec);
+	static bool	isAlpha(char c)
+	{
+		return std::isalpha(static_cast<unsigned char>(c)) != 0;
+	}
+
+	static bool	isSpecial(char c)
+	{
+		const char*	special_characters = "[]\\`_^{|}";
+
+		size_t	i = 0;
+		while (special_characters[i] != '\0')
+		{
+			if (c == special_characters[i])
+			{
+				return true;
+			}
+			++i;
+		}
+
+		return false;
+	}
+
+	static bool	isDigit(char c)
+	{
+		return std::isdigit(static_cast<unsigned char>(c)) != 0;
+	}
+
+	static bool	checkChannelPrefixes(char c)
+	{
+		const char*	prefixes = "#&+";
+
+		size_t	i = 0;
+		while (prefixes[i] != '\0')
+		{
+			if (c == prefixes[i])
+			{
+				return true;
+			}
+			++i;
+		}
+
+		return false;
+	}
+
+	static bool	isValidChannelName(const std::string& channel_name)
+	{
+		if (checkChannelPrefixes(channel_name[0]) == false)
+		{
+			return false;
+		}
+
+		size_t	i = 1;
+		while (channel_name[i] != '\0')
+		{
+			char c = channel_name[i];
+			if (c == ' ' || c == '\a' || c == ',' || c == ':')
+			{
+				return false;
+			}
+			++i;
+		}
+
+		return true;
+	}
+
+	static bool	isValidUserName(const std::string& username)
+	{
+		size_t	i = 0;
+		while (i < username.size())
+		{
+			if (username[i] == '@' || username[i] == '\n')
+			{
+				return false;
+			}
+			++i;
+		}
+
+		return true;
+	}
+
+	static	std::string	concat_string_vector(const std::vector< std::string >& vec)
+	{
+		std::string	concat_params;
+
+		size_t	i = 0;
+		while (i < vec.size())
+		{
+			concat_params += vec[i];
+			++i;
+		}
+
+		return concat_params;
+	}
 };
 
 #endif
