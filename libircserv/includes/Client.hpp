@@ -13,6 +13,13 @@
 class	Client
 {
 	public:
+		enum REGISTER_LEVEL
+		{
+			NONE,
+			AUTHORIZED,
+			REGISTERED
+		};
+
 		std::vector<std::string>	_read_buf;
 		std::vector<std::string>	_write_buf;
 
@@ -21,6 +28,8 @@ class	Client
 		int			getSocketFd() const;
 		std::string	getPrefix() const;
 		std::string	getHostname() const;
+		int			getRegisterLevel() const;
+		void		setRegisterLevel(int t_register_level);
 		void		setNickname(std::string t_nickname);
 		std::string	getNickname() const;
 		void		setUsername(std::string t_username);
@@ -31,6 +40,7 @@ class	Client
 	private:
 		int					_sockfd;
 		struct sockaddr_in	_addr;
+		int					_register_level;
 		std::string			_nickname;
 		std::string			_username;
 		std::string			_realname;
