@@ -6,6 +6,7 @@
 # include <sys/time.h>
 # include <vector>
 # include <map>
+# include <string>
 # include "Client.hpp"
 # include "Channel.hpp"
 # include "Error.hpp"
@@ -17,7 +18,13 @@
 class	IRC
 {
 	public:
-		IRC(uint16_t t_port);
+		struct	AccessData
+		{
+			uint16_t	port;
+			std::string	password;
+		};
+
+		IRC(struct IRC::AccessData access_data);
 		~IRC();
 		void	boot();
 		int		getServerSocketFd() const;
@@ -26,6 +33,7 @@ class	IRC
 		int			_server_sockfd;
 		uint16_t	_port;
 		const char*	_ip_addr;
+		std::string	_password;
 
 		std::vector<struct kevent>	_changelist;
 		struct kevent				_eventlist[MAX_EVENTS];

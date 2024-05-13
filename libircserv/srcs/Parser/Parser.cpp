@@ -7,7 +7,7 @@
 
 extern std::string		password;
 
-uint16_t	Parser::checkArgValidity(int argc, char** argv) throw(Error)
+struct IRC::AccessData	Parser::checkArgValidity(int argc, char** argv) throw(Error)
 {
 	if (argc != 3)
 	{
@@ -24,8 +24,11 @@ uint16_t	Parser::checkArgValidity(int argc, char** argv) throw(Error)
 		throw Error(Error::EAPORT, NULL);
 	}
 
-	password = argv[2];
-	return (uint16_t)port_checker;
+	struct IRC::AccessData	data_to_return;
+	data_to_return.port = (uint16_t)port_checker;
+	data_to_return.password = argv[2];
+
+	return data_to_return;
 }
 
 //Tokens:

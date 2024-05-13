@@ -8,7 +8,7 @@
 
 extern int	kq;
 
-IRC::IRC(uint16_t _port) : _port(_port), _ip_addr("127.0.0.1")
+IRC::IRC(struct AccessData access_data) : _port(access_data.port), _ip_addr("127.0.0.1"), _password(access_data.password)
 {
 }
 

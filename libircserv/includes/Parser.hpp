@@ -3,6 +3,7 @@
 
 # include <cinttypes>
 # include <vector>
+# include "IRC.hpp"
 # include "Command.hpp"
 # include "Error.hpp"
 
@@ -27,7 +28,7 @@ namespace	Parser
 		std::vector<std::string>	parameters;
 	};
 
-	uint16_t	checkArgValidity(int argc, char** argv) throw(Error);
+	struct IRC::AccessData	checkArgValidity(int argc, char** argv) throw(Error);
 	
 	struct Parser::Data		 			parseClientMessage(const std::string& message) throw(Error);
 	std::vector<struct Parser::Token>	splitTokens(const std::string message);
@@ -109,7 +110,7 @@ namespace	Parser
 		size_t	i = 0;
 		while (i < username.size())
 		{
-			if (t_username[i] == '@' || t_username[i] == '\n')
+			if (username[i] == '@' || username[i] == '\n')
 			{
 				return false;
 			}
