@@ -104,6 +104,21 @@ namespace	Parser
 		return true;
 	}
 
+	static bool	isValidUserName(const std::string& username)
+	{
+		size_t	i = 0;
+		while (i < username.size())
+		{
+			if (t_username[i] == '@' || t_username[i] == '\n')
+			{
+				return false;
+			}
+			++i;
+		}
+
+		return true;
+	}
+
 	static	std::string	concat_string_vector(const std::vector< std::string >& vec)
 	{
 		std::string	concat_params;

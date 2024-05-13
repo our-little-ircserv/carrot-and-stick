@@ -12,14 +12,9 @@ struct Command::User	Parser::user(const std::vector< std::string > params)
 	}
 
 	std::string	t_username = params[0];
-	size_t	i = 0;
-	while (i < t_username.size())
+	if (Parser::isValidUserName(t_username) == false)
 	{
-		if (t_username[i] == '@')
-		{
-			throw Error(Error::EWRPARM, t_username.c_str());
-		}
-		++i;
+		throw Error(Error::EWRPARM, t_username.c_str());
 	}
 
 	data.username = t_username;
