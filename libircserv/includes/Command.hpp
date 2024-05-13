@@ -4,10 +4,13 @@
 # include <cctype>
 # include <string>
 # include <vector>
-
 # include "Error.hpp"
 # include "IRC.hpp"
-# include "Parser.hpp"
+
+namespace	Parser
+{
+	struct Data;
+};
 
 namespace Command
 {
@@ -64,6 +67,7 @@ namespace Command
 
 	// command implementations
 	void	pass(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
+	void	join(const std::vector< std::string >& params) throw (Error);
 };
 
 #endif
