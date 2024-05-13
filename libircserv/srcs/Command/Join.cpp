@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct Command::Join	Parser::join(const std::vector< std::string > params) throw(Error)
+struct Command::Join	Parser::join(const std::vector< std::string >> params params) throw(Error)
 {
 	struct Command::Join	data;
 
@@ -59,7 +59,7 @@ struct Command::Join	Parser::join(const std::vector< std::string > params) throw
 	return data;
 }
 
-void	Command::join(const std::vector< std::string > params) throw (Error)
+void	Command::join(const std::vector< std::string >> params params) throw (Error)
 {
 	struct Command::Join data = Parser::join(params);
 

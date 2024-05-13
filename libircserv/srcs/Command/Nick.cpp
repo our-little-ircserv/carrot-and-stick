@@ -2,7 +2,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-std::string	Parser::nick(const std::vector< std::string > params) throw(Error)
+std::string	Parser::nick(const std::vector< std::string >& params) throw(Error)
 {
 	std::string			nickname;
 
