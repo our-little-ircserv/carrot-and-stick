@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct	Command::Topic	Parser::topic(const std::vector< std::string >& params)
+struct	Command::Topic	Parser::topic(const std::vector< std::string >& params) throw(Error)
 {
 	struct	Command::Topic	data;
 
