@@ -59,7 +59,7 @@ struct Command::Join	Parser::join(const std::vector< std::string >& params) thro
 	return data;
 }
 
-void	Command::join(const std::vector< std::string >& params) throw (Error)
+void	Command::join(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error)
 {
 	struct Command::Join data = Parser::join(params);
 
