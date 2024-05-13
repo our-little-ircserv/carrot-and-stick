@@ -23,7 +23,7 @@ int Command::getType(std::string& command)
 	return (-1);
 }
 
-void Command::execute(IRC& server, Client& client, struct Data& data)
+void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 {
 	int cmd_type;
 

@@ -22,6 +22,11 @@ int	IRC::getServerSocketFd() const
 	return _server_sockfd;
 }
 
+const std::string& IRC::getPassword() const
+{
+	return _password;
+}
+
 void	IRC::boot()
 {
 	struct sockaddr_in	server_sockaddr;
