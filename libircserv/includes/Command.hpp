@@ -42,6 +42,12 @@ namespace Command
 		std::string	topic;
 	};
 
+	struct	Invite
+	{
+		std::string	nickname;
+		std::string	channel;
+	};
+
 	static std::string CmdList[3] = {
 		"PASS", "NICK",	"USER"
 	};

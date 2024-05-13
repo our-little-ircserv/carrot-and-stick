@@ -36,9 +36,10 @@ namespace	Parser
 
 	struct Command::Join	join(const std::vector< std::string >& params) throw(Error);
 	std::string				nick(const std::vector< std::string >& params) throw(Error);
-	struct Command::Privmsg	privmsg(const std::vector< std::string >& params);
-	struct Command::User	user(const std::vector< std::string >& params);
-	struct Command::Topic	topic(const std::vector< std::string >& params);
+	struct Command::Privmsg	privmsg(const std::vector< std::string >& params) throw(Error);
+	struct Command::User	user(const std::vector< std::string >& params) throw(Error);
+	struct Command::Topic	topic(const std::vector< std::string >& params) throw(Error);
+	struct Command::Invite	invite(const std::vector< std::string >& params) throw(Error);
 
 	static bool			isAlpha(char c);
 	static bool			isSpecial(char c);
