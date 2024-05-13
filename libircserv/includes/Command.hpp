@@ -7,6 +7,7 @@
 
 # include "Error.hpp"
 # include "IRC.hpp"
+# include "Parser.hpp"
 
 namespace Command
 {
@@ -47,16 +48,16 @@ namespace Command
 	};
 
 	// 여기선 reference 변수를 사용 할 수 없다. 어째서...?
-	static std::vector< void (*)(std::vector< std::string >) > cmdFunctions;
+	static std::vector< void (*)(IRC&, Client&, const std::vector< std::string >&) > cmdFunctions;
 
 	// 추후에 함수 배열 추가
 
 	void	init();
 	int		getType(std::string& command);
-	void	execute(IRC& server, Client& client, struct Data& data);
+	void	execute(IRC& server, Client& client, struct Parser::Data& data);
 
 	// command implementations
-	void	pass(IRC& server, Client& client, const std::vector< std::string > params) throw (Error);
+	void	pass(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
 };
 
 #endif
