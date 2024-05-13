@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct Command::Privmsg	Parser::privmsg(const std::vector< std::string > params)
+struct Command::Privmsg	Parser::privmsg(const std::vector< std::string >& params)
 {
 	struct Command::Privmsg	data;
 	std::string				t_msg_targets = params[0];
