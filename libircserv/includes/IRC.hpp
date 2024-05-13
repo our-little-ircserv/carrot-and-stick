@@ -26,8 +26,9 @@ class	IRC
 
 		IRC(struct IRC::AccessData access_data);
 		~IRC();
-		void	boot();
-		int		getServerSocketFd() const;
+		void				boot();
+		int					getServerSocketFd() const;
+		const std::string&	getPassword() const;
 
 	private:
 		int			_server_sockfd;
