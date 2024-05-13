@@ -18,6 +18,8 @@ class	Channel
 		};
 
 		Channel(Client& client, enum Prefix prefix, std::string _name, std::string _modes);
+		Channel(const Channel& other);
+		Channel& operator=(const Channel& other);
 
 		const std::string&	getChannelName() const;
 

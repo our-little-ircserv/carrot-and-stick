@@ -13,6 +13,23 @@ Channel::Channel(Client& client, enum Channel::Prefix prefix, std::string _name,
 
 	addMode(_modes);
 }
+Channel::Channel(const Channel& other) : _name(other._name)
+{
+	*this = other;
+}
+
+Channel& Channel::operator=(const Channel& other)
+{
+	if (this != &other)
+	{
+		_modes = other._modes;
+		_topic = other._topic;
+		_key = other._key;
+		_limit = other._limit;
+		_members = other._members;
+	}
+	return *this
+}
 
 const std::string&	Channel::getChannelName() const
 {
