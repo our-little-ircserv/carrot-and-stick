@@ -8,7 +8,7 @@ struct Command::User	Parser::user(const std::vector< std::string > params)
 	if (params.size() < 4)
 	{
 		std::string	concat_params = Parser::concat_string_vector(params);
-		throw Error(Error::ENOEPARM, concat_params.c_str());
+		throw Error(Error::ENEPARM, concat_params.c_str());
 	}
 
 	std::string	t_username = params[0];
@@ -23,7 +23,7 @@ struct Command::User	Parser::user(const std::vector< std::string > params)
 	}
 
 	data.username = t_username;
-	data.realname = params[3];
+	data.real_name = params[3];
 
 	return data;
 };
