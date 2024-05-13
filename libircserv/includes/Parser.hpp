@@ -34,11 +34,11 @@ namespace	Parser
 	std::vector<struct Parser::Token>	splitTokens(const std::string message);
 	enum Parser::TokenType				extractTokenType(const std::string& token);
 
-	struct Command::Join	join(const std::vector< std::string > params) throw(Error);
-	std::string				nick(const std::vector< std::string > params) throw(Error);
-	struct Command::Privmsg	privmsg(const std::vector< std::string > params);
-	struct Command::User	user(const std::vector< std::string > params);
-	struct	Command::Topic	topic(const std::vector< std::string > params);
+	struct Command::Join	join(const std::vector< std::string >& params) throw(Error);
+	std::string				nick(const std::vector< std::string >& params) throw(Error);
+	struct Command::Privmsg	privmsg(const std::vector< std::string >& params);
+	struct Command::User	user(const std::vector< std::string >& params);
+	struct Command::Topic	topic(const std::vector< std::string >& params);
 
 	static bool			isAlpha(char c);
 	static bool			isSpecial(char c);
