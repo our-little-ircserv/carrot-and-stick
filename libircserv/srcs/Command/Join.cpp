@@ -42,7 +42,7 @@ struct Command::Join	Parser::join(const std::vector< std::string >& params) thro
 	const std::string&	t_keys = params[1];
 	std::string			key_value;
 	i = 0;
-	while (t_keys[i] != '\0')
+	while (i < t_keys.size())
 	{
 		offset = t_keys.find_first_of(',', i);
 		if (offset == std::string::npos)
