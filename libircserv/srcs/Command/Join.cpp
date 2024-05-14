@@ -81,20 +81,21 @@ void	Command::join(IRC& server, Client& client, const std::vector< std::string >
 	it = data.channels.begin();
 	ite = data.channels.end();
 
-	while (it != ite)
+	for (; it != ite; it++)
 	{
+		if (Parser::isValidChannelName(*it) == false)
+			continue ;
+
+		
 		Channel* channel = server.searchChannel(*it);
-		if (channel != NULL)
+
+		if (channel == NULL)
 		{
-			channel->addMember(client);
-		}
-		else
-		{
-			std::string mode = 0;
-			channel = server.createChannel(client, enum, *it, mode);
-			channel->addMember(client);
+			channel = server.createChannel(client, static_cast<Channel::Prefix>((*it)[0]), *it, "");
+			continue ;
 		}
 
-		it++;
+		// 채널에 들어가기 위한 유효성 검사
+		channel->addMember(client);
 	}	
 }
