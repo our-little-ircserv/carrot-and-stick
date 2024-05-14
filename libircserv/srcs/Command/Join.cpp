@@ -98,7 +98,11 @@ void	Command::join(IRC& server, Client& client, const std::vector< std::string >
 		// 1. 초대여부
 		if (channel->checkModeSet('i') == true)
 		{
-			//
+			if (channel->isInvited(client) == false)
+			{
+				// 에러처리
+				continue ;
+			}
 		}
 
 		// 2. 비밀번호
