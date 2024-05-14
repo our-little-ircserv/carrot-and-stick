@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct Command::Kick	Parser::Kick(const std::vector< std::string >& params) throw(Error)
+struct Command::Kick	Parser::kick(const std::vector< std::string >& params) throw(Error)
 {
 	struct Command::Kick	data;
 
