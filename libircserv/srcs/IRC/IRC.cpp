@@ -43,6 +43,8 @@ Channel* IRC::createChannel(Client& client, enum ::Channel::Prefix t_prefix, std
 	Channel t_new_channel(client, t_prefix, t_channel_name);
 
 	_channels[t_channel_name] = t_new_channel;
+
+	return &_channels[t_channel_name];
 }
 
 void	IRC::boot()
