@@ -91,7 +91,7 @@ void	Command::join(IRC& server, Client& client, const std::vector< std::string >
 
 		if (channel == NULL)
 		{
-			channel = server.createChannel(client, static_cast<Channel::Prefix>((*it)[0]), *it, "");
+			channel = server.createChannel(client, static_cast<Channel::Prefix>((*it)[0]), *it);
 			continue ;
 		}
 
