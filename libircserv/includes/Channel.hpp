@@ -27,6 +27,9 @@ class	Channel
 		void				delMode(std::string mode_in_str);
 		bool				checkModeSet(const char mode) const;
 		const std::string	getCurrentMode() const;
+		const std::string	getKey() const;
+		const size_t		getLimit() const;
+		const size_t		getMemberCnt() const;
 
 		bool	isMember(Client& client) const;
 		bool	isOperator(Client& client) const;

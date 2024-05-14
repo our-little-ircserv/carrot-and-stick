@@ -4,7 +4,7 @@
 
 const std::string	Channel::st_valid_modes = "oitkl";
 
-Channel::Channel(Client& client, enum Channel::Prefix prefix, std::string t_name) : _name(_name), _modes(0)
+Channel::Channel(Client& client, enum Channel::Prefix prefix, std::string t_name) : _name(_name), _modes(0), _topic(""), _key(""), _limit(0)
 {
 	addMember(client);
 
@@ -32,6 +32,21 @@ Channel& Channel::operator=(const Channel& other)
 const std::string&	Channel::getChannelName() const
 {
 	return _name;
+}
+
+const std::string	Channel::getKey() const
+{
+	return _key;
+}
+
+const size_t		Channel::getLimit() const
+{
+	return _limit;
+}
+
+const size_t		Channel::getMemberCnt() const
+{
+	return _members.size();
 }
 
 void	Channel::addMode(std::string mode_in_str)
