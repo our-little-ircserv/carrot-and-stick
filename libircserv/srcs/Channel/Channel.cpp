@@ -101,6 +101,11 @@ bool	Channel::isOperator(Client& client) const
 	return isMember(client) == true && _members.find(&client)->second == true;
 }
 
+bool	Channel::isInvited(Client& client) const
+{
+	return _invite_list.find(&client) != _invite_list.end();
+}
+
 void	Channel::addMember(Client& client)
 {
 	if (isMember(client) == false)
@@ -112,6 +117,18 @@ void	Channel::addOperator(Client& client)
 	if (isOperator(client) == false)
 	{
 		_members[&client] = true;
+	}
+}
+
+void	Channel::addInvited(Client& client)
+{
+	if (isMember(client) == false)
+	{
+		_invite_list.insert(&client);
+	}
+	else
+	{
+		// 에러처리
 	}
 }
 
@@ -128,6 +145,14 @@ void	Channel::delOperator(Client& client)
 	if (isOperator(client) == true)
 	{
 		_members[&client] = false;
+	}
+}
+
+void	Channel::delInvited(Client& client)
+{
+	if (isInvited(client) == true)
+	{
+		_invite_list.erase(_invite_list.find(&client));
 	}
 }
 
