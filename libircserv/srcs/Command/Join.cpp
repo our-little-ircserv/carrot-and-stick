@@ -75,27 +75,52 @@ void	Command::join(IRC& server, Client& client, const std::vector< std::string >
 	true -> getChannel -> reference? 초기화가 아니면 값 대입이 불가능 -> pointer*
 
 	*/
-	std::vector< std::string >::iterator it;
-	std::vector< std::string >::iterator ite;
+	size_t chan_len;
 
-	it = data.channels.begin();
-	ite = data.channels.end();
+	chan_len = data.channels.size();
 
-	for (; it != ite; it++)
+	for (size_t i = 0; i < chan_len; i++)
 	{
-		if (Parser::isValidChannelName(*it) == false)
+		if (Parser::isValidChannelName(data.channels[i]) == false)
 			continue ;
 
 		
-		Channel* channel = server.searchChannel(*it);
+		Channel* channel = server.searchChannel(data.channels[i]);
 
 		if (channel == NULL)
 		{
-			channel = server.createChannel(client, static_cast<Channel::Prefix>((*it)[0]), *it);
+			channel = server.createChannel(client, static_cast<Channel::Prefix>(data.channels[i][0]), data.channels[i]);
 			continue ;
 		}
 
 		// 채널에 들어가기 위한 유효성 검사
+
+		// 1. 초대여부
+		if (channel->checkModeSet('i') == true)
+		{
+			//
+		}
+
+		// 2. 비밀번호
+		if (channel->checkModeSet('k') == true)
+		{
+			if ((channel->getKey() == data.keys[i]) == false)
+			{
+				// 에러처리
+				continue ;
+			}
+		}
+
+		// 3. 인원제한
+		if (channel->checkModeSet('l') == true)
+		{
+			if (channel->getLimit() == channel->getMemberCnt())
+			{
+				// 에러처리
+				continue ;
+			}
+		}
+
 		channel->addMember(client);
 	}	
 }
