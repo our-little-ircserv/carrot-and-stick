@@ -58,6 +58,13 @@ namespace Command
 		std::vector< std::string >	users_nick;
 	};
 
+	struct	Mode
+	{
+		std::string					channel;
+		std::vector< std::string >	modes;
+		std::vector< std::string >	mode_params;
+	};
+
 	static std::string CmdList[3] = {
 		"PASS", "NICK",	"USER"
 	};

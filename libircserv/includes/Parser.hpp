@@ -25,7 +25,7 @@ namespace	Parser
 	{
 		std::string					prefix;
 		std::string					command;
-		std::vector<std::string>	parameters;
+		std::vector< std::string >	parameters;
 	};
 
 	struct IRC::AccessData	checkArgValidity(int argc, char** argv) throw(Error);
@@ -41,6 +41,7 @@ namespace	Parser
 	struct Command::Topic	topic(const std::vector< std::string >& params) throw(Error);
 	struct Command::Invite	invite(const std::vector< std::string >& params) throw(Error);
 	struct Command::Kick	kick(const std::vector< std::string >& params) throw(Error);
+	struct Command::Mode	mode(const std::vector< std::string >& params) throw(Error);
 
 	static bool	isAlpha(char c)
 	{
