@@ -4,14 +4,12 @@
 
 const std::string	Channel::st_valid_modes = "oitkl";
 
-Channel::Channel(Client& client, enum Channel::Prefix prefix, std::string t_name, std::string t_modes) : _name(_name), _modes(t_modes)
+Channel::Channel(Client& client, enum Channel::Prefix prefix, std::string t_name) : _name(_name), _modes(0)
 {
 	addMember(client);
 
 	if (prefix != P_PLUS)
 		addOperator(client);
-
-	addMode(t_modes);
 }
 Channel::Channel(const Channel& other) : _name(other._name)
 {

@@ -17,7 +17,7 @@ class	Channel
 			P_PLUS = '+'
 		};
 
-		Channel(Client& client, enum Prefix prefix, std::string t_name, std::string t_modes);
+		Channel(Client& client, enum Prefix prefix, std::string t_name);
 		Channel(const Channel& other);
 		Channel& operator=(const Channel& other);
 
