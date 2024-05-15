@@ -5,11 +5,11 @@
 
 const std::string	Channel::st_valid_modes = "itkl";
 
-Channel::Channel(Client& client, enum Channel::Prefix prefix, std::string t_name) : _name(t_name), _modes(0), _limit(0)
+Channel::Channel(Client& client, const char t_prefix, std::string t_name) : _name(t_name), _modes(0), _limit(0)
 {
 	addMember(client);
 
-	if (prefix != P_PLUS)
+	if (static_cast< enum Prefix >(t_prefix) != P_PLUS)
 		addOperator(client);
 }
 

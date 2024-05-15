@@ -44,14 +44,14 @@ void	Command::mode(IRC& server, Client& client, const std::vector< std::string >
 		Channel*	channel = server.searchChannel(data.channel);
 		if (channel == NULL)
 		{
-			throw Error(Error::EWRPARM, channel_name.c_str());
+			throw Error(Error::EWRPARM, data.channel.c_str());
 		}
-		else if (channel.isOperator(client) == false)
+		else if (channel->isOperator(client) == false)
 		{
-			throw Error(Error::ENOPER, channel_name.c_str());
+			throw Error(Error::ENOPER, data.channel.c_str());
 		}
 
-		channel.setMode(data.modes);
+		channel->setMode(data.modes);
 	}
 	catch (Error& e)
 	{
