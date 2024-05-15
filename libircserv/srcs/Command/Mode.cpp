@@ -51,7 +51,7 @@ void	Command::mode(IRC& server, Client& client, const std::vector< std::string >
 			throw Error(Error::ENOPER, data.channel.c_str());
 		}
 
-		channel->setMode(data.modes);
+		channel->setMode(server, data.modes);
 	}
 	catch (Error& e)
 	{

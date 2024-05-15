@@ -34,6 +34,7 @@ class	IRC
 
 		Channel*	searchChannel(std::string t_channel_name);
 		Channel*	createChannel(Client& client, const char t_prefix, std::string t_channel_name);
+		Client*		getClient(const std::string& client_name) throw(Error);
 
 	private:
 		int			_server_sockfd;

@@ -9,6 +9,8 @@
 # include "Signal.hpp"
 # include "Error.hpp"
 
+class	IRC;
+
 class	Channel
 {
 	public:
@@ -25,7 +27,7 @@ class	Channel
 
 		const std::string&	getChannelName() const;
 
-		void				setMode(std::vector< struct Command::ModeWithParams>& mode_data);
+		void				setMode(IRC& server, std::vector< struct Command::ModeWithParams>& mode_data);
 		bool				checkModeSet(const char mode) const;
 		const std::string	getCurrentMode() const;
 		const std::string	getKey() const;

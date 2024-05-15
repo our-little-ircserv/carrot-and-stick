@@ -41,17 +41,17 @@ const std::string	Channel::getKey() const
 	return _key;
 }
 
-const size_t		Channel::getLimit() const
+const size_t	Channel::getLimit() const
 {
 	return _limit;
 }
 
-const size_t		Channel::getMemberCnt() const
+const size_t	Channel::getMemberCnt() const
 {
 	return _members.size();
 }
 
-void	Channel::setMode(std::vector< struct Command::ModeWithParams>& mode_data)
+void	Channel::setMode(IRC& server, std::vector< struct Command::ModeWithParams>& mode_data)
 {
 	size_t	shift = 0;
 
@@ -59,8 +59,20 @@ void	Channel::setMode(std::vector< struct Command::ModeWithParams>& mode_data)
 	{
 		if (it->mode == 'o')
 		{
-			// get Client&
-			// add or del operator
+			Client*	client = server.getClient(it->mode_param);
+
+			if (client == NULL)
+			{
+				throw Error(Error::EWRPARM);
+			}
+			else if (isMember(*client) == false)
+			{
+				throw Error(Error::EWRPARM);
+			}
+			else if (isOperator(*client) == false)
+			{
+				addOperator(*client);
+			}
 		}
 		else if ((shift = st_valid_modes.find(it->mode, 0)) != std::string::npos)
 		{
@@ -114,16 +126,12 @@ bool	Channel::isInvited(Client& client) const
 
 void	Channel::addMember(Client& client)
 {
-	if (isMember(client) == false)
-		_members[&client] = false;
+	_members[&client] = false;
 }
 
 void	Channel::addOperator(Client& client)
 {
-	if (isOperator(client) == false)
-	{
-		_members[&client] = true;
-	}
+	_members[&client] = true;
 }
 
 void	Channel::addInvited(Client& client)
@@ -166,9 +174,6 @@ void	Channel::setAttributes(struct Command::ModeWithParams& mode_data)
 {
 	switch (mode_data.mode)
 	{
-		case 'o':
-			// add operator
-			break;
 		case 't':
 			_topic = mode_data.mode_param;
 			break;

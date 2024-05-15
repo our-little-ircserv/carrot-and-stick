@@ -39,13 +39,27 @@ Channel* IRC::searchChannel(std::string t_channel_name)
 	return &(it->second);
 }
 
-Channel* IRC::createChannel(Client& client, enum ::Channel::Prefix t_prefix, std::string t_channel_name)
+Channel* IRC::createChannel(Client& client, const char t_prefix, std::string t_channel_name)
 {
 	Channel t_new_channel(client, t_prefix, t_channel_name);
 
 	_channels[t_channel_name] = t_new_channel;
 
 	return &_channels[t_channel_name];
+}
+
+
+Client*	IRC::getClient(const std::string& client_name) throw(Error)
+{
+	for (std::map< int, Client >::iterator it = _clients.begin(); it != _clients.end(); it++)
+	{
+		if (it->second.getNickname() == client_name)
+		{
+			return &(it->second);
+		}
+	}
+
+	return NULL;
 }
 
 void	IRC::boot()
