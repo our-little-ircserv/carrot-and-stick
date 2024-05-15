@@ -27,24 +27,27 @@ class	Error
 		};
 
 		Error(enum errType _err_no, const char* _err_title = NULL);
+		virtual ~Error();
 
 		enum errType	getErrNo(void) const;
 		void			ftPerror() const;
+
+		virtual std::string		what() const = 0;
 
 	private:
 		enum errType	_err_no;
 		const char*		_err_title;
 };
-
-inline int	wrapSyscall(int syscall_ret, const char* syscall) throw(Signal, Error)
-{
-	if (g_signo == SIGINT)
-		throw Signal(SIGINT);
-
-	if (syscall_ret == -1)
-		throw Error(Error::ESYSERR, syscall);
-
-	return syscall_ret;
-}
+//
+//inline int	wrapSyscall(int syscall_ret, const char* syscall) throw(Signal, Error)
+//{
+//	if (g_signo == SIGINT)
+//		throw Signal(SIGINT);
+//
+//	if (syscall_ret == -1)
+//		throw Error(Error::ESYSERR, syscall);
+//
+//	return syscall_ret;
+//}
 
 #endif
