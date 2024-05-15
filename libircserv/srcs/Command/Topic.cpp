@@ -19,7 +19,7 @@ struct	Command::Topic	Parser::topic(const std::vector< std::string >& params) th
 	return data;
 }
 
-void	topic(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error)
+void	Command::topic(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error)
 {
 	struct Command::Topic	data;
 	Channel*				channel;
