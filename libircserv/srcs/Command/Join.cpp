@@ -92,7 +92,7 @@ void	Command::join(IRC& server, Client& client, const std::vector< std::string >
 
 			if (channel == NULL)
 			{
-				channel = server.createChannel(client, static_cast<Channel::Prefix>(data.channels[i][0]), data.channels[i]);
+				channel = server.createChannel(client, data.channels[i][0], data.channels[i]);
 				continue ;
 			}
 
