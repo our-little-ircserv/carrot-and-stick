@@ -21,6 +21,7 @@ class	Channel
 			P_PLUS = '+'
 		};
 
+		Channel();
 		Channel(Client& client, const char t_prefix, std::string t_name);
 		Channel(const Channel& other);
 		Channel& operator=(const Channel& other);
@@ -47,7 +48,7 @@ class	Channel
 	private:
 		static const std::string	st_valid_modes;
 
-		const std::string		_name;
+		std::string				_name;
 		size_t					_modes;
 		std::string				_topic;
 		std::string				_key;
