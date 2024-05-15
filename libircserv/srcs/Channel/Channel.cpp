@@ -5,7 +5,7 @@
 
 const std::string	Channel::st_valid_modes = "itkl";
 
-Channel::Channel(Client& client, enum Channel::Prefix prefix, std::string t_name) : _name(t_name), _modes(0)
+Channel::Channel(Client& client, enum Channel::Prefix prefix, std::string t_name) : _name(_name), _modes(0), _limit(0)
 {
 	addMember(client);
 
@@ -180,6 +180,7 @@ void	Channel::setAttributes(struct Command::ModeWithParams& mode_data)
 			break;
 		default:
 			break;
+	}
 }
 
 bool	operator<(const Client& a, const Client& b)
