@@ -41,7 +41,12 @@ void	Command::mode(IRC& server, const std::vector< std::string >& params) throw 
 
 	try
 	{
-		Channel&	channel = server.getChannel(data.channel);
+		Channel*	channel = server.searchChannel(data.channel);
+		if (channel == NULL)
+		{
+			throw Error(Error::EWRPARM, channel_name.c_str());
+		}
+
 		channel.setMode(data.modes);
 	}
 	catch (Error& e)

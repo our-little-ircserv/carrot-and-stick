@@ -84,14 +84,3 @@ struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Error)
 
 	return sockaddr;
 }
-
-Channel&	IRC::getChannel(std::string& channel_name)
-{
-	std::map< std::string, Channel >::iterator it = _channels.find(channel_name);
-	if (it == _channels.end())
-	{
-		throw Error(Error::EWRPARM, channel_name.c_str());
-	}
-
-	return it->second;
-}
