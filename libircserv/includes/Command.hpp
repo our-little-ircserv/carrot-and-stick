@@ -83,7 +83,7 @@ namespace Command
 	};
 
 	static std::string CmdList[3] = {
-		"PASS", "NICK",	"USER"
+		"PASS", "JOIN", "TOPIC"
 	};
 
 	// 여기선 reference 변수를 사용 할 수 없다. 어째서...?
@@ -99,6 +99,7 @@ namespace Command
 	void	pass(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
 	void	join(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
 	void	mode(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
+	void	topic(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
 };
 
 #endif
