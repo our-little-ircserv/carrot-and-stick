@@ -21,6 +21,6 @@ void	Command::pass(IRC& server, Client& client, const std::vector< std::string >
 	}
 	else
 	{
-		throw(Error::EAPASS);
+		throw(Error::EWRPARM);
 	}
 }
