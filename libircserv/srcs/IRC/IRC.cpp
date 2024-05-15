@@ -39,7 +39,7 @@ Channel* IRC::searchChannel(std::string t_channel_name)
 	return &(it->second);
 }
 
-Channel* IRC::createChannel(Client& client, enum ::Channel::Prefix t_prefix, std::string t_channel_name)
+Channel* IRC::createChannel(Client& client, const char t_prefix, std::string t_channel_name)
 {
 	Channel t_new_channel(client, t_prefix, t_channel_name);
 
