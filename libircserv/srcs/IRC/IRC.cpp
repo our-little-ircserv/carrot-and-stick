@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <iostream>
 #include "IRC.hpp"
+#include "Channel.hpp"
 #include "Error.hpp"
 
 extern int	kq;

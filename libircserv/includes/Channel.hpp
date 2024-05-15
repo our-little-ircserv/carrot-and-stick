@@ -5,6 +5,7 @@
 # include <map>
 # include <set>
 # include "Client.hpp"
+# include "Command.hpp"
 # include "Signal.hpp"
 # include "Error.hpp"
 
@@ -24,8 +25,7 @@ class	Channel
 
 		const std::string&	getChannelName() const;
 
-		void				addMode(std::string mode_in_str);
-		void				delMode(std::string mode_in_str);
+		void				setMode(std::vector< struct Command::ModeWithParams>& mode_data);
 		bool				checkModeSet(const char mode) const;
 		const std::string	getCurrentMode() const;
 		const std::string	getKey() const;
@@ -52,6 +52,8 @@ class	Channel
 		size_t					_limit;
 		std::set<Client*>		_invite_list;
 		std::map<Client*, bool>	_members;
+
+		void	setAttributes(struct Command::ModeWithParams& mode_data);
 };
 
 bool	operator<(const Client& a, const Client& b);

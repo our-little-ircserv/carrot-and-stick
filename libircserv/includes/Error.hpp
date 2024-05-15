@@ -22,10 +22,11 @@ class	Error
 			ENEPARM,
 			EWRPARM,
 			EWRCMD,
+			ENOPER,
 			ECRLF
 		};
 
-		Error(enum errType _err_no, const char* _err_title);
+		Error(enum errType _err_no, const char* _err_title = NULL);
 
 		enum errType	getErrNo(void) const;
 		void			ftPerror() const;

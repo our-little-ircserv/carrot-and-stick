@@ -1,16 +1,18 @@
 #include <sys/socket.h>
 #include <iostream>
+#include <sstream>
 #include "Channel.hpp"
 
 const std::string	Channel::st_valid_modes = "itkl";
 
-Channel::Channel(Client& client, enum Channel::Prefix prefix, std::string t_name) : _name(_name), _modes(0), _limit(0)
+Channel::Channel(Client& client, enum Channel::Prefix prefix, std::string t_name) : _name(t_name), _modes(0), _limit(0)
 {
 	addMember(client);
 
 	if (prefix != P_PLUS)
 		addOperator(client);
 }
+
 Channel::Channel(const Channel& other) : _name(other._name)
 {
 	*this = other;
@@ -26,7 +28,7 @@ Channel& Channel::operator=(const Channel& other)
 		_limit = other._limit;
 		_members = other._members;
 	}
-	return *this
+	return *this;
 }
 
 const std::string&	Channel::getChannelName() const
@@ -49,25 +51,29 @@ const size_t		Channel::getMemberCnt() const
 	return _members.size();
 }
 
-void	Channel::addMode(std::string mode_in_str)
+void	Channel::setMode(std::vector< struct Command::ModeWithParams>& mode_data)
 {
 	size_t	shift = 0;
 
-	for (std::string::iterator it = mode_in_str.begin() + 1; it != mode_in_str.end(); it++)
+	for (std::vector< struct Command::ModeWithParams >::iterator it = mode_data.begin(); it != mode_data.end(); it++)
 	{
-		if ((shift = st_valid_modes.find(*it, 0)) != std::string::npos)
-			_modes |= (1 << shift);
-	}
-}
-
-void	Channel::delMode(std::string mode_in_str)
-{
-	size_t	shift = 0;
-
-	for (std::string::iterator it = mode_in_str.begin() + 1; it != mode_in_str.end(); it++)
-	{
-		if ((shift = st_valid_modes.find(*it, 0)) != std::string::npos)
-			_modes ^= (1 << shift);
+		if (it->mode == 'o')
+		{
+			// get Client&
+			// add or del operator
+		}
+		else if ((shift = st_valid_modes.find(it->mode, 0)) != std::string::npos)
+		{
+			if (it->type == Command::ADD)
+			{
+				_modes |= (1 << shift);
+				setAttributes(*it);
+			}
+			else
+			{
+				_modes ^= (1 << shift);
+			}
+		}
 	}
 }
 
@@ -85,7 +91,7 @@ const std::string	Channel::getCurrentMode() const
 	for (std::string::const_iterator it = st_valid_modes.begin(); it != st_valid_modes.end(); it++)
 	{
 		if (checkModeSet(*it) == true)
-			current_mode.push_back(*it);
+			current_mode += *it;
 	}
 
 	return current_mode;
@@ -153,6 +159,27 @@ void	Channel::delInvited(Client& client)
 	if (isInvited(client) == true)
 	{
 		_invite_list.erase(_invite_list.find(&client));
+	}
+}
+
+void	Channel::setAttributes(struct Command::ModeWithParams& mode_data)
+{
+	switch (mode_data.mode)
+	{
+		case 'o':
+			// add operator
+			break;
+		case 't':
+			_topic = mode_data.mode_param;
+			break;
+		case 'k':
+			_key = mode_data.mode_param;
+			break;
+		case 'l':
+			std::istringstream(mode_data.mode_param) >> _limit;
+			break;
+		default:
+			break;
 	}
 }
 
