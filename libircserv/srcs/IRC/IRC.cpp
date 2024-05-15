@@ -28,6 +28,26 @@ const std::string& IRC::getPassword() const
 	return _password;
 }
 
+Channel* IRC::searchChannel(std::string t_channel_name)
+{
+	std::map<std::string, Channel>::iterator it;
+
+	it = _channels.find(t_channel_name);
+	if (it == _channels.end())
+		return NULL;
+
+	return &(it->second);
+}
+
+Channel* IRC::createChannel(Client& client, enum ::Channel::Prefix t_prefix, std::string t_channel_name)
+{
+	Channel t_new_channel(client, t_prefix, t_channel_name);
+
+	_channels[t_channel_name] = t_new_channel;
+
+	return &_channels[t_channel_name];
+}
+
 void	IRC::boot()
 {
 	struct sockaddr_in	server_sockaddr;

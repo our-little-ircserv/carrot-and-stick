@@ -30,17 +30,20 @@ class	IRC
 		void				boot();
 		int					getServerSocketFd() const;
 		const std::string&	getPassword() const;
-		Channel&	getChannel(std::string& channel_name);
+  
+		Channel&  getChannel(std::string& channel_name);
+		Channel*	searchChannel(std::string t_channel_name);
+		Channel*	createChannel(Client& client, enum ::Channel::Prefix t_prefix, std::string t_channel_name);
 
 	private:
 		int			_server_sockfd;
 		uint16_t	_port;
 		const char*	_ip_addr;
 		std::string	_password;
-
-		std::vector<struct kevent>		_changelist;
-		struct kevent					_eventlist[MAX_EVENTS];
-		std::map<int, Client>			_clients;
+  
+		std::vector<struct kevent>		  _changelist;
+		struct kevent					          _eventlist[MAX_EVENTS];
+		std::map<int, Client>			      _clients;
 		std::map<std::string, Channel>	_channels;
 
 		void				setUpSocket() throw(Error);
