@@ -12,6 +12,8 @@ namespace	Parser
 	struct Data;
 };
 
+class	IRC;
+
 namespace Command
 {
 	enum CmdType
