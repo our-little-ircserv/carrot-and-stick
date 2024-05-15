@@ -4,10 +4,13 @@
 # include <cctype>
 # include <string>
 # include <vector>
-
 # include "Error.hpp"
 # include "IRC.hpp"
-# include "Parser.hpp"
+
+namespace	Parser
+{
+	struct Data;
+};
 
 namespace Command
 {
@@ -17,6 +20,12 @@ namespace Command
 		NICK,
 		USER,
 		NO_SUCH_COMMAND = -1
+	};
+	
+	enum ModeType
+	{
+		DEL,
+		ADD
 	};
 
 	struct	Join
@@ -41,6 +50,34 @@ namespace Command
 	{
 		std::string	channel;
 		std::string	topic;
+	};
+
+	struct	Invite
+	{
+		std::string	nickname;
+		std::string	channel;
+	};
+
+	struct	Kick
+	{
+		std::vector< std::string >	channels;
+		std::vector< std::string >	users_nick;
+	};
+
+	struct	ModeWithParams
+	{
+		enum ModeType	type;
+		char			mode;
+		std::string		mode_param;
+	};
+
+	struct	Mode
+	{
+		std::string										channel;
+		std::vector< struct Command::ModeWithParams >	modes;
+		// addMode로 모드 설정할 때
+		// modes iterator->mode를 전부 하나의 문자열로 합친 다음
+		// +ikl 꼴로 만들어서 addMode 해준다...
 	};
 
 	static std::string CmdList[3] = {

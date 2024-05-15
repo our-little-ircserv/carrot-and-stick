@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct Command::User	Parser::user(const std::vector< std::string >& params)
+struct Command::User	Parser::user(const std::vector< std::string >& params) throw(Error)
 {
 	struct Command::User	data;
 
