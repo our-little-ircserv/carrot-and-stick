@@ -8,11 +8,12 @@
 # include <map>
 # include <string>
 # include "Client.hpp"
-# include "Channel.hpp"
 # include "Error.hpp"
 
 # define MAX_CLIENTS 128
 # define MAX_EVENTS 10
+
+class	Channel;
 
 // SocketManager
 class	IRC
@@ -29,6 +30,7 @@ class	IRC
 		void				boot();
 		int					getServerSocketFd() const;
 		const std::string&	getPassword() const;
+		Channel&	getChannel(std::string& channel_name);
 
 	private:
 		int			_server_sockfd;
@@ -36,10 +38,10 @@ class	IRC
 		const char*	_ip_addr;
 		std::string	_password;
 
-		std::vector<struct kevent>	_changelist;
-		struct kevent				_eventlist[MAX_EVENTS];
-		std::map<int, Client>		_clients;
-		std::map<int, Channel>		_channels;
+		std::vector<struct kevent>		_changelist;
+		struct kevent					_eventlist[MAX_EVENTS];
+		std::map<int, Client>			_clients;
+		std::map<std::string, Channel>	_channels;
 
 		void				setUpSocket() throw(Error);
 		struct sockaddr_in	setSockAddrIn(int domain) throw(Error);

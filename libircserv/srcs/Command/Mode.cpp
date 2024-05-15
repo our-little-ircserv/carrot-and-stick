@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include "Command.hpp"
+#include "Channel.hpp"
 
 struct Command::Mode	Parser::mode(const std::vector< std::string >& params) throw(Error)
 {
@@ -26,11 +27,27 @@ struct Command::Mode	Parser::mode(const std::vector< std::string >& params) thro
 
 		if (i < params.size() && Parser::isMode(params[i][0]) == false)
 		{
-			i = insertModeParameters(data, params, new_modes, i);
+			i = Parser::insertModeParameters(data, params, new_modes, i);
 		}
 	}
 
 	return data;
+}
+
+// oitkl
+void	Command::mode(IRC& server, const std::vector< std::string >& params) throw (Error)
+{
+	struct Command::Mode	data = Parser::mode(params);
+
+	try
+	{
+		Channel&	channel = server.getChannel(data.channel);
+		channel.setMode(data.modes);
+	}
+	catch (Error& e)
+	{
+		// No such channel
+	}
 }
 //
 //int main()

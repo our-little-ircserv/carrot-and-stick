@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <iostream>
 #include "IRC.hpp"
+#include "Channel.hpp"
 #include "Error.hpp"
 
 extern int	kq;
@@ -62,4 +63,15 @@ struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Error)
 	sockaddr.sin_addr.s_addr = wrapSyscall(inet_addr(_ip_addr), "inet_addr");
 
 	return sockaddr;
+}
+
+Channel&	IRC::getChannel(std::string& channel_name)
+{
+	std::map< std::string, Channel >::iterator it = _channels.find(channel_name);
+	if (it == _channels.end())
+	{
+		throw Error(Error::EWRPARM, channel_name.c_str());
+	}
+
+	return it->second;
 }

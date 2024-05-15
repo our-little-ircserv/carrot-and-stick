@@ -4,6 +4,7 @@
 # include <netinet/ip.h>
 # include <map>
 # include "Client.hpp"
+# include "Command.hpp"
 # include "Signal.hpp"
 # include "Error.hpp"
 
@@ -17,12 +18,11 @@ class	Channel
 			P_PLUS = '+'
 		};
 
-		Channel(Client& client, enum Prefix prefix, std::string _name, std::string _modes);
+		Channel(Client& client, enum Prefix prefix, std::string t_name);
 
 		const std::string&	getChannelName() const;
 
-		void				addMode(std::string mode_in_str);
-		void				delMode(std::string mode_in_str);
+		void				setMode(std::vector< struct Command::ModeWithParams>& mode_data);
 		bool				checkModeSet(const char mode) const;
 		const std::string	getCurrentMode() const;
 
@@ -42,6 +42,8 @@ class	Channel
 		std::string				_key;
 		size_t					_limit;
 		std::map<Client*, bool>	_members;
+
+		void	setAttributes(struct Command::ModeWithParams& mode_data);
 };
 
 bool	operator<(const Client& a, const Client& b);
