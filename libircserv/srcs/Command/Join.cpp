@@ -81,50 +81,55 @@ void	Command::join(IRC& server, Client& client, const std::vector< std::string >
 
 	for (size_t i = 0; i < chan_len; i++)
 	{
-		if (Parser::isValidChannelName(data.channels[i]) == false)
-			continue ;
-
-		
-		Channel* channel = server.searchChannel(data.channels[i]);
-
-		if (channel == NULL)
+		try
 		{
-			channel = server.createChannel(client, static_cast<Channel::Prefix>(data.channels[i][0]), data.channels[i]);
-			continue ;
-		}
-
-		// 채널에 들어가기 위한 유효성 검사
-
-		// 1. 초대여부
-		if (channel->checkModeSet('i') == true)
-		{
-			if (channel->isInvited(client) == false)
+			if (Parser::isValidChannelName(data.channels[i]) == false)
 			{
-				// 에러처리
+				throw(Error::EWRPARM);
+			}
+
+			Channel* channel = server.searchChannel(data.channels[i]);
+
+			if (channel == NULL)
+			{
+				channel = server.createChannel(client, static_cast<Channel::Prefix>(data.channels[i][0]), data.channels[i]);
 				continue ;
 			}
-		}
 
-		// 2. 비밀번호
-		if (channel->checkModeSet('k') == true)
-		{
-			if ((channel->getKey() == data.keys[i]) == false)
+			// 채널에 들어가기 위한 유효성 검사
+
+			// 1. 초대여부
+			if (channel->checkModeSet('i') == true)
 			{
-				// 에러처리
-				continue ;
+				if (channel->isInvited(client) == false)
+				{
+					throw(Error::EWRPARM);
+				}
 			}
-		}
 
-		// 3. 인원제한
-		if (channel->checkModeSet('l') == true)
-		{
-			if (channel->getLimit() == channel->getMemberCnt())
+			// 2. 비밀번호
+			if (channel->checkModeSet('k') == true)
 			{
-				// 에러처리
-				continue ;
+				if ((channel->getKey() == data.keys[i]) == false)
+				{
+					throw(Error::EWRPARM);
+				}
 			}
-		}
 
-		channel->addMember(client);
-	}	
+			// 3. 인원제한
+			if (channel->checkModeSet('l') == true)
+			{
+				if (channel->getLimit() == channel->getMemberCnt())
+				{
+					throw(Error::EWRPARM);
+				}
+			}
+
+			channel->addMember(client);
+		}
+		catch(const Error& e)
+		{
+			// 에러처리
+		}
+	}
 }
