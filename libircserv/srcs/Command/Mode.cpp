@@ -35,7 +35,7 @@ struct Command::Mode	Parser::mode(const std::vector< std::string >& params) thro
 }
 
 // oitkl
-void	Command::mode(IRC& server, const std::vector< std::string >& params) throw (Error)
+void	Command::mode(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error)
 {
 	struct Command::Mode	data = Parser::mode(params);
 
@@ -46,12 +46,17 @@ void	Command::mode(IRC& server, const std::vector< std::string >& params) throw 
 		{
 			throw Error(Error::EWRPARM, channel_name.c_str());
 		}
+		else if (channel.isOperator(client) == false)
+		{
+			throw Error(Error::ENOPER, channel_name.c_str());
+		}
 
 		channel.setMode(data.modes);
 	}
 	catch (Error& e)
 	{
 		// No such channel
+		// Not an operator
 	}
 }
 //
