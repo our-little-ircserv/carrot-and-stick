@@ -90,7 +90,7 @@ const std::string	Channel::getCurrentMode() const
 
 	for (std::string::const_iterator it = st_valid_modes.begin(); it != st_valid_modes.end(); it++)
 	{
-		if (*it != 'o' && checkModeSet(*it) == true)
+		if (checkModeSet(*it) == true)
 			current_mode += *it;
 	}
 
