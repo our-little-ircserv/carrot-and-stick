@@ -39,13 +39,13 @@ Channel* IRC::searchChannel(std::string t_channel_name)
 	return &(it->second);
 }
 
-Channel* IRC::createChannel(Client& client, enum ::Channel::Prefix t_prefix, std::string t_channel_name)
+Channel* IRC::createChannel(Client& client, const char t_prefix, std::string t_channel_name)
 {
-	Channel t_new_channel(client, t_prefix, t_channel_name);
+    // Channel 객체를 직접 생성하여 맵에 삽입
+    _channels.insert(std::make_pair(t_channel_name, Channel(client, t_prefix, t_channel_name)));
 
-	_channels[t_channel_name] = t_new_channel;
-
-	return &_channels[t_channel_name];
+    // insert 결과에서 삽입된 객체의 주소를 반환
+	return &(_channels[t_channel_name]);
 }
 
 void	IRC::boot()
