@@ -2,7 +2,7 @@
 #include <iostream>
 #include "Channel.hpp"
 
-const std::string	Channel::st_valid_modes = "oitkl";
+const std::string	Channel::st_valid_modes = "itkl";
 
 Channel::Channel(Client& client, enum Channel::Prefix prefix, std::string t_name) : _name(_name), _modes(0), _limit(0)
 {

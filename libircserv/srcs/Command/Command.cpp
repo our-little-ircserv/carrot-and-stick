@@ -1,4 +1,5 @@
 #include <iostream>
+#include "Parser.hpp"
 #include "Command.hpp"
 
 extern std::string password;
