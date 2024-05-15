@@ -5,6 +5,10 @@ Error::Error(unsigned int t_err_no, const char* t_err_title) : _err_no(t_err_no)
 {
 }
 
+Error::~Error()
+{
+}
+
 unsigned int	Error::getErrNo(void) const
 {
 	return _err_no;
@@ -19,24 +23,24 @@ void	Error::ftPerror() const
 		std::cerr << _err_title << ": ";
 	}
 
-	switch (_err_no)
-	{
-		case ESYSERR:
-			std::perror(NULL);
-			break;
-		case EARGC:
-			std::cerr << "Enter 2 arguments: <port> <password>" << std::endl;
-			break;
-		case EAPORT:
-			std::cerr << "Enter a valid port number: 0~65535" << std::endl;
-			break;
-		case ECRLF:
-			std::cerr << "Line must end with crlf" << std::endl;
-			break;
-		case EWRPARM:
-			std::cerr << "Wrong parameters" << std::endl;
-			break;
-		default: // not yet
-			break;
-	}
+//	switch (_err_no)
+//	{
+//		case ESYSERR:
+//			std::perror(NULL);
+//			break;
+//		case EARGC:
+//			std::cerr << "Enter 2 arguments: <port> <password>" << std::endl;
+//			break;
+//		case EAPORT:
+//			std::cerr << "Enter a valid port number: 0~65535" << std::endl;
+//			break;
+//		case ECRLF:
+//			std::cerr << "Line must end with crlf" << std::endl;
+//			break;
+//		case EWRPARM:
+//			std::cerr << "Wrong parameters" << std::endl;
+//			break;
+//		default: // not yet
+//			break;
+//	}
 }
