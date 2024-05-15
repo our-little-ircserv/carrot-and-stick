@@ -91,11 +91,11 @@ namespace Command
 
 	void	init();
 	int		getType(std::string& command);
-	void	execute(IRC& server, Client& client, struct Parser::Data& data);
+	void	execute(IRC& server, Client& client, struct ::Parser::Data& data);
 
 	// command implementations
 	void	pass(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
-	void	join(const std::vector< std::string >& params) throw (Error);
+	void	join(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
 	void	mode(IRC& server, const std::vector< std::string >& params) throw (Error);
 };
 
