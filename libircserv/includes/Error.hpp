@@ -6,36 +6,19 @@
 
 extern volatile sig_atomic_t g_signo;
 
-// error 종류가 많아지지 않는다면.
-// 추후에 Error를 상속받는 파생 errors 정의하기.
-// errno 아쉽지만 버려~~
 class	Error
 {
 	public:
-		enum	errType
-		{
-			ENOERR = 0,
-			ESYSERR,
-			EARGC,
-			EAPORT,
-			EAPASS,
-			ENEPARM,
-			EWRPARM,
-			EWRCMD,
-			ENOPER,
-			ECRLF
-		};
-
-		Error(enum errType _err_no, const char* _err_title = NULL);
+		Error(unsigned int t_err_no, const char* t_err_title = NULL);
 		virtual ~Error();
 
-		enum errType	getErrNo(void) const;
+		unsigned int	getErrNo(void) const;
 		void			ftPerror() const;
 
-		virtual std::string		what() const = 0;
+		virtual std::string	what() const = 0;
 
-	private:
-		enum errType	_err_no;
+	protected:
+		unsigned int	_err_no;
 		const char*		_err_title;
 };
 //

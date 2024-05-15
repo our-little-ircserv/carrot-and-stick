@@ -1,11 +1,11 @@
 #include <iostream>
 #include "Error.hpp"
 
-Error::Error(enum errType t_err_no, const char* t_err_title) : _err_no(t_err_no), _err_title(t_err_title)
+Error::Error(unsigned int t_err_no, const char* t_err_title) : _err_no(t_err_no), _err_title(t_err_title)
 {
 }
 
-enum Error::errType	Error::getErrNo(void) const
+unsigned int	Error::getErrNo(void) const
 {
 	return _err_no;
 }

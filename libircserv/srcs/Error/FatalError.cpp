@@ -2,7 +2,7 @@
 #include <sys/errno.h>
 #include "FatalError.hpp"
 
-FatalError::FatalError(enum errType t_err_no, const char* t_err_title) : Error(t_err_no, t_err_title)
+FatalError::FatalError(enum errType t_err_no, const char* t_err_title) : Error(static_cast< unsigned int >(t_err_no), t_err_title)
 {
 }
 
