@@ -28,6 +28,35 @@ const std::string& IRC::getPassword() const
 	return _password;
 }
 
+Client* IRC::searchClient(int sd)
+{
+	if (_clients.find(sd) == _clients.end())
+	{
+		return NULL;
+	}
+
+	return &(_clients[sd]);
+}
+
+Client* IRC::searchClient(std::string t_nick_name)
+{
+	std::map<int, Client>::iterator it;
+	std::map<int, Client>::iterator ite;
+
+	it = _clients.begin();
+	ite = _clients.end();
+
+	for (; it != ite; it++)
+	{
+		if ((it->second).getNickname() == t_nick_name)
+		{
+			return &(it->second);
+		}
+	}
+
+	return NULL;
+}
+
 Channel* IRC::searchChannel(std::string t_channel_name)
 {
 	std::map<std::string, Channel>::iterator it;
