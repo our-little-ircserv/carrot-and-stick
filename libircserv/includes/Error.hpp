@@ -12,14 +12,14 @@ class	Error
 		Error(unsigned int t_err_no, const char* t_err_title = NULL);
 		virtual ~Error();
 
-		unsigned int	getErrNo(void) const;
-		void			ftPerror() const;
+		int		getErrNo(void) const;
+		void	ftPerror() const;
 
 		virtual std::string	what() const = 0;
 
 	protected:
-		unsigned int	_err_no;
-		const char*		_err_title;
+		int			_err_no;
+		const char*	_err_title;
 };
 //
 //inline int	wrapSyscall(int syscall_ret, const char* syscall) throw(Signal, Error)

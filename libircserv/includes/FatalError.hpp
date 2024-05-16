@@ -21,13 +21,13 @@ class	FatalError : public Error
 		virtual std::string	what() const;
 };
 
-inline int	wrapSyscall(int syscall_ret, const char* syscall) throw(Signal, Error)
+inline int	wrapSyscall(int syscall_ret, const char* syscall) throw(Signal, FatalError)
 {
 	if (g_signo == SIGINT)
 		throw Signal(SIGINT);
 
 	if (syscall_ret == -1)
-		throw Error(Error::ESYSERR, syscall);
+		throw FatalError(FatalError::ESYSERR, syscall);
 
 	return syscall_ret;
 }
