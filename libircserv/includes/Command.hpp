@@ -86,7 +86,6 @@ namespace Command
 		"PASS", "JOIN", "TOPIC"
 	};
 
-	// 여기선 reference 변수를 사용 할 수 없다. 어째서...?
 	static std::vector< void (*)(IRC&, Client&, const std::vector< std::string >&) > cmdFunctions;
 
 	// 추후에 함수 배열 추가
