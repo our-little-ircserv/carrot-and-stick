@@ -2,7 +2,7 @@
 #include <sys/errno.h>
 #include "FatalError.hpp"
 
-FatalError::FatalError(enum errType t_err_no, const char* t_err_title) : Error(static_cast< unsigned int >(t_err_no), t_err_title)
+FatalError::FatalError(enum errType t_err_no, const char* t_err_title) : Error(static_cast< int >(t_err_no), t_err_title)
 {
 }
 
@@ -29,6 +29,8 @@ std::string	FatalError::what() const
 			break;
 		case EAPORT:
 			error_message += "Enter a valid port number: 0~65535";
+		default:
+			break;
 	}
 
 	return error_message;
