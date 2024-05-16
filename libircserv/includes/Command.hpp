@@ -82,8 +82,8 @@ namespace Command
 		// +ikl 꼴로 만들어서 addMode 해준다...
 	};
 
-	static std::string CmdList[3] = {
-		"PASS", "JOIN", "TOPIC"
+	static std::string CmdList[4] = {
+		"PASS", "JOIN", "TOPIC", "INVITE"
 	};
 
 	static std::vector< void (*)(IRC&, Client&, const std::vector< std::string >&) > cmdFunctions;
@@ -99,6 +99,7 @@ namespace Command
 	void	join(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
 	void	mode(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
 	void	topic(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
+	void	invite(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
 };
 
 #endif
