@@ -28,7 +28,7 @@ const std::string& IRC::getPassword() const
 	return _password;
 }
 
-Client* IRC::searchClient(const int& sockfd)
+Client* IRC::searchClient(const int sockfd)
 {
 	if (_clients.find(sockfd) == _clients.end())
 	{
