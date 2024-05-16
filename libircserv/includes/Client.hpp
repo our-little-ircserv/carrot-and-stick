@@ -23,6 +23,7 @@ class	Client
 		std::vector<std::string>	_read_buf;
 		std::vector<std::string>	_write_buf;
 
+		Client();
 		Client(int t_sockfd, struct sockaddr_in addr);
 
 		int			getSocketFd() const;
@@ -44,8 +45,6 @@ class	Client
 		std::string			_nickname;
 		std::string			_username;
 		std::string			_realname;
-
-		Client();
 };
 
 #endif

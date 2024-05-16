@@ -1,5 +1,10 @@
 #include "Client.hpp"
 
+Client::Client()
+{
+	//
+}
+
 Client::Client(int t_sockfd, struct sockaddr_in t_addr) : _sockfd(t_sockfd), _addr(t_addr)
 {
 	//

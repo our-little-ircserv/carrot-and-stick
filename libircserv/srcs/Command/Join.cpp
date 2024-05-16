@@ -5,7 +5,7 @@ struct Command::Join	Parser::join(const std::vector< std::string >& params) thro
 {
 	struct Command::Join	data;
 
-	if (params.size() < 2)
+	if (params.size() < 1)
 	{
 		std::string	concat_params = Parser::concat_string_vector(params);
 		throw Error(Error::ENEPARM, concat_params.c_str());
