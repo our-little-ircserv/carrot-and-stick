@@ -28,24 +28,53 @@ const std::string& IRC::getPassword() const
 	return _password;
 }
 
-Channel* IRC::searchChannel(std::string t_channel_name)
+Client* IRC::searchClient(const int sockfd)
+{
+	if (_clients.find(sockfd) == _clients.end())
+	{
+		return NULL;
+	}
+
+	return &(_clients[sockfd]);
+}
+
+Client* IRC::searchClient(const std::string& nickname)
+{
+	std::map<int, Client>::iterator it;
+	std::map<int, Client>::iterator ite;
+
+	it = _clients.begin();
+	ite = _clients.end();
+
+	for (; it != ite; it++)
+	{
+		if ((it->second).getNickname() == nickname)
+		{
+			return &(it->second);
+		}
+	}
+
+	return NULL;
+}
+
+Channel* IRC::searchChannel(const std::string& channel_name)
 {
 	std::map<std::string, Channel>::iterator it;
 
-	it = _channels.find(t_channel_name);
+	it = _channels.find(channel_name);
 	if (it == _channels.end())
 		return NULL;
 
 	return &(it->second);
 }
 
-Channel* IRC::createChannel(Client& client, const char t_prefix, std::string t_channel_name)
+Channel* IRC::createChannel(Client& client, const char prefix, const std::string& channel_name)
 {
     // Channel 객체를 직접 생성하여 맵에 삽입
-    _channels.insert(std::make_pair(t_channel_name, Channel(client, t_prefix, t_channel_name)));
+    _channels.insert(std::make_pair(channel_name, Channel(client, prefix, channel_name)));
 
     // insert 결과에서 삽입된 객체의 주소를 반환
-	return &(_channels[t_channel_name]);
+	return &(_channels[channel_name]);
 }
 
 void	IRC::boot()
