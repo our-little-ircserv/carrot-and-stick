@@ -32,11 +32,11 @@ class	IRC
 		int					getServerSocketFd() const;
 		const std::string&	getPassword() const;
 
-		Client*		searchClient(int sd);
-		Client*		searchClient(std::string t_nick_name);
+		Client*		searchClient(const int& sockfd);
+		Client*		searchClient(const std::string& nickname);
 
-		Channel*	searchChannel(std::string t_channel_name);
-		Channel*	createChannel(Client& client, const char t_prefix, std::string t_channel_name);
+		Channel*	searchChannel(const std::string& channel_name);
+		Channel*	createChannel(Client& client, const char prefix, const std::string& channel_name);
 
 	private:
 		int			_server_sockfd;
