@@ -15,7 +15,7 @@ class	FatalError : public Error
 			EAPORT,
 		};
 
-		FatalError(enum errType _err_no, const char* _err_title = NULL);
+		FatalError(enum errType t_err_no, const char* t_err_title = NULL);
 		virtual	~FatalError();
 
 		virtual std::string	what() const;
