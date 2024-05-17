@@ -1,8 +1,9 @@
 #include <sys/errno.h>
 #include <cstdio>
+#include <iostream>
 #include "FatalError.hpp"
 
-FatalError::FatalError(enum errType t_err_no, const char* t_err_title)
+FatalError::FatalError(enum FatalError::ErrType t_err_no, const char* t_err_title)
 {
 }
 
@@ -10,12 +11,12 @@ FatalError::~FatalError()
 {
 }
 
-enum ErrType	Error::getErrNo(void) const
+enum FatalError::ErrType	FatalError::getErrNo(void) const
 {
 	return _err_no;
 }
 
-void	Error::ftPerror() const
+void	FatalError::ftPerror() const
 {
 	std::cerr << "\033[31m[ERROR]\033[0m ";
 

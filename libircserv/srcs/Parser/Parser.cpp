@@ -34,25 +34,23 @@ struct IRC::AccessData	Parser::checkArgValidity(int argc, char** argv) throw(Fat
 //:PREFIX
 //COMMAND
 //:PARAM PARAM
-struct Parser::Data	Parser::parseClientMessage(const std::string& message) throw(FatalError)
+struct Parser::Data	Parser::parseClientMessage(const std::string& message)
 {
-	struct Parser::Data						command_data;
+	struct Parser::Data							command_data;
 	std::vector<struct Parser::Token>			tokens = Parser::splitTokens(message);
 	std::vector<struct Parser::Token>::iterator	it = tokens.begin();
 
-	if (tokens.size() < 2)
-	{
-		throw FatalError(FatalError::EWRPARM, message.c_str());
-	}
-
-	if (it->type == Parser::COLON)
+	if (it != tokens.end() && it->type == Parser::COLON)
 	{
 		command_data.prefix = it->data;
 		++it;
 	}
 
-	command_data.command = it->data;
-	++it;
+	if (it != tokens.end())
+	{
+		command_data.command = it->data;
+		++it;
+	}
 
 	while (it != tokens.end())
 	{

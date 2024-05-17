@@ -1,6 +1,9 @@
 #ifndef FATALERROR_HPP
 # define FATALERROR_HPP
 
+# include <signal.h>
+# include "Signal.hpp"
+
 extern volatile sig_atomic_t g_signo;
 
 // 프로그램을 바로 종료해야 하는 에러.
@@ -9,8 +12,7 @@ class	FatalError
 	public:
 		enum	ErrType
 		{
-			ENOERR = 0,
-			ESYSERR,
+			ESYSERR = 1,
 			EARGC,
 			EAPORT
 		};
