@@ -49,13 +49,11 @@ void	Command::invite(IRC& server, Client& client, const std::vector< std::string
 	{
 		throw(Error::EWRPARM);
 	}
-
-	if (channel->checkModeSet('i') == true && channel->isOperator(client) == false)
+	else if (channel->checkModeSet('i') == true && channel->isOperator(client) == false)
 	{
 		throw(Error::EWRPARM);
 	}
-
-	if (channel->isInvited(*target_client) == false)
+	else if (channel->isInvited(*target_client) == false)
 	{
 		channel->addInvited(*target_client);
 	}
