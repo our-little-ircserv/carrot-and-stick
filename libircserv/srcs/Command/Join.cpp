@@ -6,7 +6,7 @@ struct Command::Join	Parser::join(const Client& client, const std::vector< std::
 	struct Command::Join		data;
 	std::vector< std::string >	r_params;
 
-	if (params.size() < 2)
+	if (params.size() < 1)
 	{
 		r_params.push_back(client.getNickname());
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
