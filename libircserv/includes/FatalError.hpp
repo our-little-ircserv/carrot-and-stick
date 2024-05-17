@@ -1,24 +1,27 @@
 #ifndef FATALERROR_HPP
 # define FATALERROR_HPP
 
-# include "Error.hpp"
-
 // 프로그램을 바로 종료해야 하는 에러.
-class	FatalError : public Error
+class	FatalError
 {
 	public:
-		enum	errType
+		enum	ErrType
 		{
 			ENOERR = 0,
 			ESYSERR,
 			EARGC,
-			EAPORT,
+			EAPORT
 		};
 
-		FatalError(enum errType t_err_no, const char* t_err_title = NULL);
-		virtual	~FatalError();
+		FatalError(enum ErrType t_err_no, const char* t_err_title = NULL);
+		~FatalError();
 
-		virtual std::string	what() const;
+		enum ErrType	getErrNo() const;
+		void			ftPerror() const;
+
+	private:
+		enum ErrType	_err_no;
+		const char*		_err_title;
 };
 
 inline int	wrapSyscall(int syscall_ret, const char* syscall) throw(Signal, FatalError)

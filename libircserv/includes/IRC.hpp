@@ -26,6 +26,8 @@ class	IRC
 			std::string	password;
 		};
 
+		static const char*	hostname;
+
 		IRC(struct IRC::AccessData access_data);
 		~IRC();
 		void				boot();

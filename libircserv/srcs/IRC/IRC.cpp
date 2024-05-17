@@ -9,6 +9,8 @@
 
 extern int	kq;
 
+const char*	IRC::hostname = "carrot-and-stick.ircserv.com";
+
 IRC::IRC(struct AccessData access_data) : _port(access_data.port), _ip_addr("127.0.0.1"), _password(access_data.password)
 {
 }

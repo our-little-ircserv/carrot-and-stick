@@ -5,7 +5,7 @@
 # include <vector>
 # include "IRC.hpp"
 # include "Command.hpp"
-# include "Error.hpp"
+# include "FatalError.hpp"
 
 namespace	Parser
 {
@@ -28,7 +28,7 @@ namespace	Parser
 		std::vector< std::string >	parameters;
 	};
 
-	struct IRC::AccessData	checkArgValidity(int argc, char** argv) throw(Error);
+	struct IRC::AccessData	checkArgValidity(int argc, char** argv) throw(FatalError);
 	
 	struct Parser::Data		 			parseClientMessage(const std::string& message) throw(Error);
 	std::vector<struct Parser::Token>	splitTokens(const std::string message);
@@ -42,6 +42,8 @@ namespace	Parser
 	struct Command::Invite	invite(const std::vector< std::string >& params) throw(Error);
 	struct Command::Kick	kick(const std::vector< std::string >& params) throw(Error);
 	struct Command::Mode	mode(const std::vector< std::string >& params) throw(Error);
+
+	std::string	concat_string_vector(const std::vector< std::string >& vec);
 
 	static bool	isAlpha(char c)
 	{
@@ -121,25 +123,6 @@ namespace	Parser
 		}
 
 		return true;
-	}
-
-	static std::string	concat_string_vector(const std::vector< std::string >& vec)
-	{
-		std::string	concat_params;
-
-		size_t	i = 0;
-		while (i < vec.size())
-		{
-			concat_params += vec[i];
-			++i;
-
-			if (i != vec.size())
-			{
-				concat_params += ' ';
-			}
-		}
-
-		return concat_params;
 	}
 
 	static enum Command::ModeType	getModeType(const char c)
