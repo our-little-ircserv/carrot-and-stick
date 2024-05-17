@@ -153,14 +153,14 @@ std::string	Reply::getReplyMessage()
 
 	return message;
 }
-
-int	main()
-{
-	std::vector< std::string > params;
-	params.push_back("seojilee");
-	params.push_back("#channel");
-	params.push_back("+itl");
-
-	Reply	reply(Reply::RPL_CHANNELMODEIS, params);
-	std::cout << reply.getReplyMessage();
-}
+//
+//int	main()
+//{
+//	std::vector< std::string > params;
+//	params.push_back("seojilee");
+//	params.push_back("#channel");
+//	params.push_back("+itl");
+//
+//	Reply	reply(Reply::RPL_CHANNELMODEIS, params);
+//	std::cout << reply.getReplyMessage();
+//}
