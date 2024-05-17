@@ -108,7 +108,7 @@ std::string	Reply::getReplyMessage()
 			message += _parameters[0] + " :You're not on that channel";
 			break;
 		case ERR_USERONCHANNEL:
-			// hostname 443 nickname user #channel :is allready on channel
+			// hostname 443 nickname user #channel :is already on channel
 			message += concat_string_vector(_parameters) + " :is already on channel";
 			break;
 		case ERR_NEEDMOREPARAMS:
