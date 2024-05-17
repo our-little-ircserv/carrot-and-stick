@@ -27,4 +27,36 @@ void	Command::invite(IRC& server, Client& client, const std::vector< std::string
 		invite_list에서 중복확인후 추가 -> 추후 join시에 invite_list에서 제거하는것 검토
 		채널 매개변수가 여러개여도 첫번째것만 적용
 	*/
+
+	struct Command::Invite	data;
+	Channel* channel;
+	Client* target_client;
+
+	data = Parser::invite(params);
+	channel = server.searchChannel(data.channel);
+	if (channel == NULL)
+	{
+		throw(Error::EWRPARM);
+	}
+
+	target_client = server.searchClient(data.nickname);
+	if (target_client == NULL)
+	{
+		throw(Error::EWRPARM);
+	}
+
+	if (channel->isMember(client) == false || channel->isMember(*target_client) == true)
+	{
+		throw(Error::EWRPARM);
+	}
+
+	if (channel->checkModeSet('i') == true && channel->isOperator(client) == false)
+	{
+		throw(Error::EWRPARM);
+	}
+
+	if (channel->isInvited(*target_client) == false)
+	{
+		channel->addInvited(*target_client);
+	}
 }
