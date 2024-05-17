@@ -18,15 +18,17 @@ SRCS= $(addprefix $(DIR_SRCS), \
 	  Channel/Channel.cpp \
 	  Client/Client.cpp \
 	  Command/Command.cpp \
+	  Command/Invite.cpp \
 	  Command/Join.cpp \
-	  Command/Nick.cpp \
-	  Command/Privmsg.cpp \
-	  Command/User.cpp \
-	  Command/Topic.cpp \
 	  Command/Kick.cpp \
 	  Command/Mode.cpp \
+	  Command/Nick.cpp \
 	  Command/Pass.cpp \
-	  Error/Error.cpp \
+	  Command/Privmsg.cpp \
+	  Command/Topic.cpp \
+	  Command/User.cpp \
+	  ErrorReply/FatalError.cpp \
+	  ErrorReply/Reply.cpp \
 	  IRC/IRC.cpp \
 	  Parser/Parser.cpp \
 	  Signal/Signal.cpp \

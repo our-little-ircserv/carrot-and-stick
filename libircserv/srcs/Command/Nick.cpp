@@ -2,14 +2,15 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-std::string	Parser::nick(const Client& client, const std::vector< std::string >& params) throw(Error)
+std::string	Parser::nick(const Client& client, const std::vector< std::string >& params) throw(Reply)
 {
-	std::string			nickname;
+	std::string					nickname;
+	std::vector< std::string >	r_params;
 
 	if (params.size() < 1)
 	{
-		std::string	concat_params = Parser::concat_string_vector(params);
-		throw Error(Error::ENEPARM, concat_params.c_str());
+		r_params.push_back(client.getNickname());
+		throw Reply(Reply::ERR_NONICKNAMEGIVEN, r_params);
 	}
 
 	const std::string&	t_nickname = params[0];
@@ -17,7 +18,9 @@ std::string	Parser::nick(const Client& client, const std::vector< std::string >&
 	if (Parser::isAlpha(c) == false \
 			&& Parser::isSpecial(c) == false)
 	{
-		throw Error(Error::EWRPARM, t_nickname.c_str());
+		r_params.push_back(client.getNickname());
+		r_params.push_back(t_nickname);
+		throw Reply(Reply::ERR_ERRONEUSNICKNAME, r_params);
 	}
 
 	nickname += c;
@@ -28,7 +31,9 @@ std::string	Parser::nick(const Client& client, const std::vector< std::string >&
 		if (Parser::isAlpha(c) == false && Parser::isSpecial(c) == false \
 				&& Parser::isDigit(c) == false && c != '-')
 		{
-			throw Error(Error::EWRPARM, t_nickname.c_str());
+			r_params.push_back(client.getNickname());
+			r_params.push_back(t_nickname);
+			throw Reply(Reply::ERR_ERRONEUSNICKNAME, r_params);
 		}
 
 		nickname += c;

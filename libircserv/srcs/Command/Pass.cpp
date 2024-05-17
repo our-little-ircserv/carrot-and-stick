@@ -8,7 +8,7 @@
 // 	//
 // }
 
-void	Command::pass(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error)
+void	Command::pass(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply)
 {
 	// 이미 authorized 되었다면 무시한다
 	if (client.getRegisterLevel() > Client::AUTHORIZED)
@@ -21,6 +21,6 @@ void	Command::pass(IRC& server, Client& client, const std::vector< std::string >
 	}
 	else
 	{
-		throw(Error::EWRPARM);
+//		throw(Error::EWRPARM);
 	}
 }

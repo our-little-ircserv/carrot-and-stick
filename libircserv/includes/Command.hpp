@@ -4,7 +4,7 @@
 # include <cctype>
 # include <string>
 # include <vector>
-# include "Error.hpp"
+# include "Reply.hpp"
 # include "IRC.hpp"
 
 namespace	Parser
@@ -95,12 +95,12 @@ namespace Command
 	void	execute(IRC& server, Client& client, struct ::Parser::Data& data);
 
 	// command implementations
-	void	pass(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
-	void	join(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
-	void	mode(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
-	void	topic(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
-	void	invite(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
-	void	nick(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
+	void	pass(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
+	void	join(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
+	void	mode(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
+	void	topic(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
+	void	invite(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
+	void	nick(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
 };
 
 #endif

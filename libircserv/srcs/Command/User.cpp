@@ -1,23 +1,19 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct Command::User	Parser::user(const std::vector< std::string >& params) throw(Error)
+struct Command::User	Parser::user(const Client& client, const std::vector< std::string >& params) throw(Reply)
 {
-	struct Command::User	data;
+	struct Command::User		data;
+	std::vector< std::string >	r_params;
 
 	if (params.size() < 4)
 	{
-		std::string	concat_params = Parser::concat_string_vector(params);
-		throw Error(Error::ENEPARM, concat_params.c_str());
+		r_params.push_back(client.getNickname());
+		r_params.push_back("USER");
+		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
-	std::string	t_username = params[0];
-	if (Parser::isValidUserName(t_username) == false)
-	{
-		throw Error(Error::EWRPARM, t_username.c_str());
-	}
-
-	data.username = t_username;
+	data.username = params[0];
 	data.real_name = params[3];
 
 	return data;

@@ -5,9 +5,11 @@
 #include <iostream>
 #include "IRC.hpp"
 #include "Channel.hpp"
-#include "Error.hpp"
+#include "FatalError.hpp"
 
 extern int	kq;
+
+const char*	IRC::hostname = "carrot-and-stick.ircserv.com";
 
 IRC::IRC(struct AccessData access_data) : _port(access_data.port), _ip_addr("127.0.0.1"), _password(access_data.password)
 {
@@ -94,7 +96,7 @@ void	IRC::boot()
 	_changelist.push_back(event);
 }
 
-void	IRC::setUpSocket() throw(Error)
+void	IRC::setUpSocket() throw(FatalError)
 {
 	_server_sockfd = wrapSyscall(socket(AF_INET, SOCK_STREAM, 0), "socket");
 	
@@ -103,7 +105,7 @@ void	IRC::setUpSocket() throw(Error)
 	wrapSyscall(setsockopt(_server_sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)), "setsockopt");
 }
 
-struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Error)
+struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(FatalError)
 {
 	struct sockaddr_in	sockaddr;
 

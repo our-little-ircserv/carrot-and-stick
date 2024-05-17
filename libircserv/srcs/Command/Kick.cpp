@@ -1,14 +1,15 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct Command::Kick	Parser::kick(const std::vector< std::string >& params) throw(Error)
+struct Command::Kick	Parser::kick(const Client& client, const std::vector< std::string >& params) throw(Reply)
 {
-	struct Command::Kick	data;
+	struct Command::Kick		data;
+	std::vector< std::string >	r_params;
 
 	if (params.size() < 2)
 	{
-		std::string	concat_params = Parser::concat_string_vector(params);
-		throw Error(Error::ENEPARM, concat_params.c_str());
+		r_params.push_back(client.getNickname());
+		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
 	size_t	i = 0;
@@ -49,8 +50,8 @@ struct Command::Kick	Parser::kick(const std::vector< std::string >& params) thro
 	size_t	channels_size = data.channels.size();
 	if (channels_size > 1 && channels_size != data.users_nick.size())
 	{
-		std::string	concat_params = Parser::concat_string_vector(params);
-		throw Error(Error::EWRPARM, concat_params.c_str());
+		r_params.push_back(client.getNickname());
+		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
 	return data;

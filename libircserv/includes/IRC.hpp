@@ -9,7 +9,7 @@
 # include <string>
 # include "Client.hpp"
 # include "Channel.hpp"
-# include "Error.hpp"
+# include "FatalError.hpp"
 
 # define MAX_CLIENTS 128
 # define MAX_EVENTS 10
@@ -25,6 +25,8 @@ class	IRC
 			uint16_t	port;
 			std::string	password;
 		};
+
+		static const char*	hostname;
 
 		IRC(struct IRC::AccessData access_data);
 		~IRC();
@@ -49,8 +51,8 @@ class	IRC
 		std::map<int, Client>			_clients;
 		std::map<std::string, Channel>	_channels;
 
-		void				setUpSocket() throw(Error);
-		struct sockaddr_in	setSockAddrIn(int domain) throw(Error);
+		void				setUpSocket() throw(FatalError);
+		struct sockaddr_in	setSockAddrIn(int domain) throw(FatalError);
 };
 
 #endif
