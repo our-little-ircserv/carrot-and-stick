@@ -9,7 +9,7 @@
 # include <string>
 # include "Client.hpp"
 # include "Channel.hpp"
-# include "Error.hpp"
+# include "Reply.hpp"
 
 # define MAX_CLIENTS 128
 # define MAX_EVENTS 10
@@ -48,8 +48,8 @@ class	IRC
 		std::map<int, Client>			_clients;
 		std::map<std::string, Channel>	_channels;
 
-		void				setUpSocket() throw(Error);
-		struct sockaddr_in	setSockAddrIn(int domain) throw(Error);
+		void				setUpSocket() throw(Reply);
+		struct sockaddr_in	setSockAddrIn(int domain) throw(Reply);
 };
 
 #endif

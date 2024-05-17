@@ -7,7 +7,7 @@
 # include "Client.hpp"
 # include "Command.hpp"
 # include "Signal.hpp"
-# include "Error.hpp"
+# include "Reply.hpp"
 
 class	Channel
 {
