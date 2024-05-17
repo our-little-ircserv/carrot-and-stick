@@ -36,3 +36,8 @@ std::string	Parser::nick(const std::vector< std::string >& params) throw(Error)
 	
 	return nickname;
 }
+
+void Command::nick(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error)
+{
+	//
+}
