@@ -2,7 +2,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-std::string	Parser::nick(const std::vector< std::string >& params) throw(Error)
+std::string	Parser::nick(const Client& client, const std::vector< std::string >& params) throw(Error)
 {
 	std::string			nickname;
 
@@ -41,7 +41,7 @@ void Command::nick(IRC& server, Client& client, const std::vector< std::string >
 {
 	std::string new_nickname;
 
-	new_nickname = Parser::nick(params);
+	new_nickname = Parser::nick(client, params);
 	// 인자 수는 유효하나 닉네임의 내용이 비어있을때
 	// ERR_NONICKNAMEGIVEN
 	if (new_nickname.size() == 0)

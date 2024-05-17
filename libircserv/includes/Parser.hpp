@@ -35,7 +35,7 @@ namespace	Parser
 	enum Parser::TokenType				extractTokenType(const std::string& token);
 
 	struct Command::Join	join(const std::vector< std::string >& params) throw(Error);
-	std::string				nick(const std::vector< std::string >& params) throw(Error);
+	std::string				nick(const Client& client, const std::vector< std::string >& params) throw(Error);
 	struct Command::Privmsg	privmsg(const std::vector< std::string >& params) throw(Error);
 	struct Command::User	user(const std::vector< std::string >& params) throw(Error);
 	struct Command::Topic	topic(const std::vector< std::string >& params) throw(Error);
