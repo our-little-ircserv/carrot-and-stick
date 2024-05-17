@@ -6,6 +6,7 @@
 # include "IRC.hpp"
 # include "Command.hpp"
 # include "FatalError.hpp"
+# include "Reply.hpp"
 
 namespace	Parser
 {

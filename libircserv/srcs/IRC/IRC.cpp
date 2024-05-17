@@ -5,7 +5,7 @@
 #include <iostream>
 #include "IRC.hpp"
 #include "Channel.hpp"
-#include "Error.hpp"
+#include "FatalError.hpp"
 
 extern int	kq;
 
@@ -67,7 +67,7 @@ void	IRC::boot()
 	_changelist.push_back(event);
 }
 
-void	IRC::setUpSocket() throw(Error)
+void	IRC::setUpSocket() throw(FatalError)
 {
 	_server_sockfd = wrapSyscall(socket(AF_INET, SOCK_STREAM, 0), "socket");
 	
@@ -76,7 +76,7 @@ void	IRC::setUpSocket() throw(Error)
 	wrapSyscall(setsockopt(_server_sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)), "setsockopt");
 }
 
-struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Error)
+struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(FatalError)
 {
 	struct sockaddr_in	sockaddr;
 

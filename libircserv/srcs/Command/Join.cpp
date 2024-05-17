@@ -3,13 +3,12 @@
 
 struct Command::Join	Parser::join(const Client& client, const std::vector< std::string >& params) throw(Reply)
 {
-	struct Command::Join	data;
+	struct Command::Join		data;
+	std::vector< std::string >	r_params;
 
 	if (params.size() < 2)
 	{
-		std::vector< std::string >	r_params;
 		r_params.push_back(client.getNickname());
-//		std::string	concat_params = Parser::concat_string_vector(params);
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
@@ -34,7 +33,6 @@ struct Command::Join	Parser::join(const Client& client, const std::vector< std::
 		channel_name = t_channels.substr(i, offset);
 		if (Parser::isValidChannelName(channel_name) == false)
 		{
-			std::vector< std::string >	r_params;
 			r_params.push_back(client.getNickname());
 			r_params.push_back(channel_name);
 			throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
