@@ -42,7 +42,7 @@ std::string	Parser::nick(const Client& client, const std::vector< std::string >&
 	return nickname;
 }
 
-void Command::nick(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error)
+void Command::nick(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply)
 {
 	std::string new_nickname;
 

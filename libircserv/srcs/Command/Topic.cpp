@@ -22,12 +22,13 @@ struct	Command::Topic	Parser::topic(const Client& client, const std::vector< std
 	return data;
 }
 
-void	Command::topic(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error)
+void	Command::topic(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply)
 {
-	struct Command::Topic	data;
-	Channel*				channel;
+	struct Command::Topic		data;
+	std::vector< std::string >	r_params;
+	Channel*					channel;
 
-	data = ::Parser::topic(params);
+	data = ::Parser::topic(client, params);
 	/*
 		1. 채널 조회
 		2. 존재하는 채널의 경우 토픽 존재여부에 따라 토픽 조회
@@ -39,7 +40,9 @@ void	Command::topic(IRC& server, Client& client, const std::vector< std::string 
 	// 존재하지 않는 채널
 	if (channel == NULL)
 	{
-		throw(Error::EWRPARM);
+		r_params.push_back(client.getNickname());
+		r_params.push_back(data.channel);
+		throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
 	}
 
 	// 단순 토픽 조회
@@ -65,12 +68,16 @@ void	Command::topic(IRC& server, Client& client, const std::vector< std::string 
 		// 해당 채널의 멤버인지 검사
 		if (channel->isMember(client) == false)
 		{
-			throw(Error::EWRPARM);
+			r_params.push_back(client.getNickname());
+			r_params.push_back(data.channel);
+			throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
 		}
 		// T플래그가 활성화인경우 관리자인지 검사
 		else if (channel->checkModeSet('t') == true && channel->isOperator(client) == false)
 		{
-			throw(Error::EWRPARM);
+			r_params.push_back(client.getNickname());
+			r_params.push_back(data.channel);
+			throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 		}
 		channel->setTopic(data.topic);
 
