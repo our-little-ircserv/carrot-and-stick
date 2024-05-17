@@ -11,6 +11,7 @@ void Command::init()
 	Command::cmdFunctions.push_back(Command::topic);
 	Command::cmdFunctions.push_back(Command::invite);
 	Command::cmdFunctions.push_back(Command::nick);
+	Command::cmdFunctions.push_back(Command::kick);
 }
 
 int Command::getType(std::string& command)
