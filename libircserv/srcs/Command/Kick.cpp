@@ -61,13 +61,15 @@ void	Command::kick(IRC& server, Client& client, const std::vector< std::string >
 {
 	struct Command::Kick		data;
 	size_t						chan_len;
+	size_t						client_len;
 	std::vector< std::string >	r_params;
 	size_t						chan_idx = 0;
 	size_t						client_idx = 0;
 
 	data = Parser::kick(client, params);
 	chan_len = data.channels.size();
-	while (chan_idx < chan_len)
+	client_len = data.users_nick.size();
+	while (chan_idx < chan_len && client_idx < client_len)
 	{
 		try
 		{
