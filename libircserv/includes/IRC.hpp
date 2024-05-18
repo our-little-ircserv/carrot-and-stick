@@ -30,15 +30,18 @@ class	IRC
 
 		IRC(struct IRC::AccessData access_data);
 		~IRC();
-		void				boot();
-		int					getServerSocketFd() const;
-		const std::string&	getPassword() const;
+
+		void	init() throw(Signal, FatalError);
+		void	run() throw(Signal, FatalError);
+
+		Channel*	searchChannel(const std::string& channel_name);
+		Channel*	createChannel(Client& client, const char prefix, const std::string& channel_name);
 
 		Client*		searchClient(const int sockfd);
 		Client*		searchClient(const std::string& nickname);
 
-		Channel*	searchChannel(const std::string& channel_name);
-		Channel*	createChannel(Client& client, const char prefix, const std::string& channel_name);
+		int					getServerSocketFd() const;
+		const std::string&	getPassword() const;
 
 	private:
 		int			_server_sockfd;
@@ -51,8 +54,13 @@ class	IRC
 		std::map<int, Client>			_clients;
 		std::map<std::string, Channel>	_channels;
 
-		void				setUpSocket() throw(FatalError);
-		struct sockaddr_in	setSockAddrIn(int domain) throw(FatalError);
+		void				setUpSocket() throw(Signal, FatalError);
+		struct sockaddr_in	setSockAddrIn(int domain) throw(Signal, FatalError);
+
+		// static?
+		static void	acceptClient(IRC& server, int server_socket) throw(Signal, FatalError);
+		static void	receiveMessages(IRC& server, int client_socket) throw(Signal, FatalError);
+		static void	sendMessages(IRC& server, int client_socket) throw(Signal, FatalError);
 };
 
 #endif
