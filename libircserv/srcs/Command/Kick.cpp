@@ -59,9 +59,9 @@ struct Command::Kick	Parser::kick(const Client& client, const std::vector< std::
 
 void	Command::kick(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply)
 {
-	struct Command::Kick data;
-	size_t chan_len;
-	std::vector< std::string > r_params;
+	struct Command::Kick		data;
+	size_t						chan_len;
+	std::vector< std::string >	r_params;
 
 	data = Parser::kick(client, params);
 	chan_len = data.channels.size();
@@ -88,14 +88,6 @@ void	Command::kick(IRC& server, Client& client, const std::vector< std::string >
 				r_params.push_back(data.channels[i]);
 				throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
 			}
-			// 추방당하는 자가 채널에 존재하는지 검사
-			// ERR_USERNOTINCHANNEL
-			else if (channel->isMember(*target_client) == false)
-			{
-				r_params.push_back(client.getNickname());
-				r_params.push_back(data.channels[i]);
-				throw Reply(Reply::ERR_USERNOTINCHANNEL, r_params);
-			}
 			// 추방하는 자가 채널 관리자인지 검사
 			// ERR_CHANOPRIVSNEEDED
 			else if (channel->isOperator(client) == false)
@@ -103,6 +95,15 @@ void	Command::kick(IRC& server, Client& client, const std::vector< std::string >
 				r_params.push_back(client.getNickname());
 				r_params.push_back(data.channels[i]);
 				throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
+			}
+			// 추방당하는 자가 채널에 존재하는지 검사
+			// ERR_USERNOTINCHANNEL
+			else if (channel->isMember(*target_client) == false)
+			{
+				r_params.push_back(client.getNickname());
+				r_params.push_back(data.users_nick[i]);
+				r_params.push_back(data.channels[i]);
+				throw Reply(Reply::ERR_USERNOTINCHANNEL, r_params);
 			}
 
 			// 채널에서 해당 클라이언트를 제거한다.
