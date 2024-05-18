@@ -59,22 +59,19 @@ struct Command::Kick	Parser::kick(const Client& client, const std::vector< std::
 
 void	Command::kick(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply)
 {
-	struct Command::Kick		data;
-	size_t						chan_len;
-	size_t						client_len;
-	std::vector< std::string >	r_params;
+	struct Command::Kick		data = Parser::kick(client, params);
+	size_t						chan_len = data.channels.size();
+	size_t						client_len = data.users_nick.size();
 	size_t						chan_idx = 0;
 	size_t						client_idx = 0;
+	std::vector< std::string >	r_params;
 
-	data = Parser::kick(client, params);
-	chan_len = data.channels.size();
-	client_len = data.users_nick.size();
 	while (chan_idx < chan_len && client_idx < client_len)
 	{
 		try
 		{
-			Channel* channel = server.searchChannel(data.channels[chan_idx]);
-			Client* target_client = server.searchClient(data.users_nick[client_idx]);
+			Channel*	channel = server.searchChannel(data.channels[chan_idx]);
+			Client*		target_client = server.searchClient(data.users_nick[client_idx]);
 
 			// 채널이 존재하는지 검사
 			// ERR_NOSUCHCHANNEL
