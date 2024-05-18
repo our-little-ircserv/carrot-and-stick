@@ -30,15 +30,18 @@ class	IRC
 
 		IRC(struct IRC::AccessData access_data);
 		~IRC();
-		void				boot();
+
+		void		init() throw(FatalError);
+		Channel*	searchChannel(const std::string& channel_name);
+		Channel*	createChannel(Client& client, const char prefix, const std::string& channel_name);
+
+		void	run() throw(FatalError);
+
 		int					getServerSocketFd() const;
 		const std::string&	getPassword() const;
 
 		Client*		searchClient(const int sockfd);
 		Client*		searchClient(const std::string& nickname);
-
-		Channel*	searchChannel(const std::string& channel_name);
-		Channel*	createChannel(Client& client, const char prefix, const std::string& channel_name);
 
 	private:
 		int			_server_sockfd;
