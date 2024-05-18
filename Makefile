@@ -21,7 +21,7 @@ all: $(NAME)
 	make -C libircserv
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) libircserv/
 	$(CXX) -o $(NAME) $(OBJS) -lircserv -Llibircserv
 
 clean:

@@ -3,7 +3,7 @@
 #include <iostream>
 #include "FatalError.hpp"
 
-FatalError::FatalError(enum FatalError::ErrType t_err_no, const char* t_err_title)
+FatalError::FatalError(enum FatalError::ErrType t_err_no, const char* t_err_title) : _err_no(t_err_no), _err_title(t_err_title)
 {
 }
 
