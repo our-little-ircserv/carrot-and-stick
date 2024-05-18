@@ -73,3 +73,38 @@ std::string Client::getRealname() const
 {
 	return _realname;
 }
+
+void Client::addChannelList(std::string channel_name)
+{
+	std::vector< std::string >::iterator it = _w_channel_list.begin();
+	std::vector< std::string >::iterator ite = _w_channel_list.end();
+
+	for (; it != ite; it++)
+	{
+		if (*it == channel_name)
+		{
+			return ;
+		}
+	}
+	_w_channel_list.push_back(channel_name);
+}
+
+void Client::delChannelList(std::string channel_name)
+{
+	std::vector< std::string >::iterator it = _w_channel_list.begin();
+	std::vector< std::string >::iterator ite = _w_channel_list.end();
+
+	for (; it != ite; it++)
+	{
+		if (*it == channel_name)
+		{
+			_w_channel_list.erase(it);
+			return ;
+		}
+	}
+}
+
+const std::vector< std::string >& Client::getChannelList() const
+{
+	return _w_channel_list;
+}
