@@ -64,6 +64,7 @@ namespace Command
 	{
 		std::vector< std::string >	channels;
 		std::vector< std::string >	users_nick;
+		std::string					comment;
 	};
 
 	struct	ModeWithParams

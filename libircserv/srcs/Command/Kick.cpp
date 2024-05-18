@@ -54,6 +54,11 @@ struct Command::Kick	Parser::kick(const Client& client, const std::vector< std::
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
+	if (params.size() > 2)
+	{
+		data.comment = params[2];
+	}
+
 	return data;
 }
 
