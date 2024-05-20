@@ -21,7 +21,6 @@ class	Client
 		};
 
 		std::string					_read_buf;
-//		std::vector<std::string>	_read_buf;
 		std::vector<std::string>	_write_buf;
 
 		Client();
@@ -39,13 +38,18 @@ class	Client
 		void		setRealname(std::string t_realname);
 		std::string	getRealname() const;
 
+		void								addChannelList(std::string channel_name);
+		void								delChannelList(std::string channel_name);
+		const std::vector< std::string >&	getChannelList() const;
+
 	private:
-		int					_sockfd;
-		struct sockaddr_in	_addr;
-		int					_register_level;
-		std::string			_nickname;
-		std::string			_username;
-		std::string			_realname;
+		int							_sockfd;
+		struct sockaddr_in			_addr;
+		int							_register_level;
+		std::string					_nickname;
+		std::string					_username;
+		std::string					_realname;
+		std::vector< std::string >	_w_channels;
 };
 
 #endif
