@@ -5,7 +5,7 @@
 # include <sys/socket.h>
 # include <netdb.h>
 # include <netinet/ip.h>
-#include <arpa/inet.h>
+# include <arpa/inet.h>
 
 # include <string>
 # include <vector>
@@ -20,11 +20,12 @@ class	Client
 			REGISTERED
 		};
 
-		std::vector<std::string>	_read_buf;
+		std::string					_read_buf;
+//		std::vector<std::string>	_read_buf;
 		std::vector<std::string>	_write_buf;
 
 		Client();
-		Client(int t_sockfd, struct sockaddr_in addr);
+		Client(int t_sockfd, const struct sockaddr_in& addr);
 
 		int			getSocketFd() const;
 		std::string	getPrefix() const;

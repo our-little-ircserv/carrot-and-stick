@@ -5,8 +5,11 @@
 #include <cinttypes>
 #include <iostream>
 #include "IRC.hpp"
+#include "Parser.hpp"
+#include "Command.hpp"
 #include "Channel.hpp"
 #include "FatalError.hpp"
+#include "Assert.hpp"
 
 extern int	kq;
 
@@ -36,6 +39,8 @@ void	IRC::init() throw(Signal, FatalError)
 	kq = wrapSyscall(kqueue(), "kqueue");
 	EV_SET(&event, _server_sockfd, EVFILT_READ, EV_ADD, 0, 0, (void*)acceptClient);
 	_changelist.push_back(event);
+
+	Command::init();
 }
 
 void	IRC::run() throw(Signal, FatalError)
@@ -51,7 +56,7 @@ void	IRC::run() throw(Signal, FatalError)
 
 		for (int i = 0; i < real_events; i++)
 		{
-			((void (*)(IRC&, int))_eventlist[i].udata)(*this, _eventlist[i].ident);
+			((void (*)(IRC&, struct kevent&))_eventlist[i].udata)(*this, _eventlist[i]);
 		}
 	}
 }
@@ -135,9 +140,9 @@ struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Signal, FatalError)
 	return sockaddr;
 }
 
-void	IRC::acceptClient(IRC& server, int server_socket) throw(Signal, FatalError)
+void	IRC::acceptClient(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
-	struct kevent		event;
+	struct kevent		t_event;
 	struct sockaddr_in	client_addr;
 	socklen_t			socklen = sizeof(struct sockaddr_in);
 
@@ -148,25 +153,53 @@ void	IRC::acceptClient(IRC& server, int server_socket) throw(Signal, FatalError)
 
 	server._clients[client.getSocketFd()] = client;
 
-	EV_SET(&event, client.getSocketFd(), EVFILT_READ, EV_ADD, 0, 0, (void*)receiveMessages);
-	server._changelist.push_back(event);
+	EV_SET(&t_event, client.getSocketFd(), EVFILT_READ, EV_ADD, 0, 0, (void*)receiveMessages);
+	server._changelist.push_back(t_event);
 
-	EV_SET(&event, client.getSocketFd(), EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, (void*)sendMessages);
+	EV_SET(&t_event, client.getSocketFd(), EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, (void*)sendMessages);
 	server._changelist.push_back(event);
 }
 
-void	IRC::receiveMessages(IRC& server, int client_socket) throw(Signal, FatalError)
+void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
-	// test
 	std::cout << "Read event" << std::endl;
-	char	buf[10];
-	if (read(client_socket, buf, 10) == 0)
+
+	Client*	client = server.searchClient((int)event.ident);
+	// 이미 등록된 클라이언트라면 못 찾을 수가 없음.
+	Assert(client != NULL);
+
+	if (event.data == 0)
 	{
-		close(client_socket);
+		// test
+		close(event.ident);
+		return;
+		// remove every Client references
+		// close ident(Client socket_fd)
+		// return
+	}
+
+	char*	buf = new char[event.data + 1];
+	Assert(buf != NULL);
+	// EINTR: 내가 처리해놓은 시그널은 일단 전부 프로세스 종료, throw Signal이라 상관없다.
+	// bytes_received가 event.data보다 작을 때? 어떻게 대처해야 하지
+	int		bytes_received = wrapSyscall(recv(event.ident, buf, event.data, 0), "recv");
+
+	buf[bytes_received] = '\0';
+	client->_read_buf += buf;
+	delete[] buf;
+
+	size_t	rdbuf_size = client->_read_buf.size();
+	if (client->_read_buf[rdbuf_size - 2] == '\r' && client->_read_buf[rdbuf_size - 1] == '\n')
+	{
+		std::cout << client->_read_buf;
+		struct Parser::Data data = Parser::parseClientMessage(client->_read_buf);
+		Command::execute(server, *client, data);
+
+		client->_read_buf.clear();
 	}
 }
 
-void	IRC::sendMessages(IRC& server, int client_socket) throw(Signal, FatalError)
+void	IRC::sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
 	std::cout << "Write event" << std::endl;
 }

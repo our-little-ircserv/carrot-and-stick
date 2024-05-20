@@ -1,4 +1,5 @@
 #include <cctype>
+#include <algorithm>
 #include "Parser.hpp"
 #include "Command.hpp"
 
@@ -25,7 +26,8 @@ std::string	Parser::nick(const Client& client, const std::vector< std::string >&
 
 	nickname += c;
 
-	for (size_t i = 1; i < 9; i++)
+	size_t	nick_size = std::min(t_nickname.size(), (size_t)9);
+	for (size_t i = 1; i < nick_size; i++)
 	{
 		c = t_nickname[i];
 		if (Parser::isAlpha(c) == false && Parser::isSpecial(c) == false \
