@@ -140,6 +140,29 @@ void	IRC::deliveryMsg(std::set< Client* >& target_list, std::string msg)
 	}
 }
 
+std::set< Client* > IRC::getTargetSet(std::vector< std::string >targets)
+{
+	std::set< Client* > ret;
+	std::set< Client* > t_list;
+
+	for (size_t i = 0; i < targets.size(); i++)
+	{
+		Channel* channel = searchChannel(targets[i]);
+		if (channel != NULL)
+		{
+			t_list = channel->getMemberSet();
+			ret.insert(t_list.begin(), t_list.end());
+			continue ;
+		}
+
+		Client* client = searchClient(targets[i]);
+		if (client != NULL)
+		{
+			ret.insert(client);
+		}
+	}
+}
+
 struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Signal, FatalError)
 {
 	struct sockaddr_in	sockaddr;
