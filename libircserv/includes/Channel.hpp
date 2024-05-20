@@ -35,6 +35,11 @@ class	Channel
 		const std::string	getTopic() const;
 		void				setTopic(std::string t_topic);
 
+		std::map<Client*, bool>::iterator	getMemberBegin();
+		std::map<Client*, bool>::iterator	getMemberEnd();
+
+		std::set< Client* >	getMemberSet();
+
 		bool	isMember(Client& client) const;
 		bool	isOperator(Client& client) const;
 		bool	isInvited(Client& client) const;
