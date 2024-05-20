@@ -45,7 +45,7 @@ void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 
 	try
 	{
-		Command::cmdFunctions[cmd_type](server, client, data.parameters);
+		Command::cmdFunctions[cmd_type](server, client, data);
 	}
 	catch (Reply& reply)
 	{
