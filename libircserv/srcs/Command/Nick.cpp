@@ -25,8 +25,13 @@ std::string	Parser::nick(const Client& client, const std::vector< std::string >&
 
 	nickname += c;
 
-	for (size_t i = 1; i < 9; i++)
+	for (size_t i = 1; i < t_nickname.size(); i++)
 	{
+		if (i == 9)
+		{
+			break;
+		}
+
 		c = t_nickname[i];
 		if (Parser::isAlpha(c) == false && Parser::isSpecial(c) == false \
 				&& Parser::isDigit(c) == false && c != '-')
