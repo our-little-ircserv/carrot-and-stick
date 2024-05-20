@@ -44,7 +44,7 @@ std::string	Parser::nick(const Client& client, const std::vector< std::string >&
 	return nickname;
 }
 
-void Command::nick(IRC& server, Client& client, struct Parser::Data& data) throw(Reply)
+void Command::nick(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
 {
 	std::string					new_nickname;
 	std::vector< std::string >	r_params;
