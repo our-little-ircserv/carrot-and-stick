@@ -44,11 +44,12 @@ std::string	Parser::nick(const Client& client, const std::vector< std::string >&
 	return nickname;
 }
 
-void Command::nick(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply)
+void Command::nick(IRC& server, Client& client, struct Parser::Data& data) throw(Reply)
 {
-	std::string new_nickname;
+	std::string					new_nickname;
+	std::vector< std::string >	r_params;
 
-	new_nickname = Parser::nick(client, params);
+	new_nickname = Parser::nick(client, data.parameters);
 	// 인자 수는 유효하나 닉네임의 내용이 비어있을때
 	// ERR_NONICKNAMEGIVEN
 	if (new_nickname.size() == 0)
@@ -67,4 +68,46 @@ void Command::nick(IRC& server, Client& client, const std::vector< std::string >
 	}
 
 	client.setNickname(new_nickname);
+
+	// broadcast on server
+	// std::set< Client* > target_list;
+	// {
+	// 	const std::vector< std::string > chan_list = client.getChannelList();
+
+	// 	for (size_t i = 0; i < chan_list.size(); i++)
+	// 	{
+	// 		Channel* channel = server.searchChannel(chan_list[i]);
+
+	// 		std::map<Client*, bool>::iterator it = channel->getMemberBegin();
+	// 		std::map<Client*, bool>::iterator ite = channel->getMemberEnd();
+
+	// 		for (; it != ite; it++)
+	// 		{
+	// 			target_list.insert(it->first);
+	// 		}
+	// 	}
+	// }
+	// std::set< Client* > target_list;
+	// std::set< Client* > t_list;
+	// {
+	// 	const std::vector< std::string > chan_list = client.getChannelList();
+
+	// 	for (size_t i = 0; i < chan_list.size(); i++)
+	// 	{
+	// 		Channel* channel = server.searchChannel(chan_list[i]);
+	// 		t_list = channel->getMemberSet();
+
+	// 		target_list.insert(t_list.begin(), t_list.end());
+	// 	}
+	// }
+	std::vector< std::string > t_strVec;
+	t_strVec.push_back(client.getNickname());
+	t_strVec.insert(t_strVec.end(), client.getChannelList().begin(), client.getChannelList().end());
+	std::set< Client* > target_list = server.getTargetSet(t_strVec);
+
+	r_params.push_back(data.prefix);
+	r_params.push_back(data.command);
+	r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+
+	server.deliveryMsg(target_list, Parser::concat_string_vector(r_params));
 }

@@ -62,12 +62,12 @@ struct Command::Join	Parser::join(const Client& client, const std::vector< std::
 	return data;
 }
 
-void	Command::join(IRC& server, Client& client, const std::vector< std::string >& params) throw (Reply)
+void	Command::join(IRC& server, Client& client, struct Parser::Data& data) throw (Reply)
 {
-	struct Command::Join		data;
+	struct Command::Join		p_data;
 	std::vector< std::string >	r_params;
 
-	data = ::Parser::join(client, params);
+	p_data = ::Parser::join(client, data.parameters);
 	/*
 
 	채널목록을 순회하며
@@ -81,24 +81,24 @@ void	Command::join(IRC& server, Client& client, const std::vector< std::string >
 	*/
 	size_t chan_len;
 
-	chan_len = data.channels.size();
+	chan_len = p_data.channels.size();
 
 	for (size_t i = 0; i < chan_len; i++)
 	{
 		try
 		{
-			if (Parser::isValidChannelName(data.channels[i]) == false)
+			if (Parser::isValidChannelName(p_data.channels[i]) == false)
 			{
 				r_params.push_back(client.getNickname());
-				r_params.push_back(data.channels[i]);
+				r_params.push_back(p_data.channels[i]);
 				throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 			}
 
-			Channel* channel = server.searchChannel(data.channels[i]);
+			Channel* channel = server.searchChannel(p_data.channels[i]);
 
 			if (channel == NULL)
 			{
-				channel = server.createChannel(client, data.channels[i][0], data.channels[i]);
+				channel = server.createChannel(client, p_data.channels[i][0], p_data.channels[i]);
 				continue ;
 			}
 
@@ -110,7 +110,7 @@ void	Command::join(IRC& server, Client& client, const std::vector< std::string >
 				if (channel->isInvited(client) == false)
 				{
 					r_params.push_back(client.getNickname());
-					r_params.push_back(data.channels[i]);
+					r_params.push_back(p_data.channels[i]);
 					throw Reply(Reply::ERR_USERONCHANNEL, r_params);
 				}
 			}
@@ -118,10 +118,10 @@ void	Command::join(IRC& server, Client& client, const std::vector< std::string >
 			// 2. 비밀번호
 			if (channel->checkModeSet('k') == true)
 			{
-				if ((channel->getKey() == data.keys[i]) == false)
+				if ((channel->getKey() == p_data.keys[i]) == false)
 				{
 					r_params.push_back(client.getNickname());
-					r_params.push_back(data.channels[i]);
+					r_params.push_back(p_data.channels[i]);
 					throw Reply(Reply::ERR_BADCHANNELKEY, r_params);
 				}
 			}
@@ -132,12 +132,35 @@ void	Command::join(IRC& server, Client& client, const std::vector< std::string >
 				if (channel->getLimit() == channel->getMemberCnt())
 				{
 					r_params.push_back(client.getNickname());
-					r_params.push_back(data.channels[i]);
+					r_params.push_back(p_data.channels[i]);
 					throw Reply(Reply::ERR_CHANNELISFULL, r_params);
 				}
 			}
 
 			channel->addMember(client);
+
+			// broadcast on channel
+			// std::set< Client* > target_list;
+			// {
+			// 	std::map<Client*, bool>::iterator it = channel->getMemberBegin();
+			// 	std::map<Client*, bool>::iterator ite = channel->getMemberEnd();
+
+			// 	for (; it != ite; it++)
+			// 	{
+			// 		if (target_list.find(it->first) == target_list.end())
+			// 		{
+			// 			continue ;
+			// 		}
+			// 		target_list.insert(it->first);
+			// 	}
+			// }
+			std::set< Client* > target_list = channel->getMemberSet();
+
+			r_params.push_back(data.prefix);
+			r_params.push_back(data.command);
+			r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+
+			server.deliveryMsg(target_list, Parser::concat_string_vector(r_params));
 		}
 		catch(const Reply& e)
 		{
