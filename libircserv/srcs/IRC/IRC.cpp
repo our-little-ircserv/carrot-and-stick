@@ -39,6 +39,8 @@ void	IRC::init() throw(Signal, FatalError)
 	kq = wrapSyscall(kqueue(), "kqueue");
 	EV_SET(&event, _server_sockfd, EVFILT_READ, EV_ADD, 0, 0, (void*)acceptClient);
 	_changelist.push_back(event);
+
+	Command::init();
 }
 
 void	IRC::run() throw(Signal, FatalError)
@@ -138,7 +140,7 @@ struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Signal, FatalError)
 	return sockaddr;
 }
 
-void	IRC::acceptClient(IRC& server, struct kevent& event) throw(Signal, FatalError)
+void	IRC::acceptClient(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
 	struct kevent		t_event;
 	struct sockaddr_in	client_addr;
@@ -154,15 +156,17 @@ void	IRC::acceptClient(IRC& server, struct kevent& event) throw(Signal, FatalErr
 	EV_SET(&t_event, client.getSocketFd(), EVFILT_READ, EV_ADD, 0, 0, (void*)receiveMessages);
 	server._changelist.push_back(t_event);
 
-	EV_SET(&event, client.getSocketFd(), EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, (void*)sendMessages);
+	EV_SET(&t_event, client.getSocketFd(), EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, (void*)sendMessages);
 	server._changelist.push_back(event);
 }
 
-void	IRC::receiveMessages(IRC& server, struct kevent& event) throw(Signal, FatalError)
+void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
 	std::cout << "Read event" << std::endl;
 
 	Client*	client = server.searchClient((int)event.ident);
+	// 이미 등록된 클라이언트라면 못 찾을 수가 없음.
+	Assert(client != NULL);
 
 	if (event.data == 0)
 	{
@@ -188,7 +192,6 @@ void	IRC::receiveMessages(IRC& server, struct kevent& event) throw(Signal, Fatal
 	if (client->_read_buf[rdbuf_size - 2] == '\r' && client->_read_buf[rdbuf_size - 1] == '\n')
 	{
 		std::cout << client->_read_buf;
-		Command::init();
 		struct Parser::Data data = Parser::parseClientMessage(client->_read_buf);
 		Command::execute(server, *client, data);
 
@@ -196,7 +199,7 @@ void	IRC::receiveMessages(IRC& server, struct kevent& event) throw(Signal, Fatal
 	}
 }
 
-void	IRC::sendMessages(IRC& server, struct kevent& event) throw(Signal, FatalError)
+void	IRC::sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
 	std::cout << "Write event" << std::endl;
 }

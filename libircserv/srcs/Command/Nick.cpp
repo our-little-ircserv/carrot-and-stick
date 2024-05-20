@@ -1,4 +1,5 @@
 #include <cctype>
+#include <algorithm>
 #include "Parser.hpp"
 #include "Command.hpp"
 
@@ -25,13 +26,9 @@ std::string	Parser::nick(const Client& client, const std::vector< std::string >&
 
 	nickname += c;
 
-	for (size_t i = 1; i < t_nickname.size(); i++)
+	size_t	nick_size = std::min(t_nickname.size(), (size_t)9);
+	for (size_t i = 1; i < nick_size; i++)
 	{
-		if (i == 9)
-		{
-			break;
-		}
-
 		c = t_nickname[i];
 		if (Parser::isAlpha(c) == false && Parser::isSpecial(c) == false \
 				&& Parser::isDigit(c) == false && c != '-')

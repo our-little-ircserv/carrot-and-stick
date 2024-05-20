@@ -58,9 +58,9 @@ class	IRC
 		struct sockaddr_in	setSockAddrIn(int domain) throw(Signal, FatalError);
 
 		// static?
-		static void	acceptClient(IRC& server, struct kevent& event) throw(Signal, FatalError);
-		static void	receiveMessages(IRC& server, struct kevent& event) throw(Signal, FatalError);
-		static void	sendMessages(IRC& server, struct kevent& event) throw(Signal, FatalError);
+		static void	acceptClient(IRC& server, const struct kevent& event) throw(Signal, FatalError);
+		static void	receiveMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
+		static void	sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
 };
 
 #endif
