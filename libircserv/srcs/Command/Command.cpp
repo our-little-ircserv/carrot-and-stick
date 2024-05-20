@@ -34,8 +34,10 @@ int Command::getType(std::string& command)
 
 void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 {
-	int cmd_type;
+	int							cmd_type;
+	std::vector< std::string >	r_params;
 
+	data.prefix = client.getHostname();
 	cmd_type = getType(data.command);
 	// remove later
 	if (cmd_type == -1)

@@ -62,7 +62,7 @@ struct Command::Join	Parser::join(const Client& client, const std::vector< std::
 	return data;
 }
 
-void	Command::join(IRC& server, Client& client, struct Parser::Data& data) throw (Reply)
+void	Command::join(IRC& server, Client& client, const struct Parser::Data& data) throw (Reply)
 {
 	struct Command::Join		p_data;
 	std::vector< std::string >	r_params;
@@ -139,32 +139,22 @@ void	Command::join(IRC& server, Client& client, struct Parser::Data& data) throw
 
 			channel->addMember(client);
 
-			// broadcast on channel
-			// std::set< Client* > target_list;
-			// {
-			// 	std::map<Client*, bool>::iterator it = channel->getMemberBegin();
-			// 	std::map<Client*, bool>::iterator ite = channel->getMemberEnd();
+			{
+				std::set< Client* > target_list = channel->getMemberSet();
 
-			// 	for (; it != ite; it++)
-			// 	{
-			// 		if (target_list.find(it->first) == target_list.end())
-			// 		{
-			// 			continue ;
-			// 		}
-			// 		target_list.insert(it->first);
-			// 	}
-			// }
-			std::set< Client* > target_list = channel->getMemberSet();
+				r_params.push_back(data.prefix);
+				r_params.push_back(data.command);
+				r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
 
-			r_params.push_back(data.prefix);
-			r_params.push_back(data.command);
-			r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
-
-			server.deliveryMsg(target_list, Parser::concat_string_vector(r_params));
+				server.deliveryMsg(target_list, Parser::concat_string_vector(r_params));
+			}
 		}
-		catch(const Reply& e)
+		catch(Reply& e)
 		{
-			// 에러처리
+			std::set< Client* > target_list;
+
+			target_list.insert(&client);
+			server.deliveryMsg(target_list, e.getReplyMessage());
 		}
 	}
 }
