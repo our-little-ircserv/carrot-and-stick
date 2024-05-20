@@ -129,6 +129,17 @@ const std::string& IRC::getPassword() const
 	return _password;
 }
 
+void	IRC::deliveryMsg(std::set< Client* >& target_list, std::string msg)
+{
+	std::set< Client* >::iterator it = target_list.begin();
+	std::set< Client* >::iterator ite = target_list.end();
+
+	for (; it != ite; it++)
+	{
+		(*it)->_write_buf.push_back(msg);
+	}
+}
+
 struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Signal, FatalError)
 {
 	struct sockaddr_in	sockaddr;
