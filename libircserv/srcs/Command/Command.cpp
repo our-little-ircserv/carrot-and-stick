@@ -39,7 +39,7 @@ void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 	int							cmd_type;
 	std::vector< std::string >	r_params;
 
-	data.prefix = client.getHostname();
+	data.prefix = client.getPrefix();
 	cmd_type = getType(data.command);
 	// remove later
 	if (cmd_type == -1)
