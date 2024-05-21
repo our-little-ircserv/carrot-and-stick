@@ -129,6 +129,40 @@ const std::string& IRC::getPassword() const
 	return _password;
 }
 
+void	IRC::deliveryMsg(std::set< Client* >& target_list, std::string msg)
+{
+	std::set< Client* >::iterator it = target_list.begin();
+	std::set< Client* >::iterator ite = target_list.end();
+
+	for (; it != ite; it++)
+	{
+		(*it)->_write_buf.push_back(msg);
+	}
+}
+
+std::set< Client* > IRC::getTargetSet(std::vector< std::string >targets)
+{
+	std::set< Client* > ret;
+	std::set< Client* > t_list;
+
+	for (size_t i = 0; i < targets.size(); i++)
+	{
+		Channel* channel = searchChannel(targets[i]);
+		if (channel != NULL)
+		{
+			t_list = channel->getMemberSet();
+			ret.insert(t_list.begin(), t_list.end());
+			continue ;
+		}
+
+		Client* client = searchClient(targets[i]);
+		if (client != NULL)
+		{
+			ret.insert(client);
+		}
+	}
+}
+
 struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Signal, FatalError)
 {
 	struct sockaddr_in	sockaddr;

@@ -147,6 +147,31 @@ bool	Channel::checkModeSet(const char mode) const
 	return mode_bit == (_modes & mode_bit);
 }
 
+std::map<Client*, bool>::iterator Channel::getMemberBegin()
+{
+	return _members.begin();
+}
+
+std::map<Client*, bool>::iterator Channel::getMemberEnd()
+{
+	return _members.end();
+}
+
+std::set< Client* >	Channel::getMemberSet()
+{
+	std::set< Client* > target_list;
+
+	std::map<Client*, bool>::iterator it = _members.begin();
+	std::map<Client*, bool>::iterator ite = _members.end();
+
+	for (; it != ite; it++)
+	{
+		target_list.insert(it->first);
+	}
+
+	return target_list;
+}
+
 bool	Channel::isMember(Client& client) const
 {
 	return _members.find(&client) != _members.end();

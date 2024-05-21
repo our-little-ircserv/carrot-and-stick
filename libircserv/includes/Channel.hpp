@@ -35,10 +35,16 @@ class	Channel
 		const size_t		getMemberCnt() const;
 		const std::string&	getTopic() const;
 
+		std::map<Client*, bool>::iterator	getMemberBegin();
+		std::map<Client*, bool>::iterator	getMemberEnd();
+
+		std::set< Client* >	getMemberSet();
+
 		void	setMode(const Client& client, std::vector< struct Command::ModeWithParams>& mode_data);
 		void	setTopic(std::string t_topic);
 
 		bool	checkModeSet(const char mode) const;
+
 		bool	isMember(Client& client) const;
 		bool	isOperator(Client& client) const;
 		bool	isInvited(Client& client) const;
