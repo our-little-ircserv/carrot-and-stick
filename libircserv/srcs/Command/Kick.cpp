@@ -78,6 +78,7 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 			Channel*	channel = server.searchChannel(p_data.channels[chan_idx]);
 			Client*		target_client = server.searchClient(p_data.users_nick[client_idx]);
 
+			r_params.clear();
 			// 채널이 존재하는지 검사
 			// ERR_NOSUCHCHANNEL
 			if (channel == NULL)
@@ -114,15 +115,23 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 
 			// 채널에서 해당 클라이언트를 제거한다.
 			// 관리자와 멤버목록 모두에서 제거한다.
-			channel->delOperator(*target_client);
-			channel->delMember(*target_client);
+			if (channel->isMember(*target_client) == true)
+			{
+				if (channel->isOperator(*target_client) == true)
+				{
+					channel->delOperator(*target_client);
+				}
+				channel->delMember(*target_client);
+			}
 
 			{
 				std::set< Client* > target_list = channel->getMemberSet();
 
 				r_params.push_back(data.prefix);
 				r_params.push_back(data.command);
-				r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+				r_params.push_back(p_data.channels[chan_idx]);
+				r_params.push_back(p_data.users_nick[client_idx]);
+				r_params.push_back(p_data.comment);
 
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
