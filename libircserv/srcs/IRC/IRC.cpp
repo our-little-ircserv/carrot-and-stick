@@ -195,10 +195,10 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 
 	char*	buf = new char[event.data + 1];
 	Assert(buf != NULL);
+
 	// EINTR: 내가 처리해놓은 시그널은 일단 전부 프로세스 종료, throw Signal이라 상관없다.
 	// bytes_received가 event.data보다 작을 때? 어떻게 대처해야 하지
-	int		bytes_received = wrapSyscall(recv(event.ident, buf, event.data, 0), "recv");
-
+	int	bytes_received = wrapSyscall(recv(event.ident, buf, event.data, 0), "recv");
 	buf[bytes_received] = '\0';
 	client->_read_buf += buf;
 	delete[] buf;
@@ -209,7 +209,6 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 		std::cout << client->_read_buf;
 		struct Parser::Data data = Parser::parseClientMessage(client->_read_buf);
 		Command::execute(server, *client, data);
-
 		client->_read_buf.clear();
 	}
 }

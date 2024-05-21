@@ -15,7 +15,9 @@ Channel::Channel(Client& client, const char t_prefix, std::string t_name) : _nam
 	addMember(client);
 
 	if (static_cast< enum Prefix >(t_prefix) != P_PLUS)
+	{
 		addOperator(client);
+	}
 }
 
 Channel::Channel(const Channel& other) : _name(other._name)
@@ -36,12 +38,41 @@ Channel& Channel::operator=(const Channel& other)
 	return *this;
 }
 
+Client*	Channel::searchMember(const std::string& name)
+{
+	std::map<Client*, bool>::iterator it = _members.begin();
+	std::map<Client*, bool>::iterator ite = _members.end();
+
+	for (; it != ite; it++)
+	{
+		if (it->first->getNickname() == name)
+		{
+			return it->first;
+		}
+	}
+	
+	return NULL;
+}
+
+const std::string	Channel::getCurrentMode() const
+{
+	std::string	current_mode = "+";
+
+	for (std::string::const_iterator it = st_valid_modes.begin(); it != st_valid_modes.end(); it++)
+	{
+		if (checkModeSet(*it) == true)
+			current_mode += *it;
+	}
+
+	return current_mode;
+}
+
 const std::string&	Channel::getChannelName() const
 {
 	return _name;
 }
 
-const std::string	Channel::getKey() const
+const std::string&	Channel::getKey() const
 {
 	return _key;
 }
@@ -56,27 +87,37 @@ const size_t	Channel::getMemberCnt() const
 	return _members.size();
 }
 
-void	Channel::setMode(IRC& server, std::vector< struct Command::ModeWithParams>& mode_data)
+const std::string& Channel::getTopic() const
 {
-	size_t	shift = 0;
+	return _topic;
+}
 
-	for (std::vector< struct Command::ModeWithParams >::iterator it = mode_data.begin(); it != mode_data.end(); it++)
+void	Channel::setMode(const Client& client, std::vector< struct Command::ModeWithParams>& mode_data)
+{
+	size_t						shift = 0;
+	std::vector< std::string >	r_params;
+	std::vector< struct Command::ModeWithParams >::iterator it = mode_data.begin();
+	std::vector< struct Command::ModeWithParams >::iterator ite = mode_data.end();
+
+	for (; it != ite; it++)
 	{
 		if (it->mode == 'o')
 		{
-			Client*	client = server.getClient(it->mode_param);
-
-			if (client == NULL)
+			Client*	member = searchMember(it->mode_param);
+			if (member == NULL)
 			{
-				throw Error(Error::EWRPARM);
+				r_params.push_back(client.getNickname());
+				r_params.push_back(it->mode_param);
+				r_params.push_back(_name);
+				throw Reply(Reply::ERR_USERNOTINCHANNEL, r_params);
 			}
-			else if (isMember(*client) == false)
+			else if (it->type == Command::ADD)
 			{
-				throw Error(Error::EWRPARM);
+				addOperator(*member);
 			}
-			else if (isOperator(*client) == false)
+			else
 			{
-				addOperator(*client);
+				delOperator(*member);
 			}
 		}
 		else if ((shift = st_valid_modes.find(it->mode, 0)) != std::string::npos)
@@ -94,34 +135,16 @@ void	Channel::setMode(IRC& server, std::vector< struct Command::ModeWithParams>&
 	}
 }
 
+void Channel::setTopic(std::string t_topic)
+{
+	_topic = t_topic;
+}
+
 bool	Channel::checkModeSet(const char mode) const
 {
 	size_t	mode_bit = (1 << st_valid_modes.find(mode, 0));
 
 	return mode_bit == (_modes & mode_bit);
-}
-
-const std::string	Channel::getCurrentMode() const
-{
-	std::string	current_mode = "+";
-
-	for (std::string::const_iterator it = st_valid_modes.begin(); it != st_valid_modes.end(); it++)
-	{
-		if (checkModeSet(*it) == true)
-			current_mode += *it;
-	}
-
-	return current_mode;
-}
-
-const std::string Channel::getTopic() const
-{
-	return _topic;
-}
-
-void Channel::setTopic(std::string t_topic)
-{
-	_topic = t_topic;
 }
 
 bool	Channel::isMember(Client& client) const
@@ -141,7 +164,14 @@ bool	Channel::isInvited(Client& client) const
 
 void	Channel::addMember(Client& client)
 {
+<<<<<<< Updated upstream
 	_members[&client] = false;
+=======
+	if (isMember(client) == false)
+	{
+		_members[&client] = false;
+	}
+>>>>>>> Stashed changes
 }
 
 void	Channel::addOperator(Client& client)
