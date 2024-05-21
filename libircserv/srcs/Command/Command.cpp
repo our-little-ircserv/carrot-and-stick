@@ -21,19 +21,22 @@ void Command::init()
 
 int Command::getType(std::string& command)
 {
-	for (size_t i = 0; i < command.size(); i++)
+	std::string t_str(command);
+
+	for (size_t i = 0; i < t_str.size(); i++)
 	{
-		command[i] = std::toupper(command[i]);
+		t_str[i] = std::toupper(t_str[i]);
 	}
 
 	for (int i = 0; i < sizeof(Command::CmdList) / sizeof(Command::CmdList[0]); i++)
 	{
-		if (Command::CmdList[i] == command)
+		if (Command::CmdList[i] == t_str)
 		{
+			command = t_str;
 			return (i);
 		}
 	}
-	return (-1);
+	return (Command::UNKNOWNCOMMAND);
 }
 
 void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
@@ -43,14 +46,21 @@ void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 
 	data.prefix = client.getPrefix();
 	cmd_type = getType(data.command);
-	// remove later
-	if (cmd_type == -1)
-	{
-		return;
-	}
 
 	try
 	{
+		// command not found
+		if (cmd_type == Command::UNKNOWNCOMMAND)
+		{
+			r_params.push_back(client.getNickname());
+			r_params.push_back(data.command);
+			throw Reply(Reply::ERR_UNKNOWNCOMMAND, r_params);
+		}
+		else if (client.getRegisterLevel() < Client::REGISTERED && cmd_type > Command::USER)
+		{
+			r_params.push_back(client.getNickname());
+			throw Reply(Reply::ERR_NOTREGISTERED, r_params);
+		}
 		Command::cmdFunctions[cmd_type](server, client, data);
 	}
 	catch (Reply& reply)
