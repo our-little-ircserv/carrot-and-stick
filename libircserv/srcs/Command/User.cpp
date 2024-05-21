@@ -21,5 +21,8 @@ struct Command::User	Parser::user(const Client& client, const std::vector< std::
 
 void	Command::user(IRC& server, Client& client, const struct Parser::Data& data) throw (Reply)
 {
-	//
+	struct Command::User	p_data = Parser::user(client, data.parameters);
+
+	client.setUsername(p_data.username);
+	client.setRealname(p_data.real_name);
 }
