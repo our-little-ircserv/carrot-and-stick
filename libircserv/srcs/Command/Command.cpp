@@ -9,6 +9,7 @@ void Command::init()
 {
 	Command::cmdFunctions.push_back(Command::pass);
 	Command::cmdFunctions.push_back(Command::join);
+	Command::cmdFunctions.push_back(Command::user);
 	Command::cmdFunctions.push_back(Command::topic);
 	Command::cmdFunctions.push_back(Command::invite);
 	Command::cmdFunctions.push_back(Command::nick);

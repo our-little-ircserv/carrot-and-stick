@@ -89,8 +89,8 @@ namespace Command
 		std::string					comment;
 	};
 
-	static std::string CmdList[9] = {
-		"PASS", "JOIN", "TOPIC", "INVITE", "NICK", "KICK", "MODE", "PRIVMSG", "PART"
+	static std::string CmdList[10] = {
+		"PASS", "JOIN", "USER", "TOPIC", "INVITE", "NICK", "KICK", "MODE", "PRIVMSG", "PART"
 	};
 
 	static std::vector< void (*)(IRC&, Client&, const struct Parser::Data&) > cmdFunctions;
@@ -104,6 +104,7 @@ namespace Command
 	// command implementations
 	void	pass(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	join(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	user(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	mode(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	topic(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	invite(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);

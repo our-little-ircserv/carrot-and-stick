@@ -18,3 +18,8 @@ struct Command::User	Parser::user(const Client& client, const std::vector< std::
 
 	return data;
 };
+
+void	Command::user(IRC& server, Client& client, const struct Parser::Data& data) throw (Reply)
+{
+	//
+}
