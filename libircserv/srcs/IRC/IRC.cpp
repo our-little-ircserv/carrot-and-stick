@@ -83,8 +83,6 @@ Channel* IRC::createChannel(Client& client, const char prefix, const std::string
 	return &(_channels[channel_name]);
 }
 
-<<<<<<< HEAD
-
 Client*	IRC::getClient(const std::string& client_name) throw(Error)
 {
 	for (std::map< int, Client >::iterator it = _clients.begin(); it != _clients.end(); it++)
