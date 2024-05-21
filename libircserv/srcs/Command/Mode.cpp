@@ -56,7 +56,7 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 	}
 
-	channel->setMode(p_data.modes);
+	channel->setMode(client, p_data.modes);
 
 	{
 		std::set< Client* > target_list = channel->getMemberSet();

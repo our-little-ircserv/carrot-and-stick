@@ -83,8 +83,8 @@ namespace Command
 		// +ikl 꼴로 만들어서 addMode 해준다...
 	};
 
-	static std::string CmdList[7] = {
-		"PASS", "JOIN", "TOPIC", "INVITE", "NICK", "KICK", "PRIVMSG"
+	static std::string CmdList[8] = {
+		"PASS", "JOIN", "TOPIC", "INVITE", "NICK", "KICK", "MODE", "PRIVMSG"
 	};
 
 	static std::vector< void (*)(IRC&, Client&, const struct Parser::Data&) > cmdFunctions;
@@ -103,6 +103,7 @@ namespace Command
 	void	invite(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	nick(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	kick(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	mode(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	privmsg(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 };
 

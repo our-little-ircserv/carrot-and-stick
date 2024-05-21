@@ -13,6 +13,7 @@ void Command::init()
 	Command::cmdFunctions.push_back(Command::invite);
 	Command::cmdFunctions.push_back(Command::nick);
 	Command::cmdFunctions.push_back(Command::kick);
+	Command::cmdFunctions.push_back(Command::mode);
 	Command::cmdFunctions.push_back(Command::privmsg);
 }
 
