@@ -186,26 +186,17 @@ void	Channel::addInvited(Client& client)
 
 void	Channel::delMember(Client& client)
 {
-	if (isMember(client) == true)
-	{
-		_members.erase(_members.find(&client));
-	}
+	_members.erase(_members.find(&client));
 }
 
 void	Channel::delOperator(Client& client)
 {
-	if (isOperator(client) == true)
-	{
-		_members[&client] = false;
-	}
+	_members[&client] = false;
 }
 
 void	Channel::delInvited(Client& client)
 {
-	if (isInvited(client) == true)
-	{
-		_invite_list.erase(_invite_list.find(&client));
-	}
+	_invite_list.erase(_invite_list.find(&client));
 }
 
 void	Channel::setAttributes(struct Command::ModeWithParams& mode_data)
