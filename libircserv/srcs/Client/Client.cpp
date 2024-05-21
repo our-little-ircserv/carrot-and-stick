@@ -46,32 +46,32 @@ void Client::setRegisterLevel(int t_register_level)
 	_register_level = t_register_level;
 }
 
-void Client::setNickname(std::string t_nickname)
+void Client::setNickname(const std::string& t_nickname)
 {
 	_nickname = t_nickname;
 }
 
-std::string Client::getNickname() const
+const std::string& Client::getNickname() const
 {
 	return _nickname;
 }
 
-void Client::setUsername(std::string t_username)
+void Client::setUsername(const std::string& t_username)
 {
 	_username = t_username;
 }
 
-std::string Client::getUsername() const
+const std::string& Client::getUsername() const
 {
 	return _username;
 }
 
-void Client::setRealname(std::string t_realname)
+void Client::setRealname(const std::string& t_realname)
 {
 	_realname = t_realname;
 }
 
-std::string Client::getRealname() const
+const std::string& Client::getRealname() const
 {
 	return _realname;
 }

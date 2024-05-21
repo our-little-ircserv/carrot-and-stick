@@ -57,7 +57,6 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 	}
 
 	channel->setMode(client, p_data.modes);
-
 	{
 		std::set< Client* > target_list = channel->getMemberSet();
 
