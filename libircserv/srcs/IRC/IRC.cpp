@@ -161,6 +161,8 @@ std::set< Client* > IRC::getTargetSet(std::vector< std::string >targets)
 			ret.insert(client);
 		}
 	}
+
+	return ret;
 }
 
 struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Signal, FatalError)
