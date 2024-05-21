@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include "Command.hpp"
+#include <iostream>
 
 struct Command::Join	Parser::join(const Client& client, const std::vector< std::string >& params) throw(Reply)
 {
@@ -87,18 +88,28 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 	{
 		try
 		{
+			r_params.clear();
+
 			if (Parser::isValidChannelName(p_data.channels[i]) == false)
 			{
 				r_params.push_back(client.getNickname());
 				r_params.push_back(p_data.channels[i]);
 				throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 			}
-
 			Channel* channel = server.searchChannel(p_data.channels[i]);
 
 			if (channel == NULL)
 			{
 				channel = server.createChannel(client, p_data.channels[i][0], p_data.channels[i]);
+				{
+					std::set< Client* > target_list = channel->getMemberSet();
+
+					r_params.push_back(data.prefix);
+					r_params.push_back(data.command);
+					r_params.push_back(p_data.channels[i]);
+
+					server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+				}
 				continue ;
 			}
 
@@ -144,7 +155,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 
 				r_params.push_back(data.prefix);
 				r_params.push_back(data.command);
-				r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+				r_params.push_back(p_data.channels[i]);
 
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
