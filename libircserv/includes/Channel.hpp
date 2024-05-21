@@ -9,6 +9,8 @@
 # include "Signal.hpp"
 # include "Reply.hpp"
 
+class	IRC;
+
 class	Channel
 {
 	public:
@@ -24,20 +26,23 @@ class	Channel
 		Channel(const Channel& other);
 		Channel& operator=(const Channel& other);
 
-		const std::string&	getChannelName() const;
+		Client*	searchMember(const std::string& name);
 
-		void				setMode(std::vector< struct Command::ModeWithParams>& mode_data);
-		bool				checkModeSet(const char mode) const;
 		const std::string	getCurrentMode() const;
-		const std::string	getKey() const;
+		const std::string&	getChannelName() const;
+		const std::string&	getKey() const;
 		const size_t		getLimit() const;
 		const size_t		getMemberCnt() const;
-		const std::string	getTopic() const;
-		void				setTopic(std::string t_topic);
+		const std::string&	getTopic() const;
 
+		void	setMode(const Client& client, std::vector< struct Command::ModeWithParams>& mode_data);
+		void	setTopic(std::string t_topic);
+
+		bool	checkModeSet(const char mode) const;
 		bool	isMember(Client& client) const;
 		bool	isOperator(Client& client) const;
 		bool	isInvited(Client& client) const;
+
 		void	addMember(Client& client);
 		void	addOperator(Client& client);
 		void	addInvited(Client& client);
