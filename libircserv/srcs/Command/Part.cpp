@@ -42,5 +42,59 @@ struct Command::Part	Parser::part(const Client& client, const std::vector< std::
 
 void	Command::part(IRC& server, Client& client, const struct Parser::Data& data) throw (Reply)
 {
-	//
+	struct Command::Part		p_data = Parser::part(client, data.parameters);
+	std::vector< std::string >	r_params;
+	size_t						chan_len = p_data.channels.size();
+
+	for (size_t i = 0; i < chan_len; i++)
+	{
+		try
+		{
+			r_params.clear();
+
+            // ERR_NOSUCHCHANNEL
+			Channel* channel = server.searchChannel(p_data.channels[i]);
+			if (channel == NULL)
+			{
+				r_params.push_back(client.getNickname());
+				r_params.push_back(p_data.channels[i]);
+				throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
+			}
+
+            // ERR_NOTONCHANNEL
+            if (channel->isMember(client) == false)
+            {
+                r_params.push_back(client.getNickname());
+                r_params.push_back(p_data.channels[i]);
+                throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
+            }
+
+            if (channel->isOperator(client) == true)
+            {
+                channel->delOperator(client);
+            }
+            channel->delMember(client);
+            client.delChannelList(p_data.channels[i]);
+
+			{
+				std::set< Client* > target_list = channel->getMemberSet();
+
+				r_params.push_back(data.prefix);
+				r_params.push_back(data.command);
+				r_params.push_back(p_data.channels[i]);
+                r_params.push_back(p_data.comment);
+
+				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+                std::cout << "part message: " << Parser::concat_string_vector(r_params) << "\n";
+			}
+		}
+		catch(Reply& e)
+		{
+			std::set< Client* > target_list;
+
+			target_list.insert(&client);
+
+			server.deliverMsg(target_list, e.getReplyMessage());
+		}
+	}
 }
