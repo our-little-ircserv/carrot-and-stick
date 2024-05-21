@@ -164,14 +164,7 @@ bool	Channel::isInvited(Client& client) const
 
 void	Channel::addMember(Client& client)
 {
-<<<<<<< Updated upstream
 	_members[&client] = false;
-=======
-	if (isMember(client) == false)
-	{
-		_members[&client] = false;
-	}
->>>>>>> Stashed changes
 }
 
 void	Channel::addOperator(Client& client)
