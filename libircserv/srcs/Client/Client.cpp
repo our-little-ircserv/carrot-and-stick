@@ -76,7 +76,7 @@ std::string Client::getRealname() const
 	return _realname;
 }
 
-void Client::addChannelList(std::string channel_name)
+void Client::addChannelList(const std::string& channel_name)
 {
 	std::vector< std::string >::iterator it = _w_channels.begin();
 	std::vector< std::string >::iterator ite = _w_channels.end();
@@ -91,7 +91,7 @@ void Client::addChannelList(std::string channel_name)
 	_w_channels.push_back(channel_name);
 }
 
-void Client::delChannelList(std::string channel_name)
+void Client::delChannelList(const std::string& channel_name)
 {
 	std::vector< std::string >::iterator it = _w_channels.begin();
 	std::vector< std::string >::iterator ite = _w_channels.end();
