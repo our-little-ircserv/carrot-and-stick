@@ -1,6 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 #include "Channel.hpp"
+#include <iostream>
 
 struct Command::Mode	Parser::mode(const Client& client, const std::vector< std::string >& params) throw(Reply)
 {
@@ -56,7 +57,9 @@ void	Command::mode(IRC& server, Client& client, const std::vector< std::string >
 		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 	}
 
-	channel->setMode(data.modes);
+	std::cout << std::boolalpha << channel->isOperator(client) << std::endl;
+
+	channel->setMode(client, data.modes);
 }
 //
 //int main()
