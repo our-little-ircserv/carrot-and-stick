@@ -119,6 +119,12 @@ Client* IRC::searchClient(const std::string& nickname)
 	return NULL;
 }
 
+void	IRC::delClient(const int sockfd)
+{
+	close(sockfd);
+	_clients.erase(_clients.find(sockfd));
+}
+
 int	IRC::getServerSocketFd() const
 {
 	return _server_sockfd;
@@ -170,12 +176,8 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 
 	if (event.data == 0)
 	{
-		// test
-		close(event.ident);
+		server.delClient(event.ident);
 		return;
-		// remove every Client references
-		// close ident(Client socket_fd)
-		// return
 	}
 
 	char*	buf = new char[event.data + 1];

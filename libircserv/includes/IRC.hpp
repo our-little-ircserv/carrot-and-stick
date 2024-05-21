@@ -40,6 +40,8 @@ class	IRC
 		Client*		searchClient(const int sockfd);
 		Client*		searchClient(const std::string& nickname);
 
+		void	delClient(const int sockfd);
+
 		int					getServerSocketFd() const;
 		const std::string&	getPassword() const;
 
