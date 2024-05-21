@@ -122,6 +122,7 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 					channel->delOperator(*target_client);
 				}
 				channel->delMember(*target_client);
+				target_client->delChannelList(p_data.channels[chan_idx]);
 			}
 
 			{

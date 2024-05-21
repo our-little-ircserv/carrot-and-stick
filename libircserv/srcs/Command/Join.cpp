@@ -120,6 +120,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 				}
 
 				channel->addMember(client);
+				client.addChannelList(p_data.channels[i]);
 			}
 
 			{
