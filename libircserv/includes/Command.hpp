@@ -21,7 +21,15 @@ namespace Command
 		PASS,
 		NICK,
 		USER,
-		NO_SUCH_COMMAND = -1
+		// need registration commands
+		TOPIC,
+		INVITE,
+		NICK,
+		KICK,
+		MODE,
+		PRIVMSG,
+		PART,
+		UNKNOWNCOMMAND = -1
 	};
 	
 	enum ModeType
