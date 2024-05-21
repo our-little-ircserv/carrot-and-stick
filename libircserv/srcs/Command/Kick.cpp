@@ -116,10 +116,23 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 			// 관리자와 멤버목록 모두에서 제거한다.
 			channel->delOperator(*target_client);
 			channel->delMember(*target_client);
+
+			{
+				std::set< Client* > target_list = channel->getMemberSet();
+
+				r_params.push_back(data.prefix);
+				r_params.push_back(data.command);
+				r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+
+				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+			}
 		}
-		catch(const Reply& e)
+		catch(Reply& e)
 		{
-			// 에러처리
+			std::set< Client* > target_list;
+
+			target_list.insert(&client);
+			server.deliverMsg(target_list, e.getReplyMessage());
 		}
 
 		client_idx++;

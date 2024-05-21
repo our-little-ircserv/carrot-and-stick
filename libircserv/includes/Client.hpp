@@ -38,8 +38,8 @@ class	Client
 		void				setRealname(const std::string& t_realname);
 		const std::string&	getRealname() const;
 
-		void								addChannelList(std::string channel_name);
-		void								delChannelList(std::string channel_name);
+		void								addChannelList(const std::string& channel_name);
+		void								delChannelList(const std::string& channel_name);
 		const std::vector< std::string >&	getChannelList() const;
 
 	private:

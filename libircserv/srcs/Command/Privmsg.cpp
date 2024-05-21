@@ -46,3 +46,49 @@ struct Command::Privmsg	Parser::privmsg(const Client& client, const std::vector<
 
 	return data;
 }
+
+void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
+{
+	struct Command::Privmsg		p_data;
+	std::vector< std::string >	r_params;
+
+	p_data = Parser::privmsg(client, data.parameters);
+
+	for (size_t i = 0; i < p_data.msg_targets.size(); i++)
+	{
+		std::set< Client* >	target_list;
+		Client*				t_client;
+		Channel*			t_channel;
+
+		try
+		{
+			t_channel = server.searchChannel(p_data.msg_targets[i]);
+			if (t_channel == NULL)
+			{
+				t_client = server.searchClient(p_data.msg_targets[i]);
+				if (t_client == NULL)
+				{
+					r_params.push_back(client.getNickname());
+					r_params.push_back(p_data.msg_targets[i]);
+					throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
+				}
+				target_list.insert(t_client);
+			}
+			target_list.insert(t_channel->getMemberSet().begin(), t_channel->getMemberSet().end());
+			// except self in channel member list
+			if (target_list.find(&client) == target_list.end())
+			{
+				target_list.erase(target_list.find(&client));
+			}
+
+			// Message to client or channel
+			server.deliverMsg(target_list, p_data.text_to_be_sent);
+		}
+		catch(Reply& e)
+		{
+			// ErrReply to host client
+			target_list.insert(&client);
+			server.deliverMsg(target_list, e.getReplyMessage());
+		}
+	}
+}

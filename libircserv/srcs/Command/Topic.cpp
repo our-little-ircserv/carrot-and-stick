@@ -55,11 +55,16 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 		// 서버에서 다음 토픽들을 메세지로 클라이언트에게 전달
 		if (t_topic.size() == 0)
 		{
-			// There no topic
+			r_params.push_back(client.getNickname());
+			r_params.push_back(p_data.channel);
+			throw Reply(Reply::RPL_NOTOPIC, r_params);
 		}
 		else
 		{
-			// #channel <topic>
+			r_params.push_back(client.getNickname());
+			r_params.push_back(p_data.channel);
+			r_params.push_back(channel->getTopic());
+			throw Reply(Reply::RPL_TOPIC, r_params);
 		}
 	}
 	// 토픽 지정
@@ -82,5 +87,14 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 		channel->setTopic(p_data.topic);
 
 		// 서버에서 해당 채널 구성원들에게 브로드캐스트
+		{
+			std::set< Client* > target_list = channel->getMemberSet();
+
+			r_params.push_back(data.prefix);
+			r_params.push_back(data.command);
+			r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+
+			server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+		}
 	}
 }

@@ -100,14 +100,14 @@ void Command::nick(IRC& server, Client& client, const struct Parser::Data& data)
 	// 		target_list.insert(t_list.begin(), t_list.end());
 	// 	}
 	// }
-	std::vector< std::string > t_strVec;
-	t_strVec.push_back(client.getNickname());
-	t_strVec.insert(t_strVec.end(), client.getChannelList().begin(), client.getChannelList().end());
-	std::set< Client* > target_list = server.getTargetSet(t_strVec);
+	std::vector< std::string > target_names;
+	target_names.push_back(client.getNickname());
+	target_names.insert(target_names.end(), client.getChannelList().begin(), client.getChannelList().end());
+	std::set< Client* > target_list = server.getTargetSet(target_names);
 
 	r_params.push_back(data.prefix);
 	r_params.push_back(data.command);
 	r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
 
-	server.deliveryMsg(target_list, Parser::concat_string_vector(r_params));
+	server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 }

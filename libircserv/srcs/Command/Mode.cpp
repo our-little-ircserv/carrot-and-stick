@@ -57,6 +57,15 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 	}
 
 	channel->setMode(client, p_data.modes);
+	{
+		std::set< Client* > target_list = channel->getMemberSet();
+
+		r_params.push_back(data.prefix);
+		r_params.push_back(data.command);
+		r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+
+		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+	}
 }
 //
 //int main()
