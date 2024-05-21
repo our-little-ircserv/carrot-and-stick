@@ -47,7 +47,7 @@ struct Command::Privmsg	Parser::privmsg(const Client& client, const std::vector<
 	return data;
 }
 
-void	privmsg(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
+void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
 {
 	struct Command::Privmsg		p_data;
 	std::vector< std::string >	r_params;
