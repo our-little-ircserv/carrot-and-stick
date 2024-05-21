@@ -55,11 +55,13 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 		// 서버에서 다음 토픽들을 메세지로 클라이언트에게 전달
 		if (t_topic.size() == 0)
 		{
+			r_params.push_back(client.getNickname());
 			r_params.push_back(p_data.channel);
 			throw Reply(Reply::RPL_NOTOPIC, r_params);
 		}
 		else
 		{
+			r_params.push_back(client.getNickname());
 			r_params.push_back(p_data.channel);
 			r_params.push_back(channel->getTopic());
 			throw Reply(Reply::RPL_TOPIC, r_params);
