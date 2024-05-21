@@ -114,6 +114,16 @@ const std::string	Channel::getCurrentMode() const
 	return current_mode;
 }
 
+const std::string Channel::getTopic() const
+{
+	return _topic;
+}
+
+void Channel::setTopic(std::string t_topic)
+{
+	_topic = t_topic;
+}
+
 bool	Channel::isMember(Client& client) const
 {
 	return _members.find(&client) != _members.end();

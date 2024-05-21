@@ -9,7 +9,7 @@
 # include <string>
 # include "Client.hpp"
 # include "Channel.hpp"
-# include "Error.hpp"
+# include "FatalError.hpp"
 
 # define MAX_CLIENTS 128
 # define MAX_EVENTS 10
@@ -26,15 +26,22 @@ class	IRC
 			std::string	password;
 		};
 
+		static const char*	hostname;
+
 		IRC(struct IRC::AccessData access_data);
 		~IRC();
-		void				boot();
+
+		void	init() throw(Signal, FatalError);
+		void	run() throw(Signal, FatalError);
+
+		Channel*	searchChannel(const std::string& channel_name);
+		Channel*	createChannel(Client& client, const char prefix, const std::string& channel_name);
+
+		Client*		searchClient(const int sockfd);
+		Client*		searchClient(const std::string& nickname);
+
 		int					getServerSocketFd() const;
 		const std::string&	getPassword() const;
-
-		Channel*	searchChannel(std::string t_channel_name);
-		Channel*	createChannel(Client& client, const char t_prefix, std::string t_channel_name);
-		Client*		getClient(const std::string& client_name) throw(Error);
 
 	private:
 		int			_server_sockfd;
@@ -47,8 +54,13 @@ class	IRC
 		std::map<int, Client>			_clients;
 		std::map<std::string, Channel>	_channels;
 
-		void				setUpSocket() throw(Error);
-		struct sockaddr_in	setSockAddrIn(int domain) throw(Error);
+		void				setUpSocket() throw(Signal, FatalError);
+		struct sockaddr_in	setSockAddrIn(int domain) throw(Signal, FatalError);
+
+		// static?
+		static void	acceptClient(IRC& server, const struct kevent& event) throw(Signal, FatalError);
+		static void	receiveMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
+		static void	sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
 };
 
 #endif

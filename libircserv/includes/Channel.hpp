@@ -7,7 +7,7 @@
 # include "Client.hpp"
 # include "Command.hpp"
 # include "Signal.hpp"
-# include "Error.hpp"
+# include "Reply.hpp"
 
 class	IRC;
 
@@ -34,6 +34,8 @@ class	Channel
 		const std::string	getKey() const;
 		const size_t		getLimit() const;
 		const size_t		getMemberCnt() const;
+		const std::string	getTopic() const;
+		void				setTopic(std::string t_topic);
 
 		bool	isMember(Client& client) const;
 		bool	isOperator(Client& client) const;

@@ -4,7 +4,7 @@
 # include <cctype>
 # include <string>
 # include <vector>
-# include "Error.hpp"
+# include "Reply.hpp"
 # include "IRC.hpp"
 
 namespace	Parser
@@ -64,6 +64,7 @@ namespace Command
 	{
 		std::vector< std::string >	channels;
 		std::vector< std::string >	users_nick;
+		std::string					comment;
 	};
 
 	struct	ModeWithParams
@@ -82,11 +83,10 @@ namespace Command
 		// +ikl 꼴로 만들어서 addMode 해준다...
 	};
 
-	static std::string CmdList[3] = {
-		"PASS", "NICK",	"USER"
+	static std::string CmdList[6] = {
+		"PASS", "JOIN", "TOPIC", "INVITE", "NICK", "KICK"
 	};
 
-	// 여기선 reference 변수를 사용 할 수 없다. 어째서...?
 	static std::vector< void (*)(IRC&, Client&, const std::vector< std::string >&) > cmdFunctions;
 
 	// 추후에 함수 배열 추가
@@ -96,9 +96,13 @@ namespace Command
 	void	execute(IRC& server, Client& client, struct ::Parser::Data& data);
 
 	// command implementations
-	void	pass(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
-	void	join(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
-	void	mode(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error);
+	void	pass(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
+	void	join(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
+	void	mode(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
+	void	topic(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
+	void	invite(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
+	void	nick(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
+	void	kick(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
 };
 
 #endif

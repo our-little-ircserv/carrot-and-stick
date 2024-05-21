@@ -2,13 +2,15 @@
 #include "Command.hpp"
 #include "Channel.hpp"
 
-struct Command::Mode	Parser::mode(const std::vector< std::string >& params) throw(Error)
+struct Command::Mode	Parser::mode(const Client& client, const std::vector< std::string >& params) throw(Reply)
 {
-	struct Command::Mode	data;
+	struct Command::Mode		data;
+	std::vector< std::string >	r_params;
 
 	if (params.size() < 1)
 	{
-		throw Error(Error::ENEPARM, NULL);
+		r_params.push_back(client.getNickname());
+		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
 	data.channel = params[0];
@@ -35,29 +37,26 @@ struct Command::Mode	Parser::mode(const std::vector< std::string >& params) thro
 }
 
 // oitkl
-void	Command::mode(IRC& server, Client& client, const std::vector< std::string >& params) throw (Error)
+void	Command::mode(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply)
 {
-	struct Command::Mode	data = Parser::mode(params);
+	struct Command::Mode		data = Parser::mode(client, params);
+	std::vector< std::string >	r_params;
 
-	try
+	Channel*	channel = server.searchChannel(data.channel);
+	if (channel == NULL)
 	{
-		Channel*	channel = server.searchChannel(data.channel);
-		if (channel == NULL)
-		{
-			throw Error(Error::EWRPARM, data.channel.c_str());
-		}
-		else if (channel->isOperator(client) == false)
-		{
-			throw Error(Error::ENOPER, data.channel.c_str());
-		}
+		r_params.push_back(client.getNickname());
+		r_params.push_back(data.channel);
+		throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
+	}
+	else if (channel->isMember(client) == false || channel->isOperator(client) == false)
+	{
+		r_params.push_back(client.getNickname());
+		r_params.push_back(data.channel);
+		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
+	}
 
-		channel->setMode(server, data.modes);
-	}
-	catch (Error& e)
-	{
-		// No such channel
-		// Not an operator
-	}
+	channel->setMode(data.modes);
 }
 //
 //int main()

@@ -5,11 +5,11 @@
 #include <exception>
 #include "Parser.hpp"
 
-struct IRC::AccessData	Parser::checkArgValidity(int argc, char** argv) throw(Error)
+struct IRC::AccessData	Parser::checkArgValidity(int argc, char** argv) throw(FatalError)
 {
 	if (argc != 3)
 	{
-		throw Error(Error::EARGC, NULL);
+		throw FatalError(FatalError::EARGC);
 	}
 
 	std::string	port(argv[1]);
@@ -19,7 +19,7 @@ struct IRC::AccessData	Parser::checkArgValidity(int argc, char** argv) throw(Err
 	if (iss.fail() || !iss.eof() \
 			|| port_checker < 0 || port_checker > USHRT_MAX)
 	{
-		throw Error(Error::EAPORT, NULL);
+		throw FatalError(FatalError::EAPORT);
 	}
 
 	struct IRC::AccessData	data_to_return;
@@ -34,25 +34,23 @@ struct IRC::AccessData	Parser::checkArgValidity(int argc, char** argv) throw(Err
 //:PREFIX
 //COMMAND
 //:PARAM PARAM
-struct Parser::Data	Parser::parseClientMessage(const std::string& message) throw(Error)
+struct Parser::Data	Parser::parseClientMessage(const std::string& message)
 {
-	struct Parser::Data						command_data;
+	struct Parser::Data							command_data;
 	std::vector<struct Parser::Token>			tokens = Parser::splitTokens(message);
 	std::vector<struct Parser::Token>::iterator	it = tokens.begin();
 
-	if (tokens.size() < 2)
-	{
-		throw Error(Error::EWRPARM, message.c_str());
-	}
-
-	if (it->type == Parser::COLON)
+	if (it != tokens.end() && it->type == Parser::COLON)
 	{
 		command_data.prefix = it->data;
 		++it;
 	}
 
-	command_data.command = it->data;
-	++it;
+	if (it != tokens.end())
+	{
+		command_data.command = it->data;
+		++it;
+	}
 
 	while (it != tokens.end())
 	{
@@ -121,6 +119,25 @@ enum Parser::TokenType	Parser::extractTokenType(const std::string& token)
 	}
 
 	return Parser::NOCOLON;
+}
+
+std::string	Parser::concat_string_vector(const std::vector< std::string >& vec)
+{
+	std::string	concat_params;
+
+	size_t	i = 0;
+	while (i < vec.size())
+	{
+		concat_params += vec[i];
+		++i;
+
+		if (i != vec.size())
+		{
+			concat_params += ' ';
+		}
+	}
+
+	return concat_params;
 }
 
 //int	main()

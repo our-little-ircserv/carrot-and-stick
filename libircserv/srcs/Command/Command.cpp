@@ -1,12 +1,18 @@
-#include <iostream>
+#include <iostream> // for debug
 #include "Parser.hpp"
 #include "Command.hpp"
+#include "Reply.hpp"
 
 extern std::string password;
 
 void Command::init()
 {
 	Command::cmdFunctions.push_back(Command::pass);
+	Command::cmdFunctions.push_back(Command::join);
+	Command::cmdFunctions.push_back(Command::topic);
+	Command::cmdFunctions.push_back(Command::invite);
+	Command::cmdFunctions.push_back(Command::nick);
+	Command::cmdFunctions.push_back(Command::kick);
 }
 
 int Command::getType(std::string& command)
@@ -16,10 +22,12 @@ int Command::getType(std::string& command)
 		command[i] = std::toupper(command[i]);
 	}
 
-	for (int i = 0; i < Command::CmdList->size(); i++)
+	for (int i = 0; i < sizeof(Command::CmdList) / sizeof(Command::CmdList[0]); i++)
 	{
 		if (Command::CmdList[i] == command)
+		{
 			return (i);
+		}
 	}
 	return (-1);
 }
@@ -29,7 +37,19 @@ void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 	int cmd_type;
 
 	cmd_type = getType(data.command);
+	// remove later
+	if (cmd_type == -1)
+	{
+		return;
+	}
 
-	Command::cmdFunctions[cmd_type](server, client, data.parameters);
+	try
+	{
+		Command::cmdFunctions[cmd_type](server, client, data.parameters);
+	}
+	catch (Reply& reply)
+	{
+		// for debug
+		std::cout << reply.getReplyMessage() << std::endl;
+	}
 }
-
