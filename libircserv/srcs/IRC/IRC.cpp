@@ -129,7 +129,7 @@ const std::string& IRC::getPassword() const
 	return _password;
 }
 
-void	IRC::deliveryMsg(std::set< Client* >& target_list, std::string msg)
+void	IRC::deliverMsg(std::set< Client* >& target_list, std::string msg)
 {
 	std::set< Client* >::iterator it = target_list.begin();
 	std::set< Client* >::iterator ite = target_list.end();

@@ -82,13 +82,13 @@ void	privmsg(IRC& server, Client& client, const struct Parser::Data& data) throw
 			}
 
 			// Message to client or channel
-			server.deliveryMsg(target_list, p_data.text_to_be_sent);
+			server.deliverMsg(target_list, p_data.text_to_be_sent);
 		}
 		catch(Reply& e)
 		{
 			// ErrReply to host client
 			target_list.insert(&client);
-			server.deliveryMsg(target_list, e.getReplyMessage());
+			server.deliverMsg(target_list, e.getReplyMessage());
 		}
 	}
 }

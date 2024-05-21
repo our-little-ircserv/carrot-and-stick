@@ -76,7 +76,7 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 		std::set< Client* > target_list;
 
 		target_list.insert(&client);
-		server.deliveryMsg(target_list, Reply(Reply::RPL_INVITING, r_params).getReplyMessage());
+		server.deliverMsg(target_list, Reply(Reply::RPL_INVITING, r_params).getReplyMessage());
 
 		//
 		r_params.clear();
@@ -86,7 +86,7 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 
 		target_list.clear();
 		target_list.insert(target_client);
-		server.deliveryMsg(target_list, Parser::concat_string_vector(r_params));
+		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 	}
 
 	// invite-only가 아니면 invite_list에 추가하지 않는다...?

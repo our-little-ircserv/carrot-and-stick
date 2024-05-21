@@ -65,7 +65,7 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 		r_params.push_back(data.command);
 		r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
 
-		server.deliveryMsg(target_list, Parser::concat_string_vector(r_params));
+		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 	}
 }
 //
