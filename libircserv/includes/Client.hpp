@@ -26,17 +26,17 @@ class	Client
 		Client();
 		Client(int t_sockfd, const struct sockaddr_in& addr);
 
-		int			getSocketFd() const;
-		std::string	getPrefix() const;
-		std::string	getHostname() const;
-		int			getRegisterLevel() const;
-		void		setRegisterLevel(int t_register_level);
-		void		setNickname(std::string t_nickname);
-		std::string	getNickname() const;
-		void		setUsername(std::string t_username);
-		std::string	getUsername() const;
-		void		setRealname(std::string t_realname);
-		std::string	getRealname() const;
+		int					getSocketFd() const;
+		std::string			getPrefix() const;
+		std::string			getHostname() const;
+		int					getRegisterLevel() const;
+		void				setRegisterLevel(int t_register_level);
+		void				setNickname(const std::string& t_nickname);
+		const std::string&	getNickname() const;
+		void				setUsername(const std::string& t_username);
+		const std::string&	getUsername() const;
+		void				setRealname(const std::string& t_realname);
+		const std::string&	getRealname() const;
 
 		void								addChannelList(std::string channel_name);
 		void								delChannelList(std::string channel_name);
