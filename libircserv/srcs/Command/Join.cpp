@@ -10,6 +10,7 @@ struct Command::Join	Parser::join(const Client& client, const std::vector< std::
 	if (params.size() < 1)
 	{
 		r_params.push_back(client.getNickname());
+		r_params.push_back("JOIN");
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
@@ -41,6 +42,11 @@ struct Command::Join	Parser::join(const Client& client, const std::vector< std::
 
 		data.channels.push_back(channel_name);
 		i += offset + 1;
+	}
+
+	if (params.size() == 1)
+	{
+		return data;
 	}
 
 	const std::string&	t_keys = params[1];
