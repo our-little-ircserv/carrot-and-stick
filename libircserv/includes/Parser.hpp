@@ -43,6 +43,7 @@ namespace	Parser
 	struct Command::Invite	invite(const Client& client, const std::vector< std::string >& params) throw(Reply);
 	struct Command::Kick	kick(const Client& client, const std::vector< std::string >& params) throw(Reply);
 	struct Command::Mode	mode(const Client& client, const std::vector< std::string >& params) throw(Reply);
+	struct Command::Part	part(const Client& client, const std::vector< std::string >& params) throw(Reply);
 
 	std::string	concat_string_vector(const std::vector< std::string >& vec);
 
