@@ -56,7 +56,7 @@ void	IRC::run() throw(Signal, FatalError)
 
 		for (int i = 0; i < real_events; i++)
 		{
-			((void (*)(IRC&, struct kevent&))_eventlist[i].udata)(*this, _eventlist[i]);
+			reinterpret_cast< void (*)(IRC&, struct kevent&) >(_eventlist[i].udata)(*this, _eventlist[i]);
 		}
 	}
 }
@@ -76,10 +76,8 @@ Channel* IRC::searchChannel(const std::string& channel_name)
 
 Channel* IRC::createChannel(Client& client, const char prefix, const std::string& channel_name)
 {
-    // Channel 객체를 직접 생성하여 맵에 삽입
     _channels.insert(std::make_pair(channel_name, Channel(client, prefix, channel_name)));
 
-    // insert 결과에서 삽입된 객체의 주소를 반환
 	return &(_channels[channel_name]);
 }
 
@@ -214,7 +212,6 @@ void	IRC::acceptClient(IRC& server, const struct kevent& event) throw(Signal, Fa
 	socklen_t			socklen = sizeof(struct sockaddr_in);
 
 	std::cout << "acceptClient" << std::endl;
-	// addr 초기화
 	int client_fd = wrapSyscall(accept(server.getServerSocketFd(), (struct sockaddr*)&client_addr, &socklen), "accept");
 	Client	client(client_fd, client_addr);
 
@@ -232,7 +229,6 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 	std::cout << "Read event" << std::endl;
 
 	Client*	client = server.searchClient((int)event.ident);
-	// 이미 등록된 클라이언트라면 못 찾을 수가 없음.
 	Assert(client != NULL);
 
 	if (event.data == 0)
@@ -241,26 +237,40 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 		return;
 	}
 
-	char*	buf = new char[event.data + 1];
-	// 메모리 부족하다는데... 뭐 어떡해...
-	Assert(buf != NULL);
+	char	buf[512];
+//	char*	buf = new char[event.data + 1];
+//	Assert(buf != NULL);
 
-	// EINTR: 내가 처리해놓은 시그널은 일단 전부 프로세스 종료, throw Signal이라 상관없다.
-	// bytes_received가 event.data보다 작을 때? 어떻게 대처해야 하지
-	// 다음 read event 때 잡는다.
 	int	bytes_received = recv(event.ident, buf, event.data, 0);
 	if (bytes_received != -1)
 	{
 		buf[bytes_received] = '\0';
 		get_next_line(*client, buf);
 	}
-	delete[] buf;
+//	delete[] buf;
 	wrapSyscall(bytes_received, "recv");
 
 	empty_inputs(server, *client);
 }
 
+// kevent EVFILT_WRITE를 감지한 경우 - event는 실시간
+// write_buf에 쌓인 걸 하나만 내보낼지
+// 아니면 한번에 다 내보낼지
 void	IRC::sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
 	std::cout << "Write event" << std::endl;
+
+	Client*	client = server.searchClient((int)event.ident);
+	Assert(client != NULL);
+
+	std::vector< std::string >::iterator it = client->_write_buf.begin();
+	std::vector< std::string >::iterator ite = client->_write_buf.end();
+	for ( ; it != ite; it++)
+	{
+		wrapSyscall(send(event.ident, it->c_str(), it->size(), 0), "send");
+	}
+	client->_write_buf.clear();
+
+//	wrapSyscall(send(event.ident, client->_write_buf.first().c_str(), it->size(), 0), "send");
+//	client->_write_buf.erase(client->_write_buf.begin());
 }
