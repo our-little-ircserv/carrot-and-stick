@@ -1,7 +1,6 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 #include "Channel.hpp"
-#include <iostream>
 
 struct Command::Mode	Parser::mode(const Client& client, const std::vector< std::string >& params) throw(Reply)
 {
@@ -38,26 +37,35 @@ struct Command::Mode	Parser::mode(const Client& client, const std::vector< std::
 }
 
 // oitkl
-void	Command::mode(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply)
+void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
 {
-	struct Command::Mode		data = Parser::mode(client, params);
+	struct Command::Mode		p_data = Parser::mode(client, data.parameters);
 	std::vector< std::string >	r_params;
 
-	Channel*	channel = server.searchChannel(data.channel);
+	Channel*	channel = server.searchChannel(p_data.channel);
 	if (channel == NULL)
 	{
 		r_params.push_back(client.getNickname());
-		r_params.push_back(data.channel);
+		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 	}
 	else if (channel->isMember(client) == false || channel->isOperator(client) == false)
 	{
 		r_params.push_back(client.getNickname());
-		r_params.push_back(data.channel);
+		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 	}
 
-	channel->setMode(client, data.modes);
+	channel->setMode(client, p_data.modes);
+	{
+		std::set< Client* > target_list = channel->getMemberSet();
+
+		r_params.push_back(data.prefix);
+		r_params.push_back(data.command);
+		r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+
+		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+	}
 }
 //
 //int main()

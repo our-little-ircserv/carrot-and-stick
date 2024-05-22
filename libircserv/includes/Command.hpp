@@ -21,7 +21,15 @@ namespace Command
 		PASS,
 		NICK,
 		USER,
-		NO_SUCH_COMMAND = -1
+		// need registration commands
+		TOPIC,
+		INVITE,
+		NICK,
+		KICK,
+		MODE,
+		PRIVMSG,
+		PART,
+		UNKNOWNCOMMAND = -1
 	};
 	
 	enum ModeType
@@ -83,11 +91,17 @@ namespace Command
 		// +ikl 꼴로 만들어서 addMode 해준다...
 	};
 
-	static std::string CmdList[7] = {
-		"PASS", "JOIN", "TOPIC", "INVITE", "NICK", "KICK", "MODE"
+	struct	Part
+	{
+		std::vector< std::string >	channels;
+		std::string					comment;
 	};
 
-	static std::vector< void (*)(IRC&, Client&, const std::vector< std::string >&) > cmdFunctions;
+	static std::string CmdList[10] = {
+		"PASS", "JOIN", "USER", "TOPIC", "INVITE", "NICK", "KICK", "MODE", "PRIVMSG", "PART"
+	};
+
+	static std::vector< void (*)(IRC&, Client&, const struct Parser::Data&) > cmdFunctions;
 
 	// 추후에 함수 배열 추가
 
@@ -96,13 +110,17 @@ namespace Command
 	void	execute(IRC& server, Client& client, struct ::Parser::Data& data);
 
 	// command implementations
-	void	pass(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
-	void	join(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
-	void	mode(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
-	void	topic(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
-	void	invite(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
-	void	nick(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
-	void	kick(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply);
+	void	pass(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	join(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	user(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	mode(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	topic(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	invite(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	nick(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	kick(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	mode(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	privmsg(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	part(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 };
 
 #endif

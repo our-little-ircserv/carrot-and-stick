@@ -87,6 +87,10 @@ std::string	Reply::getReplyMessage()
 			// hostname 412 nickname :No text to send
 			message += ":No text to send";
 			break;
+		case ERR_UNKNOWNCOMMAND:
+			// hostname 411 nickname <command> :Unknown command
+			message += _parameters[0] + " :Unknown command";
+			break;
 		case ERR_NONICKNAMEGIVEN:
 			// hostname 431 nickname/* :No nickname given
 			message += ":No nickname given";
@@ -110,6 +114,10 @@ std::string	Reply::getReplyMessage()
 		case ERR_USERONCHANNEL:
 			// hostname 443 nickname user #channel :is already on channel
 			message += concat_string_vector(_parameters) + " :is already on channel";
+			break;
+		case ERR_NOTREGISTERED:
+			// hostname 411 nickname :You have not registered
+			message += " :You have not registered";
 			break;
 		case ERR_NEEDMOREPARAMS:
 			// hostname 461 nickname command :Not enough parameters
