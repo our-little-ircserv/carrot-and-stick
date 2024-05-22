@@ -129,6 +129,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 				r_params.push_back(data.prefix);
 				r_params.push_back(data.command);
 				r_params.push_back(p_data.channels[i]);
+				r_params.push_back("\r\n");
 
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
@@ -140,6 +141,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 
 			target_list.insert(&client);
 
+			r_params.push_back("\r\n");
 			server.deliverMsg(target_list, e.getReplyMessage());
 		}
 	}

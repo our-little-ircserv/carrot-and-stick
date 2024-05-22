@@ -83,6 +83,7 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 		r_params.push_back(data.prefix);
 		r_params.push_back(data.command);
 		r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+		r_params.push_back("\r\n");
 
 		target_list.clear();
 		target_list.insert(target_client);
