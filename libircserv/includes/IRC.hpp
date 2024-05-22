@@ -45,6 +45,9 @@ class	IRC
 		int					getServerSocketFd() const;
 		const std::string&	getPassword() const;
 
+		void	deliverMsg(std::set< Client* >& target_list, std::string msg);
+		std::set< Client* > getTargetSet(std::vector< std::string >targets);
+
 	private:
 		int			_server_sockfd;
 		uint16_t	_port;

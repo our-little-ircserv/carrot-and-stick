@@ -44,27 +44,61 @@ std::string	Parser::nick(const Client& client, const std::vector< std::string >&
 	return nickname;
 }
 
-void Command::nick(IRC& server, Client& client, const std::vector< std::string >& params) throw(Reply)
+void Command::nick(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
 {
-	std::string new_nickname;
+	std::string					new_nickname;
+	std::vector< std::string >	r_params;
 
-	new_nickname = Parser::nick(client, params);
-	// 인자 수는 유효하나 닉네임의 내용이 비어있을때
-	// ERR_NONICKNAMEGIVEN
-	if (new_nickname.size() == 0)
+	if (client.getRegisterLevel() == Client::NONE)
 	{
-		//
+		return ;
 	}
 
-	// 닉네임 형식에 맞지 않을 때 (Parser::nick에서 유효성 검사)
-	// ERR_ERRONEUSNICKNAME
-
+	new_nickname = Parser::nick(client, data.parameters);
 	// 이미 사용중인 닉네임일 때
-	// ERR_NICKNAMEINUSE
-	if (!(server.searchClient(new_nickname) == NULL))
+	if ((server.searchClient(new_nickname) == NULL) == false)
 	{
-		//
+		r_params.push_back(client.getNickname());
+		r_params.push_back(new_nickname);
+		throw Reply(Reply::ERR_NICKNAMEINUSE, r_params);
 	}
 
 	client.setNickname(new_nickname);
+	if (client.getRegisterLevel() == Client::AUTHORIZED && (client.getUsername() == "") == false)
+	{
+		client.setRegisterLevel(Client::REGISTERED);
+		// 환영합니다
+		std::set< Client* > target_list;
+		target_list.insert(&client);
+		r_params.push_back(client.getNickname());
+
+		{
+			Reply rp(Reply::RPL_WELCOME, r_params);
+			server.deliverMsg(target_list, rp.getReplyMessage());
+		}
+		{
+			Reply rp(Reply::RPL_YOURHOST, r_params);
+			server.deliverMsg(target_list, rp.getReplyMessage());
+		}
+		{
+			Reply rp(Reply::RPL_CREATED, r_params);
+			server.deliverMsg(target_list, rp.getReplyMessage());
+		}
+		{
+			Reply rp(Reply::RPL_MYINFO, r_params);
+			server.deliverMsg(target_list, rp.getReplyMessage());
+		}
+		return ;
+	}
+
+	std::vector< std::string > target_names;
+	target_names.push_back(client.getNickname());
+	target_names.insert(target_names.end(), client.getChannelList().begin(), client.getChannelList().end());
+	std::set< Client* > target_list = server.getTargetSet(target_names);
+
+	r_params.push_back(data.prefix);
+	r_params.push_back(data.command);
+	r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+
+	server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 }
