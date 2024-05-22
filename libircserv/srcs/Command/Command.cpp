@@ -64,6 +64,10 @@ void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 	}
 	catch (Reply& reply)
 	{
+		std::set< Client* > target_list;
+
+		target_list.insert(&client);
+		server.deliverMsg(target_list, reply.getReplyMessage());
 		// for debug
 		std::cout << reply.getReplyMessage() << std::endl;
 	}

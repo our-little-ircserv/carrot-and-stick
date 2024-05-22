@@ -133,6 +133,7 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 				r_params.push_back(p_data.channels[chan_idx]);
 				r_params.push_back(p_data.users_nick[client_idx]);
 				r_params.push_back(p_data.comment);
+				r_params.push_back("\r\n");
 
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}

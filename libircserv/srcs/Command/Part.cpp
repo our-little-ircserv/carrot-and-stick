@@ -81,6 +81,7 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
 				r_params.push_back(data.command);
 				r_params.push_back(p_data.channels[i]);
                 r_params.push_back(p_data.comment);
+				r_params.push_back("\r\n");
 
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
