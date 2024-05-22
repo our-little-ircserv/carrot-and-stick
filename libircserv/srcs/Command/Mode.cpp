@@ -10,6 +10,7 @@ struct Command::Mode	Parser::mode(const Client& client, const std::vector< std::
 	if (params.size() < 1)
 	{
 		r_params.push_back(client.getNickname());
+		r_params.push_back("MODE");
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 

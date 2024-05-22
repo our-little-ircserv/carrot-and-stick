@@ -3,16 +3,14 @@
 #include "Command.hpp"
 #include "Reply.hpp"
 
-extern std::string password;
-
 void Command::init()
 {
 	Command::cmdFunctions.push_back(Command::pass);
-	Command::cmdFunctions.push_back(Command::join);
+	Command::cmdFunctions.push_back(Command::nick);
 	Command::cmdFunctions.push_back(Command::user);
+	Command::cmdFunctions.push_back(Command::join);
 	Command::cmdFunctions.push_back(Command::topic);
 	Command::cmdFunctions.push_back(Command::invite);
-	Command::cmdFunctions.push_back(Command::nick);
 	Command::cmdFunctions.push_back(Command::kick);
 	Command::cmdFunctions.push_back(Command::mode);
 	Command::cmdFunctions.push_back(Command::privmsg);
@@ -41,6 +39,7 @@ int Command::getType(std::string& command)
 
 void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 {
+	std::cout << "exec" << std::endl;
 	int							cmd_type;
 	std::vector< std::string >	r_params;
 

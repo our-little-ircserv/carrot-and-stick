@@ -54,21 +54,20 @@ class	IRC
 		const char*	_ip_addr;
 		std::string	_password;
 
-		std::vector<struct kevent>		_changelist;
-		struct kevent					_eventlist[MAX_EVENTS];
-		std::map<int, Client>			_clients;
-		std::map<std::string, Channel>	_channels;
+		std::vector< struct kevent >		_changelist;
+		struct kevent						_eventlist[MAX_EVENTS];
+		std::map< int, Client >				_clients;
+		std::map< std::string, Channel >	_channels;
 
 		void				setUpSocket() throw(Signal, FatalError);
 		struct sockaddr_in	setSockAddrIn(int domain) throw(Signal, FatalError);
 
 		static void	get_next_line(Client& client, const std::string& input);
-		static void	empty_inputs(IRC& server, Client& client);
+		static void	iterate_rdbuf(IRC& server, Client& client);
 
 		static void	acceptClient(IRC& server, const struct kevent& event) throw(Signal, FatalError);
 		static void	receiveMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
 		static void	sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
-
 };
 
 #endif

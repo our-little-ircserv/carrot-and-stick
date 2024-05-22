@@ -56,7 +56,7 @@ void	IRC::run() throw(Signal, FatalError)
 
 		for (int i = 0; i < real_events; i++)
 		{
-			((void (*)(IRC&, struct kevent&))_eventlist[i].udata)(*this, _eventlist[i]);
+			reinterpret_cast< void (*)(IRC&, struct kevent&) >(_eventlist[i].udata)(*this, _eventlist[i]);
 		}
 	}
 }
@@ -76,10 +76,8 @@ Channel* IRC::searchChannel(const std::string& channel_name)
 
 Channel* IRC::createChannel(Client& client, const char prefix, const std::string& channel_name)
 {
-    // Channel 객체를 직접 생성하여 맵에 삽입
     _channels.insert(std::make_pair(channel_name, Channel(client, prefix, channel_name)));
 
-    // insert 결과에서 삽입된 객체의 주소를 반환
 	return &(_channels[channel_name]);
 }
 
@@ -143,6 +141,13 @@ void	IRC::deliverMsg(std::set< Client* >& target_list, std::string msg)
 	for (; it != ite; it++)
 	{
 		(*it)->_write_buf.push_back(msg);
+		if ((*it)->_writable == false)
+		{
+			(*it)->_writable = true;
+			struct kevent	t_event;
+			EV_SET(&t_event, (*it)->getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, (void*)sendMessages);
+			_changelist.push_back(t_event);
+		}
 	}
 }
 
@@ -185,45 +190,46 @@ struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Signal, FatalError)
 void	IRC::get_next_line(Client& client, const std::string& input)
 {
 	std::vector< std::string >&	rdbuf = client._read_buf;
-	std::string&				last_element = rdbuf.back();
 	bool						add_than_push = false;
+	size_t						old_idx = 0;
+	size_t						crlf = 0;
 
-	if (rdbuf.empty() == false && last_element.substr(last_element.size() - 2, 2) != "\r\n")
+	std::string&	last_element = rdbuf.back();
+	if (client._read_buf.empty() == false && last_element.find("\r\n") == std::string::npos)
 	{
-		add_than_push = true;
+		crlf = input.find("\r\n");
+		old_idx = crlf;
+		if (crlf != std::string::npos)
+		{
+			old_idx += 2;
+		}
+
+		last_element += input.substr(0, old_idx);
 	}
 
-	size_t	old_idx = 0;
-	size_t	crlf = 0;
 	size_t	input_size = input.size();
 	size_t	substr_size;
 	while (old_idx < input_size)
 	{
 		crlf = input.find("\r\n", old_idx);
-		if (crlf != std::string::npos)
+		substr_size = crlf;
+		if (crlf == std::string::npos)
 		{
-			substr_size = crlf - old_idx + 2;
+			substr_size = input_size;
 		}
 		else
 		{
-			substr_size = input_size - old_idx;
+			substr_size = crlf + 2;
 		}
+		substr_size -= old_idx;
 
-		if (add_than_push == true)
-		{
-			last_element += input.substr(old_idx, substr_size);
-			add_than_push = false;
-		}
-		else
-		{
-			rdbuf.push_back(input.substr(old_idx, substr_size));
-		}
+		rdbuf.push_back(input.substr(old_idx, substr_size));
 
 		old_idx += substr_size;
 	}
 }
 
-void	IRC::empty_inputs(IRC& server, Client& client)
+void	IRC::iterate_rdbuf(IRC& server, Client& client)
 {
 	std::vector< std::string >::iterator	it = client._read_buf.begin();
 
@@ -231,7 +237,6 @@ void	IRC::empty_inputs(IRC& server, Client& client)
 	{
 		if (it->empty() == false && it->substr(it->size() - 2, 2) == "\r\n")
 		{
-			std::cout << *it << std::endl;
 			struct Parser::Data data = Parser::parseClientMessage(*it);
 			Command::execute(server, client, data);
 			it = client._read_buf.erase(it);
@@ -250,7 +255,6 @@ void	IRC::acceptClient(IRC& server, const struct kevent& event) throw(Signal, Fa
 	socklen_t			socklen = sizeof(struct sockaddr_in);
 
 	std::cout << "acceptClient" << std::endl;
-	// addr 초기화
 	int client_fd = wrapSyscall(accept(server.getServerSocketFd(), (struct sockaddr*)&client_addr, &socklen), "accept");
 	Client	client(client_fd, client_addr);
 
@@ -268,7 +272,6 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 	std::cout << "Read event" << std::endl;
 
 	Client*	client = server.searchClient((int)event.ident);
-	// 이미 등록된 클라이언트라면 못 찾을 수가 없음.
 	Assert(client != NULL);
 
 	if (event.data == 0)
@@ -277,26 +280,49 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 		return;
 	}
 
-	char*	buf = new char[event.data + 1];
-	// 메모리 부족하다는데... 뭐 어떡해...
-	Assert(buf != NULL);
+	char	buf[512];
+//	char*	buf = new char[event.data + 1];
+//	Assert(buf != NULL);
 
-	// EINTR: 내가 처리해놓은 시그널은 일단 전부 프로세스 종료, throw Signal이라 상관없다.
-	// bytes_received가 event.data보다 작을 때? 어떻게 대처해야 하지
-	// 다음 read event 때 잡는다.
 	int	bytes_received = recv(event.ident, buf, event.data, 0);
 	if (bytes_received != -1)
 	{
 		buf[bytes_received] = '\0';
 		get_next_line(*client, buf);
 	}
-	delete[] buf;
+//	delete[] buf;
 	wrapSyscall(bytes_received, "recv");
 
-	empty_inputs(server, *client);
+	iterate_rdbuf(server, *client);
 }
 
 void	IRC::sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
 	std::cout << "Write event" << std::endl;
+
+	Client*	client = server.searchClient((int)event.ident);
+	Assert(client != NULL);
+
+	// 한번에 보낼 수 있는 최대 블럭수
+	size_t	sent_size;
+	while (client->_write_buf.empty() == false)
+	{
+		size_t	data_size = client->_write_buf[0].size();
+		sent_size = wrapSyscall(send(event.ident, client->_write_buf[0].c_str(), data_size, 0), "send");
+		if (sent_size < data_size)
+		{
+			client->_write_buf[0] = client->_write_buf[0].substr(sent_size);
+			break;
+		}
+		client->_write_buf.erase(client->_write_buf.begin());
+	}
+
+	if (client->_write_buf.empty() == true && client->_writable == true)
+	{
+		client->_writable = false;
+
+		struct kevent	t_event;
+		EV_SET(&t_event, client->getSocketFd(), EVFILT_WRITE, EV_DISABLE, 0, 0, (void*)sendMessages);
+		server._changelist.push_back(t_event);
+	}
 }
