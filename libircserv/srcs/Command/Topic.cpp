@@ -38,7 +38,7 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 	channel = server.searchChannel(p_data.channel);
 
 	// 존재하지 않는 채널
-	if (channel == NULL)
+	if (channel == NULL || channel->isMember(client) == false)
 	{
 		r_params.push_back(client.getNickname());
 		r_params.push_back(p_data.channel);
@@ -63,7 +63,7 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 		{
 			r_params.push_back(client.getNickname());
 			r_params.push_back(p_data.channel);
-			r_params.push_back(channel->getTopic());
+			r_params.push_back(t_topic);
 			throw Reply(Reply::RPL_TOPIC, r_params);
 		}
 	}
