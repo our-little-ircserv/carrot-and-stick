@@ -6,7 +6,7 @@ struct Command::Part	Parser::part(const Client& client, const std::vector< std::
 	struct Command::Part		data;
 	std::vector< std::string >  r_params;
 
-    if (params.size() < 2)
+    if (params.size() < 1)
 	{
 		r_params.push_back(client.getNickname());
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
@@ -30,12 +30,10 @@ struct Command::Part	Parser::part(const Client& client, const std::vector< std::
 		i += offset + 1;
 	}
 
-    if (params.size() == 1)
+    if (params.size() > 1)
     {
-        return data;
+		data.comment = params[1];
     }
-
-    data.comment = params[1];
 
 	return data;
 }
@@ -85,7 +83,6 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
                 r_params.push_back(p_data.comment);
 
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
-                std::cout << "part message: " << Parser::concat_string_vector(r_params) << "\n";
 			}
 		}
 		catch(Reply& e)

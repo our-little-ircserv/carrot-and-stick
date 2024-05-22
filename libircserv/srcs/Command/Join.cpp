@@ -1,6 +1,5 @@
 #include "Parser.hpp"
 #include "Command.hpp"
-#include <iostream>
 
 struct Command::Join	Parser::join(const Client& client, const std::vector< std::string >& params) throw(Reply)
 {

@@ -117,7 +117,7 @@ std::string	Reply::getReplyMessage()
 			break;
 		case ERR_NOTREGISTERED:
 			// hostname 411 nickname :You have not registered
-			message += "You have not registered";
+			message += " :You have not registered";
 			break;
 		case ERR_NEEDMOREPARAMS:
 			// hostname 461 nickname command :Not enough parameters

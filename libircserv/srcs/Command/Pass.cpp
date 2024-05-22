@@ -20,11 +20,11 @@ void	Command::pass(IRC& server, Client& client, const struct Parser::Data& data)
 	}
 
 	// 그렇지 않다면 authorization을 수행한다
-	if (server.getPassword() == data.parameters[0])
+	if (server.getPassword() == data.parameters[0] && client.getRegisterLevel() == Client::NONE)
 	{
 		client.setRegisterLevel(Client::AUTHORIZED);
 	}
-	else
+	else if (client.getRegisterLevel() == Client::AUTHORIZED)
 	{
 		client.setRegisterLevel(Client::NONE);
 	}

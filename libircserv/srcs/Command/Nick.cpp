@@ -56,7 +56,7 @@ void Command::nick(IRC& server, Client& client, const struct Parser::Data& data)
 
 	new_nickname = Parser::nick(client, data.parameters);
 	// 이미 사용중인 닉네임일 때
-	if (!(server.searchClient(new_nickname) == NULL))
+	if ((server.searchClient(new_nickname) == NULL) == false)
 	{
 		r_params.push_back(client.getNickname());
 		r_params.push_back(new_nickname);
