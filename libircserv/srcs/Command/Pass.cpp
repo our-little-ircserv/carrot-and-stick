@@ -12,6 +12,13 @@ void	Command::pass(IRC& server, Client& client, const struct Parser::Data& data)
 {
 	std::vector< std::string >	r_params;
 
+	if (data.parameters.size() < 2)
+	{
+		r_params.push_back(client.getNickname());
+		r_params.push_back(data.command);
+		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
+	}
+
 	// 이미 authorized 되었다면 무시한다
 	if (client.getRegisterLevel() == Client::REGISTERED)
 	{
