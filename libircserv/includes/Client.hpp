@@ -20,8 +20,7 @@ class	Client
 			REGISTERED
 		};
 
-		std::string					_read_buf;
-//		std::vector<std::string>	_read_buf;
+		std::vector<std::string>	_read_buf;
 		std::vector<std::string>	_write_buf;
 
 		Client();

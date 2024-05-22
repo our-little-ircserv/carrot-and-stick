@@ -59,10 +59,13 @@ class	IRC
 		void				setUpSocket() throw(Signal, FatalError);
 		struct sockaddr_in	setSockAddrIn(int domain) throw(Signal, FatalError);
 
-		// static?
+		static void	get_next_line(Client& client, const std::string& input);
+		static void	empty_inputs(IRC& server, Client& client);
+
 		static void	acceptClient(IRC& server, const struct kevent& event) throw(Signal, FatalError);
 		static void	receiveMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
 		static void	sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
+
 };
 
 #endif
