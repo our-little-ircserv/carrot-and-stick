@@ -58,4 +58,6 @@ void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data)
         }
         channel->delMember(client);
     }
+
+    server.delClient(client.getSocketFd());
 }
