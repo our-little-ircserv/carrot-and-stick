@@ -8,11 +8,11 @@ extern std::string password;
 void Command::init()
 {
 	Command::cmdFunctions.push_back(Command::pass);
-	Command::cmdFunctions.push_back(Command::join);
+	Command::cmdFunctions.push_back(Command::nick);
 	Command::cmdFunctions.push_back(Command::user);
+	Command::cmdFunctions.push_back(Command::join);
 	Command::cmdFunctions.push_back(Command::topic);
 	Command::cmdFunctions.push_back(Command::invite);
-	Command::cmdFunctions.push_back(Command::nick);
 	Command::cmdFunctions.push_back(Command::kick);
 	Command::cmdFunctions.push_back(Command::mode);
 	Command::cmdFunctions.push_back(Command::privmsg);

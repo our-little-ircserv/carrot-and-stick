@@ -22,6 +22,7 @@ namespace Command
 		NICK,
 		USER,
 		// need registration commands
+		JOIN,
 		TOPIC,
 		INVITE,
 		NICK,
@@ -98,7 +99,7 @@ namespace Command
 	};
 
 	static std::string CmdList[10] = {
-		"PASS", "JOIN", "USER", "TOPIC", "INVITE", "NICK", "KICK", "MODE", "PRIVMSG", "PART"
+		"PASS", "NICK", "USER", "JOIN", "TOPIC", "INVITE", "KICK", "MODE", "PRIVMSG", "PART"
 	};
 
 	static std::vector< void (*)(IRC&, Client&, const struct Parser::Data&) > cmdFunctions;
