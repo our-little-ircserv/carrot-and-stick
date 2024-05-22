@@ -119,6 +119,12 @@ Client* IRC::searchClient(const std::string& nickname)
 	return NULL;
 }
 
+void	IRC::delClient(const int sockfd)
+{
+	close(sockfd);
+	_clients.erase(_clients.find(sockfd));
+}
+
 int	IRC::getServerSocketFd() const
 {
 	return _server_sockfd;
@@ -176,6 +182,67 @@ struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Signal, FatalError)
 	return sockaddr;
 }
 
+void	IRC::get_next_line(Client& client, const std::string& input)
+{
+	std::vector< std::string >&	rdbuf = client._read_buf;
+	std::string&				last_element = rdbuf.back();
+	bool						add_than_push = false;
+
+	if (rdbuf.empty() == false && last_element.substr(last_element.size() - 2, 2) != "\r\n")
+	{
+		add_than_push = true;
+	}
+
+	size_t	old_idx = 0;
+	size_t	crlf = 0;
+	size_t	input_size = input.size();
+	size_t	substr_size;
+	while (old_idx < input_size)
+	{
+		crlf = input.find("\r\n", old_idx);
+		if (crlf != std::string::npos)
+		{
+			substr_size = crlf - old_idx + 2;
+		}
+		else
+		{
+			substr_size = input_size - old_idx;
+		}
+
+		if (add_than_push == true)
+		{
+			last_element += input.substr(old_idx, substr_size);
+			add_than_push = false;
+		}
+		else
+		{
+			rdbuf.push_back(input.substr(old_idx, substr_size));
+		}
+
+		old_idx += substr_size;
+	}
+}
+
+void	IRC::empty_inputs(IRC& server, Client& client)
+{
+	std::vector< std::string >::iterator	it = client._read_buf.begin();
+
+	for (; it != client._read_buf.end(); )
+	{
+		if (it->empty() == false && it->substr(it->size() - 2, 2) == "\r\n")
+		{
+			std::cout << *it << std::endl;
+			struct Parser::Data data = Parser::parseClientMessage(*it);
+			Command::execute(server, client, data);
+			it = client._read_buf.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
 void	IRC::acceptClient(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
 	struct kevent		t_event;
@@ -206,32 +273,27 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 
 	if (event.data == 0)
 	{
-		// test
-		close(event.ident);
+		server.delClient(event.ident);
 		return;
-		// remove every Client references
-		// close ident(Client socket_fd)
-		// return
 	}
 
 	char*	buf = new char[event.data + 1];
+	// 메모리 부족하다는데... 뭐 어떡해...
 	Assert(buf != NULL);
 
 	// EINTR: 내가 처리해놓은 시그널은 일단 전부 프로세스 종료, throw Signal이라 상관없다.
 	// bytes_received가 event.data보다 작을 때? 어떻게 대처해야 하지
-	int	bytes_received = wrapSyscall(recv(event.ident, buf, event.data, 0), "recv");
-	buf[bytes_received] = '\0';
-	client->_read_buf += buf;
-	delete[] buf;
-
-	size_t	rdbuf_size = client->_read_buf.size();
-	if (client->_read_buf[rdbuf_size - 2] == '\r' && client->_read_buf[rdbuf_size - 1] == '\n')
+	// 다음 read event 때 잡는다.
+	int	bytes_received = recv(event.ident, buf, event.data, 0);
+	if (bytes_received != -1)
 	{
-		std::cout << client->_read_buf;
-		struct Parser::Data data = Parser::parseClientMessage(client->_read_buf);
-		Command::execute(server, *client, data);
-		client->_read_buf.clear();
+		buf[bytes_received] = '\0';
+		get_next_line(*client, buf);
 	}
+	delete[] buf;
+	wrapSyscall(bytes_received, "recv");
+
+	empty_inputs(server, *client);
 }
 
 void	IRC::sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
