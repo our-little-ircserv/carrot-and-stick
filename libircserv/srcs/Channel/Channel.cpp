@@ -167,17 +167,14 @@ bool	Channel::setModeParam(const char mode, const std::string& param)
 	bool	shift_or_not = mode == 'i' || mode == 't';
 
 	// k, l은 인자가 없거나 문제가 있으면 shift X.
-	if (mode == 'k')
+	if (param.empty() == false)
 	{
-		if (param.empty() == false)
+		if (mode == 'k')
 		{
 			_key = param;
 			shift_or_not = true;
 		}
-	}
-	else if (mode == 'l')
-	{
-		if (param.empty() == false)
+		else if (mode == 'l')
 		{
 			size_t	t_limit = 0;
 			std::stringstream	ss(param);
