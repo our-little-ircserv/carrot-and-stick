@@ -57,8 +57,6 @@ void	Command::mode(IRC& server, Client& client, const std::vector< std::string >
 		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 	}
 
-	std::cout << std::boolalpha << channel->isOperator(client) << std::endl;
-
 	channel->setMode(client, data.modes);
 }
 //

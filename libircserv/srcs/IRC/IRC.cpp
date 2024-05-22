@@ -181,23 +181,23 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 	}
 
 	char*	buf = new char[event.data + 1];
+	// 메모리 부족하다는데... 뭐 어떡해...
 	Assert(buf != NULL);
 
 	// EINTR: 내가 처리해놓은 시그널은 일단 전부 프로세스 종료, throw Signal이라 상관없다.
 	// bytes_received가 event.data보다 작을 때? 어떻게 대처해야 하지
+	// 다음 read event 때 잡는다.
 	int	bytes_received = recv(event.ident, buf, event.data, 0);
-	if (bytes_received == -1)
+	if (bytes_received != -1)
 	{
-		delete[] buf;
-		wrapSyscall(-1, "recv");
+		buf[bytes_received] = '\0';
+		client->_read_buf += buf;
 	}
-
-	buf[bytes_received] = '\0';
-	client->_read_buf += buf;
 	delete[] buf;
+	wrapSyscall(bytes_received, "recv");
 
 	size_t	rdbuf_size = client->_read_buf.size();
-	if (client->_read_buf[rdbuf_size - 2] == '\r' && client->_read_buf[rdbuf_size - 1] == '\n')
+	if (client->_read_buf.substr(rdbuf_size - 2, 2).rfind("\r\n") != std::string::npos)
 	{
 		std::cout << client->_read_buf;
 		struct Parser::Data data = Parser::parseClientMessage(client->_read_buf);
