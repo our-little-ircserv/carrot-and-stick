@@ -28,6 +28,7 @@ namespace Command
 		MODE,
 		PRIVMSG,
 		PART,
+		QUIT,
 		UNKNOWNCOMMAND = -1
 	};
 	
@@ -96,8 +97,8 @@ namespace Command
 		std::string					comment;
 	};
 
-	static std::string CmdList[10] = {
-		"PASS", "NICK", "USER", "JOIN", "TOPIC", "INVITE", "KICK", "MODE", "PRIVMSG", "PART"
+	static std::string CmdList[11] = {
+		"PASS", "NICK", "USER", "JOIN", "TOPIC", "INVITE", "KICK", "MODE", "PRIVMSG", "PART", "QUIT"
 	};
 
 	static std::vector< void (*)(IRC&, Client&, const struct Parser::Data&) > cmdFunctions;
@@ -120,6 +121,7 @@ namespace Command
 	void	mode(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	privmsg(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	part(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	quit(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 };
 
 #endif
