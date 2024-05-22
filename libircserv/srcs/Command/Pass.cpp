@@ -13,16 +13,19 @@ void	Command::pass(IRC& server, Client& client, const struct Parser::Data& data)
 	std::vector< std::string >	r_params;
 
 	// 이미 authorized 되었다면 무시한다
-	if (client.getRegisterLevel() > Client::AUTHORIZED)
-		return ;
+	if (client.getRegisterLevel() == Client::REGISTERED)
+	{
+		r_params.push_back(client.getNickname());
+		throw Reply(Reply::ERR_ALREADYREGISTRED, r_params);
+	}
 
 	// 그렇지 않다면 authorization을 수행한다
-	if (server.getPassword() == data.parameters[0])
+	if (server.getPassword() == data.parameters[0] && client.getRegisterLevel() == Client::NONE)
 	{
 		client.setRegisterLevel(Client::AUTHORIZED);
 	}
-	else
+	else if (client.getRegisterLevel() == Client::AUTHORIZED)
 	{
-//		throw(Error::EWRPARM);
+		client.setRegisterLevel(Client::NONE);
 	}
 }
