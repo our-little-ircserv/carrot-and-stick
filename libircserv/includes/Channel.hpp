@@ -29,6 +29,7 @@ class	Channel
 		Client*	searchMember(const std::string& name);
 
 		const std::string	getCurrentMode() const;
+		const std::string	getCurrentModeParam(const bool key_auth) const;
 		const std::string&	getChannelName() const;
 		const std::string&	getKey() const;
 		const size_t		getLimit() const;
@@ -67,7 +68,7 @@ class	Channel
 		std::set<Client*>		_invite_list;
 		std::map<Client*, bool>	_members;
 
-		void	setAttributes(struct Command::ModeWithParams& mode_data);
+		bool	setModeParam(const char mode, const std::string& param);
 };
 
 bool	operator<(const Client& a, const Client& b);

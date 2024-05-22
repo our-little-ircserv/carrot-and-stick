@@ -1,7 +1,7 @@
 #include <sys/socket.h>
-#include <iostream>
 #include <sstream>
 #include "Channel.hpp"
+#include "Parser.hpp"
 
 const std::string	Channel::st_valid_modes = "itkl";
 
@@ -62,10 +62,31 @@ const std::string	Channel::getCurrentMode() const
 	for (std::string::const_iterator it = st_valid_modes.begin(); it != st_valid_modes.end(); it++)
 	{
 		if (checkModeSet(*it) == true)
+		{
 			current_mode += *it;
+		}
 	}
 
 	return current_mode;
+}
+
+const std::string	Channel::getCurrentModeParam(const bool key_auth) const
+{
+	std::vector< std::string >	current_mode_param;
+
+	if (checkModeSet('k') == true && key_auth == true)
+	{
+		current_mode_param.push_back(_key);
+	}
+
+	if (checkModeSet('l') == true)
+	{
+		std::stringstream	ss;
+		ss << _limit;
+		current_mode_param.push_back(ss.str());
+	}
+
+	return Parser::concat_string_vector(current_mode_param);
 }
 
 const std::string&	Channel::getChannelName() const
@@ -93,6 +114,7 @@ const std::string& Channel::getTopic() const
 	return _topic;
 }
 
+// oitkl
 void	Channel::setMode(const Client& client, std::vector< struct Command::ModeWithParams>& mode_data)
 {
 	size_t						shift = 0;
@@ -125,8 +147,10 @@ void	Channel::setMode(const Client& client, std::vector< struct Command::ModeWit
 		{
 			if (it->type == Command::ADD)
 			{
-				_modes |= (1 << shift);
-				setAttributes(*it);
+				if (setModeParam(it->mode, it->mode_param) == true)
+				{
+					_modes |= (1 << shift);
+				}
 			}
 			else
 			{
@@ -134,6 +158,39 @@ void	Channel::setMode(const Client& client, std::vector< struct Command::ModeWit
 			}
 		}
 	}
+}
+
+// itkl 모드 세팅, shift 여부 판단.
+bool	Channel::setModeParam(const char mode, const std::string& param)
+{
+	// i, t는 인자 없음. 무조건 shift.
+	bool	shift_or_not = mode == 'i' || mode == 't';
+
+	// k, l은 인자가 없거나 문제가 있으면 shift X.
+	if (mode == 'k')
+	{
+		if (param.empty() == false)
+		{
+			_key = param;
+			shift_or_not = true;
+		}
+	}
+	else if (mode == 'l')
+	{
+		if (param.empty() == false)
+		{
+			size_t	t_limit = 0;
+			std::stringstream	ss(param);
+			ss >> t_limit;
+			if (ss.fail() == false && ss.eof() == true && t_limit != 0)
+			{
+				_limit = t_limit;
+				shift_or_not = true;
+			}
+		}
+	}
+
+	return shift_or_not;
 }
 
 void Channel::setTopic(std::string t_topic)
@@ -223,24 +280,6 @@ void	Channel::delOperator(Client& client)
 void	Channel::delInvited(Client& client)
 {
 	_invite_list.erase(_invite_list.find(&client));
-}
-
-void	Channel::setAttributes(struct Command::ModeWithParams& mode_data)
-{
-	switch (mode_data.mode)
-	{
-		case 't':
-			_topic = mode_data.mode_param;
-			break;
-		case 'k':
-			_key = mode_data.mode_param;
-			break;
-		case 'l':
-			std::istringstream(mode_data.mode_param) >> _limit;
-			break;
-		default:
-			break;
-	}
 }
 
 bool	operator<(const Client& a, const Client& b)
