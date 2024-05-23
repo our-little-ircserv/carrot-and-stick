@@ -22,6 +22,7 @@ class	Channel
 		};
 
 		Channel();
+//		~Channel();
 		Channel(Client& client, const char t_prefix, std::string t_name);
 		Channel(const Channel& other);
 		Channel& operator=(const Channel& other);
@@ -49,6 +50,8 @@ class	Channel
 		bool	isMember(Client& client) const;
 		bool	isOperator(Client& client) const;
 		bool	isInvited(Client& client) const;
+
+		bool	isEmpty() const;
 
 		void	addMember(Client& client);
 		void	addOperator(Client& client);

@@ -136,7 +136,6 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 		}
 		catch(Reply& e)
 		{
-			std::cout << e.getReplyMessage() << std::endl;
 			std::set< Client* > target_list;
 
 			target_list.insert(&client);

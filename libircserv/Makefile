@@ -6,7 +6,7 @@ DIR_OBJS=objs/
 
 NAME=libircserv.a
 CXX=c++
-CXXFLAGS=#-Wall -Wextra -Werror
+CXXFLAGS=-DDEBUG#-Wall -Wextra -Werror
 CPPFLAGS=-MMD -MP -I$(DIR_INCLUDES)
 
 RM=rm -fr
