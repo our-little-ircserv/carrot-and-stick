@@ -1,4 +1,3 @@
-#include <iostream>
 #include "IRC.hpp"
 #include "Parser.hpp"
 #include "Command.hpp"
@@ -26,16 +25,19 @@ void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data)
 
 	// 자신을 제외하고 모두에게 quit 메세지 브로드캐스트
 	chan_list.insert(chan_list.end(), client.getChannelList().begin(), client.getChannelList().end());
-	target_list = server.getTargetSet(chan_list);
-	std::set< Client* >::iterator it = target_list.find(&client);
-	Assert(it != target_list.end());
-
-	target_list.erase(it);
-
-	if (target_list.empty() == false)
+	if (chan_list.empty() == false)
 	{
-		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
-		target_list.clear();
+		target_list = server.getTargetSet(chan_list);
+		std::set< Client* >::iterator it = target_list.find(&client);
+		Assert(it != target_list.end());
+
+		target_list.erase(it);
+
+		if (target_list.empty() == false)
+		{
+			server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+			target_list.clear();
+		}
 	}
 
 	// 본인에게는 ERROR 메세지 전달

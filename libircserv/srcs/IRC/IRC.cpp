@@ -1,4 +1,5 @@
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -334,7 +335,8 @@ void	IRC::sendMessages(IRC& server, const struct kevent& event) throw(Signal, Fa
 {
 	std::cout << "Write event" << std::endl;
 
-	if ((event.flags & EV_ERROR) != 0)
+	struct stat	statbuf;
+	if (fstat(event.ident, &statbuf) == -1)
 	{
 		return;
 	}
