@@ -40,6 +40,7 @@ class	IRC
 		Client*		searchClient(const int sockfd);
 		Client*		searchClient(const std::string& nickname);
 
+		void	disconnectClient(Client& client);
 		std::vector< Channel* >	delClient(Client& client);
 		void					delChannels(const std::vector< Channel* >& channels);
 
@@ -70,11 +71,11 @@ class	IRC
 		static void	receiveMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
 		static void	sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
 };
-
-inline void	disconnectClient(IRC& server, Client& client)
-{
-	std::vector< Channel* >	empty_channels = server.delClient(client);
-	server.delChannels(empty_channels);
-}
+//
+//inline void	disconnectClient(IRC& server, Client& client)
+//{
+//	std::vector< Channel* >	empty_channels = server.delClient(client);
+//	server.delChannels(empty_channels);
+//}
 
 #endif

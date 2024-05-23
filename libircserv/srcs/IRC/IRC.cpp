@@ -312,7 +312,7 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 
 	if ((event.flags & EV_EOF) != 0)
 	{
-		disconnectClient(server, *client);
+		server.disconnectClient(*client);
 		return;
 	}
 
@@ -326,7 +326,7 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 
 	if (client->getRegisterLevel() == Client::LEFT)
 	{
-		disconnectClient(server, *client);
+		server.disconnectClient(*client);
 		std::cout << "closed successfully" << std::endl;
 	}
 }
