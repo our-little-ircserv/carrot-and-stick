@@ -17,7 +17,8 @@ class	Client
 		{
 			NONE,
 			AUTHORIZED,
-			REGISTERED
+			REGISTERED,
+			LEFT
 		};
 
 		std::vector<std::string>	_read_buf;
@@ -26,6 +27,7 @@ class	Client
 		bool	_writable;
 
 		Client();
+//		~Client();
 		Client(int t_sockfd, const struct sockaddr_in& addr);
 
 		int					getSocketFd() const;

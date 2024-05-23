@@ -117,10 +117,41 @@ Client* IRC::searchClient(const std::string& nickname)
 	return NULL;
 }
 
-void	IRC::delClient(const int sockfd)
+std::vector< Channel* >	IRC::delClient(Client& client)
 {
-	close(sockfd);
-	_clients.erase(_clients.find(sockfd));
+	std::vector< Channel* >		empty_channels;
+	std::vector< std::string >	chan_list;
+	chan_list.insert(chan_list.end(), client.getChannelList().begin(), client.getChannelList().end());
+	for (size_t i = 0; i < chan_list.size(); i++)
+	{
+		Channel* channel = searchChannel(chan_list[i]);
+		Assert(channel != NULL && channel->isMember(client) == true);
+
+		if (channel->isOperator(client) == true)
+		{
+			channel->delOperator(client);
+		}
+		channel->delMember(client);
+
+		if (channel->isEmpty() == true)
+		{
+			empty_channels.push_back(channel);
+		}
+	}
+
+	close(client.getSocketFd());
+	_clients.erase(_clients.find(client.getSocketFd()));
+
+	return empty_channels;
+}
+
+void	IRC::delChannels(const std::vector< Channel* >& channels)
+{
+	size_t	channels_size = channels.size();
+	for (size_t i = 0; i < channels_size; i++)
+	{
+		_channels.erase(_channels.find(channels[i]->getChannelName()));
+	}
 }
 
 int	IRC::getServerSocketFd() const
@@ -233,12 +264,16 @@ void	IRC::iterate_rdbuf(IRC& server, Client& client)
 {
 	std::vector< std::string >::iterator	it = client._read_buf.begin();
 
-	for (; it != client._read_buf.end(); )
+	for ( ; it != client._read_buf.end(); )
 	{
 		if (it->empty() == false && it->substr(it->size() - 2, 2) == "\r\n")
 		{
 			struct Parser::Data data = Parser::parseClientMessage(*it);
 			Command::execute(server, client, data);
+			if (client.getRegisterLevel() == Client::LEFT)
+			{
+				break;
+			}
 			it = client._read_buf.erase(it);
 		}
 		else
@@ -274,31 +309,35 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 	Client*	client = server.searchClient((int)event.ident);
 	Assert(client != NULL);
 
-	if (event.data == 0)
+	if ((event.flags & EV_EOF) != 0)
 	{
-		server.delClient(event.ident);
+		disconnectClient(server, *client);
 		return;
 	}
 
 	char	buf[512];
-//	char*	buf = new char[event.data + 1];
-//	Assert(buf != NULL);
 
-	int	bytes_received = recv(event.ident, buf, event.data, 0);
-	if (bytes_received != -1)
-	{
-		buf[bytes_received] = '\0';
-		get_next_line(*client, buf);
-	}
-//	delete[] buf;
-	wrapSyscall(bytes_received, "recv");
+	int	bytes_received = wrapSyscall(recv(event.ident, buf, event.data, 0), "recv");
+	buf[bytes_received] = '\0';
 
+	get_next_line(*client, buf);
 	iterate_rdbuf(server, *client);
+
+	if (client->getRegisterLevel() == Client::LEFT)
+	{
+		disconnectClient(server, *client);
+		std::cout << "closed successfully" << std::endl;
+	}
 }
 
 void	IRC::sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
 	std::cout << "Write event" << std::endl;
+
+	if ((event.flags & EV_ERROR) != 0)
+	{
+		return;
+	}
 
 	Client*	client = server.searchClient((int)event.ident);
 	Assert(client != NULL);

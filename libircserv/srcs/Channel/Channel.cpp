@@ -1,5 +1,6 @@
 #include <sys/socket.h>
 #include <sstream>
+//#include <iostream>
 #include "Channel.hpp"
 #include "Parser.hpp"
 
@@ -9,6 +10,11 @@ Channel::Channel() : _modes(0), _limit(0)
 {
 	//
 }
+//
+//Channel::~Channel()
+//{
+//	std::cout << _name << " destroyed" << std::endl;
+//}
 
 Channel::Channel(Client& client, const char t_prefix, std::string t_name) : _name(t_name), _modes(0), _limit(0)
 {
@@ -240,6 +246,11 @@ bool	Channel::isOperator(Client& client) const
 bool	Channel::isInvited(Client& client) const
 {
 	return _invite_list.find(&client) != _invite_list.end();
+}
+
+bool	Channel::isEmpty() const
+{
+	return _members.size() == 0;
 }
 
 void	Channel::addMember(Client& client)
