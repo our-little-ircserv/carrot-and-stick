@@ -1,4 +1,3 @@
-#include <iostream> // for debug
 #include "Parser.hpp"
 #include "Command.hpp"
 #include "Reply.hpp"
@@ -40,7 +39,6 @@ int Command::getType(std::string& command)
 
 void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 {
-	std::cout << "exec" << std::endl;
 	int							cmd_type;
 	std::vector< std::string >	r_params;
 

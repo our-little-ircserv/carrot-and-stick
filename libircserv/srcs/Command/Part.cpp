@@ -41,8 +41,9 @@ struct Command::Part	Parser::part(const Client& client, const std::vector< std::
 void	Command::part(IRC& server, Client& client, const struct Parser::Data& data) throw (Reply)
 {
 	struct Command::Part		p_data = Parser::part(client, data.parameters);
-	std::vector< std::string >	r_params;
 	size_t						chan_len = p_data.channels.size();
+	std::vector< std::string >	r_params;
+	std::vector< Channel* >		empty_channels;
 
 	for (size_t i = 0; i < chan_len; i++)
 	{
@@ -85,6 +86,12 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
 
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
+
+			if (channel->isEmpty() == true)
+			{
+				empty_channels.push_back(channel);
+			}
+
 		}
 		catch(Reply& e)
 		{
@@ -95,4 +102,6 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
 			server.deliverMsg(target_list, e.getReplyMessage());
 		}
 	}
+
+	server.delChannels(empty_channels);
 }

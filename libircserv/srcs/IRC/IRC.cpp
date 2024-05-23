@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <cinttypes>
-#include <iostream>
 #include "IRC.hpp"
 #include "Parser.hpp"
 #include "Command.hpp"
@@ -14,7 +13,7 @@
 
 extern int	kq;
 
-const char*	IRC::hostname = "carrot-and-stick.ircserv.com";
+const std::string	IRC::hostname = "carrot-and-stick.ircserv.com";
 
 IRC::IRC(struct AccessData access_data) : _port(access_data.port), _ip_addr("127.0.0.1"), _password(access_data.password)
 {
@@ -118,6 +117,16 @@ Client* IRC::searchClient(const std::string& nickname)
 	return NULL;
 }
 
+// client socket disconnect
+void	IRC::disconnectClient(Client& client)
+{
+	int	t_sockfd = client.getSocketFd();
+	std::vector< Channel* >	empty_channels = delClient(client);
+	delChannels(empty_channels);
+	close(t_sockfd);
+}
+
+// map에 담긴 client 객체 소멸
 std::vector< Channel* >	IRC::delClient(Client& client)
 {
 	std::vector< Channel* >		empty_channels;
@@ -140,7 +149,6 @@ std::vector< Channel* >	IRC::delClient(Client& client)
 		}
 	}
 
-	close(client.getSocketFd());
 	_clients.erase(_clients.find(client.getSocketFd()));
 
 	return empty_channels;
@@ -290,7 +298,6 @@ void	IRC::acceptClient(IRC& server, const struct kevent& event) throw(Signal, Fa
 	struct sockaddr_in	client_addr;
 	socklen_t			socklen = sizeof(struct sockaddr_in);
 
-	std::cout << "acceptClient" << std::endl;
 	int client_fd = wrapSyscall(accept(server.getServerSocketFd(), (struct sockaddr*)&client_addr, &socklen), "accept");
 	Client	client(client_fd, client_addr);
 
@@ -305,8 +312,6 @@ void	IRC::acceptClient(IRC& server, const struct kevent& event) throw(Signal, Fa
 
 void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
-	std::cout << "Read event" << std::endl;
-
 	Client*	client = server.searchClient((int)event.ident);
 	Assert(client != NULL);
 
@@ -327,14 +332,11 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 	if (client->getRegisterLevel() == Client::LEFT)
 	{
 		server.disconnectClient(*client);
-		std::cout << "closed successfully" << std::endl;
 	}
 }
 
 void	IRC::sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
-	std::cout << "Write event" << std::endl;
-
 	struct stat	statbuf;
 	if (fstat(event.ident, &statbuf) == -1)
 	{
