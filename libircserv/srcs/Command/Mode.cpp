@@ -50,20 +50,32 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 	}
+	else if (p_data.modes.empty() == true)
+	{
+		r_params.push_back(client.getNickname());
+		r_params.push_back(p_data.channel);
+		r_params.push_back(channel->getCurrentMode());
+		r_params.push_back(channel->getCurrentModeParam(channel->isMember(client)));
+		throw Reply(Reply::RPL_CHANNELMODEIS, r_params);
+	}
 	else if (channel->isMember(client) == false || channel->isOperator(client) == false)
 	{
 		r_params.push_back(client.getNickname());
 		r_params.push_back(p_data.channel);
+
 		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 	}
 
+	// only (member && operator) reaches here
 	channel->setMode(client, p_data.modes);
+
 	{
 		std::set< Client* > target_list = channel->getMemberSet();
 
 		r_params.push_back(data.prefix);
 		r_params.push_back(data.command);
 		r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+		r_params.push_back("\r\n");
 
 		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 	}

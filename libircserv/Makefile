@@ -28,6 +28,7 @@ SRCS= $(addprefix $(DIR_SRCS), \
 	  Command/Topic.cpp \
 	  Command/User.cpp \
 	  Command/Part.cpp \
+	  Command/Quit.cpp \
 	  ErrorReply/FatalError.cpp \
 	  ErrorReply/Reply.cpp \
 	  IRC/IRC.cpp \
