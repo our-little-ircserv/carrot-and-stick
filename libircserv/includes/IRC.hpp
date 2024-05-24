@@ -40,14 +40,14 @@ class	IRC
 		Client*		searchClient(const int sockfd);
 		Client*		searchClient(const std::string& nickname);
 
-		void	disconnectClient(Client& client);
+		void					disconnectClient(Client& client);
 		std::vector< Channel* >	delClient(Client& client);
 		void					delChannels(const std::vector< Channel* >& channels);
 
 		int					getServerSocketFd() const;
 		const std::string&	getPassword() const;
 
-		void	deliverMsg(std::set< Client* >& target_list, std::string msg);
+		void				deliverMsg(std::set< Client* >& target_list, std::string msg);
 		std::set< Client* > getTargetSet(std::vector< std::string >targets);
 
 	private:
@@ -70,6 +70,8 @@ class	IRC
 		static void	acceptClient(IRC& server, const struct kevent& event) throw(Signal, FatalError);
 		static void	receiveMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
 		static void	sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
+
+		static void	handleEOF(IRC& server, Client& client) throw(enum Client::REGISTER_LEVEL);
 };
 //
 //inline void	disconnectClient(IRC& server, Client& client)

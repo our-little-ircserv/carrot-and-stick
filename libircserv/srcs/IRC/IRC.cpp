@@ -76,7 +76,7 @@ Channel* IRC::searchChannel(const std::string& channel_name)
 
 Channel* IRC::createChannel(Client& client, const char prefix, const std::string& channel_name)
 {
-    _channels.insert(std::make_pair(channel_name, Channel(client, prefix, channel_name)));
+	_channels.insert(std::make_pair(channel_name, Channel(client, prefix, channel_name)));
 
 	return &(_channels[channel_name]);
 }
@@ -85,7 +85,7 @@ void	IRC::setUpSocket() throw(Signal, FatalError)
 {
 	_server_sockfd = wrapSyscall(socket(AF_INET, SOCK_STREAM, 0), "socket");
 	fcntl(_server_sockfd, F_SETFL, O_NONBLOCK);
-	
+
 	int	opt;
 	opt = 1;
 	wrapSyscall(setsockopt(_server_sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)), "setsockopt");
@@ -161,6 +161,7 @@ void	IRC::delChannels(const std::vector< Channel* >& channels)
 	{
 		_channels.erase(_channels.find(channels[i]->getChannelName()));
 	}
+
 }
 
 int	IRC::getServerSocketFd() const
@@ -235,7 +236,7 @@ void	IRC::get_next_line(Client& client, const std::string& input)
 	size_t						crlf = 0;
 
 	std::string&	last_element = rdbuf.back();
-	if (client._read_buf.empty() == false && last_element.find("\r\n") == std::string::npos)
+	if (rdbuf.empty() == false && last_element.find("\r\n") == std::string::npos)
 	{
 		crlf = input.find("\r\n");
 		old_idx = crlf;
@@ -261,6 +262,7 @@ void	IRC::get_next_line(Client& client, const std::string& input)
 		{
 			substr_size = crlf + 2;
 		}
+
 		substr_size -= old_idx;
 
 		rdbuf.push_back(input.substr(old_idx, substr_size));
@@ -275,7 +277,9 @@ void	IRC::iterate_rdbuf(IRC& server, Client& client)
 
 	for ( ; it != client._read_buf.end(); )
 	{
-		if (it->empty() == false && it->substr(it->size() - 2, 2) == "\r\n")
+		Assert(it->empty() == false);
+		*it = it->substr(0, 512);
+		if (it->substr(it->size() - 2, 2) == "\r\n")
 		{
 			struct Parser::Data data = Parser::parseClientMessage(*it);
 			Command::execute(server, client, data);
@@ -315,7 +319,7 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 	{
 		if ((event.flags & EV_EOF) != 0)
 		{
-			throw Client::LEFT;
+			handleEOF(server, *client);
 		}
 
 		char	buf[512];
@@ -327,15 +331,10 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 
 		iterate_rdbuf(server, *client);
 	}
-	catch(enum Client::REGISTER_LEVEL&)
+	catch(enum Client::REGISTER_LEVEL& left)
 	{
-		server.disconnectClient(*client);
+		client->setRegisterLevel(left);
 	}
-//
-//	if (client->getRegisterLevel() == Client::LEFT)
-//	{
-//		server.disconnectClient(*client);
-//	}
 }
 
 void	IRC::sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
@@ -360,15 +359,32 @@ void	IRC::sendMessages(IRC& server, const struct kevent& event) throw(Signal, Fa
 			client->_write_buf[0] = client->_write_buf[0].substr(sent_size);
 			break;
 		}
+
 		client->_write_buf.erase(client->_write_buf.begin());
 	}
 
 	if (client->_write_buf.empty() == true && client->_writable == true)
 	{
+		if (client->getRegisterLevel() == Client::LEFT)
+		{
+			server.disconnectClient(*client);
+			return;
+		}
+
 		client->_writable = false;
 
 		struct kevent	t_event;
 		EV_SET(&t_event, client->getSocketFd(), EVFILT_WRITE, EV_DISABLE, 0, 0, (void*)sendMessages);
 		server._changelist.push_back(t_event);
 	}
+}
+
+void	IRC::handleEOF(IRC& server, Client& client) throw(enum Client::REGISTER_LEVEL)
+{
+	struct kevent	t_event;
+	EV_SET(&t_event, client.getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, (void*)sendMessages);
+	server._changelist.push_back(t_event);
+
+	struct Parser::Data	data = Parser::parseClientMessage("QUIT\r\n");
+	Command::execute(server, client, data);
 }
