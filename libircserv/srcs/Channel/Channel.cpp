@@ -248,11 +248,6 @@ bool	Channel::isInvited(Client& client) const
 	return _invite_list.find(&client) != _invite_list.end();
 }
 
-bool	Channel::isEmpty() const
-{
-	return _members.size() == 0;
-}
-
 void	Channel::addMember(Client& client)
 {
 	_members[&client] = false;

@@ -87,7 +87,7 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
 
-			if (channel->isEmpty() == true)
+			if (channel->getMemberCnt() == 0)
 			{
 				empty_channels.push_back(channel);
 			}

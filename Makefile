@@ -2,7 +2,7 @@
 
 NAME=irctest
 CXX=c++
-CXXFLAGS=#-Wall -Wextra -Werror
+CXXFLAGS=-DDEBUG#-Wall -Wextra -Werror
 CPPFLAGS=-MMD -MP -Ilibircserv/includes
 
 RM=rm -fr

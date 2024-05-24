@@ -51,8 +51,6 @@ class	Channel
 		bool	isOperator(Client& client) const;
 		bool	isInvited(Client& client) const;
 
-		bool	isEmpty() const;
-
 		void	addMember(Client& client);
 		void	addOperator(Client& client);
 		void	addInvited(Client& client);
