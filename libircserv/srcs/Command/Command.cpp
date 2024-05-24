@@ -4,6 +4,7 @@
 
 void Command::init()
 {
+	Command::cmdFunctions.push_back(Command::quit);
 	Command::cmdFunctions.push_back(Command::pass);
 	Command::cmdFunctions.push_back(Command::nick);
 	Command::cmdFunctions.push_back(Command::user);
@@ -14,7 +15,6 @@ void Command::init()
 	Command::cmdFunctions.push_back(Command::mode);
 	Command::cmdFunctions.push_back(Command::privmsg);
 	Command::cmdFunctions.push_back(Command::part);
-	Command::cmdFunctions.push_back(Command::quit);
 }
 
 int Command::getType(std::string& command)
