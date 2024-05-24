@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iomanip>
 #include "Reply.hpp"
 #include "IRC.hpp"
 #include "Parser.hpp"
@@ -12,8 +13,8 @@ std::string	Reply::getReplyMessage()
 {
 	std::stringstream	ss;
 
-	ss << _number;
-	std::string	message = IRC::hostname + " " + ss.str() + " " + _parameters[0] + " ";
+	ss << std::setw(3) << std::setfill('0') << _number;
+	std::string	message = ":" + IRC::hostname + " " + ss.str() + " " + _parameters[0] + " ";
 	_parameters.erase(_parameters.begin());
 
 	switch (_number)
