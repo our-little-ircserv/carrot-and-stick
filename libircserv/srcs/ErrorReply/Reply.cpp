@@ -1,26 +1,7 @@
+#include <sstream>
 #include "Reply.hpp"
-#include <iostream>
-//#include "IRC.hpp"
-//#include "Parser.hpp"
-
-std::string	concat_string_vector(const std::vector< std::string >& vec, const char identifier = ' ')
-{
-	std::string	concat_params;
-
-	size_t	i = 0;
-	while (i < vec.size())
-	{
-		concat_params += vec[i];
-		++i;
-
-		if (i != vec.size())
-		{
-			concat_params += identifier;
-		}
-	}
-
-	return concat_params;
-}
+#include "IRC.hpp"
+#include "Parser.hpp"
 
 Reply::Reply(enum Reply::ReplyType t_number, const std::vector< std::string >& t_parameters) : _number(t_number), _parameters(t_parameters)
 {
@@ -29,8 +10,10 @@ Reply::Reply(enum Reply::ReplyType t_number, const std::vector< std::string >& t
 // :hostname rpl_no parameters :message crlf
 std::string	Reply::getReplyMessage()
 {
-//	std::string	message = IRC::hostname + ' ' + rpl_no + ' ' + _parameters[0] + ' ';
-	std::string	message = ":carrot-and-stick.irc.kr " + std::to_string(_number) + " " + _parameters[0] + " ";
+	std::stringstream	ss;
+
+	ss << _number;
+	std::string	message = IRC::hostname + " " + ss.str() + " " + _parameters[0] + " ";
 	_parameters.erase(_parameters.begin());
 
 	switch (_number)
@@ -53,7 +36,7 @@ std::string	Reply::getReplyMessage()
 			break;
 		case RPL_CHANNELMODEIS:
 			// hostname 324 nickname #channel +it
-			message += concat_string_vector(_parameters);
+			message += Parser::concat_string_vector(_parameters);
 			break;
 		case RPL_NOTOPIC:
 			// hostname 331 nickname #channel :No topic is set
@@ -65,7 +48,7 @@ std::string	Reply::getReplyMessage()
 			break;
 		case RPL_INVITING:
 			// hostname 341 nickname #channel user_to_invite
-			message += concat_string_vector(_parameters);
+			message += Parser::concat_string_vector(_parameters);
 			break;
 		case ERR_NOSUCHNICK:
 			// hostname 401 nickname nick/channel :No such nick/channel
@@ -77,7 +60,7 @@ std::string	Reply::getReplyMessage()
 			break;
 		case ERR_TOOMANYTARGETS:
 			// hostname 407 nickname ... :Too many recipients
-			message += concat_string_vector(_parameters, ',') + " :Too many recipients";
+			message += Parser::concat_string_vector(_parameters, ',') + " :Too many recipients";
 			break;
 		case ERR_NORECIPIENT:
 			// hostname 411 nickname :No recipient given (command)
@@ -105,7 +88,7 @@ std::string	Reply::getReplyMessage()
 			break;
 		case ERR_USERNOTINCHANNEL:
 			// hostname 441 nickname user #channel :They aren't on that channel
-			message += concat_string_vector(_parameters) + " :They aren't on that channel";
+			message += Parser::concat_string_vector(_parameters) + " :They aren't on that channel";
 			break;
 		case ERR_NOTONCHANNEL:
 			// hostname 442 nickname #channel :You're not on that channel
@@ -113,7 +96,7 @@ std::string	Reply::getReplyMessage()
 			break;
 		case ERR_USERONCHANNEL:
 			// hostname 443 nickname user #channel :is already on channel
-			message += concat_string_vector(_parameters) + " :is already on channel";
+			message += Parser::concat_string_vector(_parameters) + " :is already on channel";
 			break;
 		case ERR_NOTREGISTERED:
 			// hostname 411 nickname :You have not registered
@@ -161,14 +144,3 @@ std::string	Reply::getReplyMessage()
 
 	return message;
 }
-//
-//int	main()
-//{
-//	std::vector< std::string > params;
-//	params.push_back("seojilee");
-//	params.push_back("#channel");
-//	params.push_back("+itl");
-//
-//	Reply	reply(Reply::RPL_CHANNELMODEIS, params);
-//	std::cout << reply.getReplyMessage();
-//}

@@ -121,7 +121,7 @@ enum Parser::TokenType	Parser::extractTokenType(const std::string& token)
 	return Parser::NOCOLON;
 }
 
-std::string	Parser::concat_string_vector(const std::vector< std::string >& vec)
+std::string	Parser::concat_string_vector(const std::vector< std::string >& vec, const char identifier)
 {
 	std::string	concat_params;
 
@@ -133,7 +133,7 @@ std::string	Parser::concat_string_vector(const std::vector< std::string >& vec)
 
 		if (i != vec.size())
 		{
-			concat_params += ' ';
+			concat_params += identifier;
 		}
 	}
 
