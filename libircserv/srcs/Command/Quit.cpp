@@ -9,7 +9,7 @@
 // 	//
 // }
 
-void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
+void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data) throw(enum Client::REGISTER_LEVEL)
 {
 	std::vector< std::string >	r_params;
 	std::vector< std::string >  chan_list;
@@ -52,8 +52,5 @@ void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data)
 
 	server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 
-	client.setRegisterLevel(Client::LEFT);
-	//
-	//	std::vector< Channel* >	empty_channels = server.delClient(client);
-	//	server.delChannels(empty_channels);
+	throw Client::LEFT;
 }

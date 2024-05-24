@@ -121,7 +121,7 @@ namespace Command
 	void	mode(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	privmsg(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	part(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
-	void	quit(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	quit(IRC& server, Client& client, const struct Parser::Data& data) throw(enum Client::REGISTER_LEVEL);
 };
 
 #endif

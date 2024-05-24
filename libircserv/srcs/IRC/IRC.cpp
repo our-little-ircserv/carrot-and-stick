@@ -279,10 +279,6 @@ void	IRC::iterate_rdbuf(IRC& server, Client& client)
 		{
 			struct Parser::Data data = Parser::parseClientMessage(*it);
 			Command::execute(server, client, data);
-			if (client.getRegisterLevel() == Client::LEFT)
-			{
-				break;
-			}
 			it = client._read_buf.erase(it);
 		}
 		else
@@ -315,24 +311,31 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 	Client*	client = server.searchClient((int)event.ident);
 	Assert(client != NULL);
 
-	if ((event.flags & EV_EOF) != 0)
+	try
+	{
+		if ((event.flags & EV_EOF) != 0)
+		{
+			throw Client::LEFT;
+		}
+
+		char	buf[512];
+
+		int	bytes_received = wrapSyscall(recv(event.ident, buf, event.data, 0), "recv");
+		buf[bytes_received] = '\0';
+
+		get_next_line(*client, buf);
+
+		iterate_rdbuf(server, *client);
+	}
+	catch(enum Client::REGISTER_LEVEL&)
 	{
 		server.disconnectClient(*client);
-		return;
 	}
-
-	char	buf[512];
-
-	int	bytes_received = wrapSyscall(recv(event.ident, buf, event.data, 0), "recv");
-	buf[bytes_received] = '\0';
-
-	get_next_line(*client, buf);
-	iterate_rdbuf(server, *client);
-
-	if (client->getRegisterLevel() == Client::LEFT)
-	{
-		server.disconnectClient(*client);
-	}
+//
+//	if (client->getRegisterLevel() == Client::LEFT)
+//	{
+//		server.disconnectClient(*client);
+//	}
 }
 
 void	IRC::sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
