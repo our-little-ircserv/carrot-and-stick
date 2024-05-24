@@ -143,7 +143,7 @@ std::vector< Channel* >	IRC::delClient(Client& client)
 		}
 		channel->delMember(client);
 
-		if (channel->isEmpty() == true)
+		if (channel->getMemberCnt() == 0)
 		{
 			empty_channels.push_back(channel);
 		}
