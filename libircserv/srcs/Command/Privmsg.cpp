@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include "Command.hpp"
+#include "Assert.hpp"
 
 struct Command::Privmsg	Parser::privmsg(const Client& client, const std::vector< std::string >& params) throw(Reply)
 {
@@ -74,14 +75,15 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 				}
 				target_list.insert(t_client);
 			}
-			target_list.insert(t_channel->getMemberSet().begin(), t_channel->getMemberSet().end());
-			// except self in channel member list
-			if (target_list.find(&client) == target_list.end())
-			{
-				target_list.erase(target_list.find(&client));
-			}
+			Assert(t_channel->getMemberCnt() != 0);
+			std::set< Client* >	t_member_set = t_channel->getMemberSet();
 
-			// Message to client or channel
+			target_list.insert(t_member_set.begin(), t_member_set.end());
+
+			std::set< Client* >::iterator it = target_list.find(&client);
+			Assert(it != target_list.end());
+			target_list.erase(it);
+
 			server.deliverMsg(target_list, p_data.text_to_be_sent);
 		}
 		catch(Reply& e)
