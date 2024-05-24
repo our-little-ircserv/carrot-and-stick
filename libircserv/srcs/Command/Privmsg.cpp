@@ -82,8 +82,10 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 			target_list.insert(t_member_set.begin(), t_member_set.end());
 
 			std::set< Client* >::iterator it = target_list.find(&client);
-			Assert(it != target_list.end());
-			target_list.erase(it);
+			if (it != target_list.end())
+			{
+				target_list.erase(it);
+			}
 
 			r_params.push_back(data.prefix);
 			r_params.push_back(data.command);
