@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Parser.hpp"
 #include "Command.hpp"
 #include "Assert.hpp"
@@ -84,7 +85,14 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 			Assert(it != target_list.end());
 			target_list.erase(it);
 
-			server.deliverMsg(target_list, p_data.text_to_be_sent);
+			r_params.push_back(data.prefix);
+			r_params.push_back(data.command);
+			r_params.push_back(p_data.msg_targets[i]);
+			r_params.push_back(p_data.text_to_be_sent);
+			r_params.push_back("\r\n");
+
+			server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+			r_params.clear();
 		}
 		catch(Reply& e)
 		{
