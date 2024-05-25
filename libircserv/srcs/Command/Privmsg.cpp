@@ -75,10 +75,13 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 				}
 				target_list.insert(t_client);
 			}
-			Assert(t_channel->getMemberCnt() != 0);
-			std::set< Client* >	t_member_set = t_channel->getMemberSet();
+			else
+			{
+				Assert(t_channel->getMemberCnt() != 0);
+				std::set< Client* >	t_member_set = t_channel->getMemberSet();
 
-			target_list.insert(t_member_set.begin(), t_member_set.end());
+				target_list.insert(t_member_set.begin(), t_member_set.end());
+			}
 
 			std::set< Client* >::iterator it = target_list.find(&client);
 			if (it != target_list.end())
