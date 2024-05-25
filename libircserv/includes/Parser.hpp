@@ -35,15 +35,16 @@ namespace	Parser
 	std::vector<struct Parser::Token>	splitTokens(const std::string message);
 	enum Parser::TokenType				extractTokenType(const std::string& token);
 
-	struct Command::Join	join(const Client& client, const std::vector< std::string >& params) throw(Reply);
-	std::string				nick(const Client& client, const std::vector< std::string >& params) throw(Reply);
-	struct Command::Privmsg	privmsg(const Client& client, const std::vector< std::string >& params) throw(Reply);
-	struct Command::User	user(const Client& client, const std::vector< std::string >& params) throw(Reply);
-	struct Command::Topic	topic(const Client& client, const std::vector< std::string >& params) throw(Reply);
-	struct Command::Invite	invite(const Client& client, const std::vector< std::string >& params) throw(Reply);
-	struct Command::Kick	kick(const Client& client, const std::vector< std::string >& params) throw(Reply);
-	struct Command::Mode	mode(const Client& client, const std::vector< std::string >& params) throw(Reply);
-	struct Command::Part	part(const Client& client, const std::vector< std::string >& params) throw(Reply);
+	struct Command::Join		join(const Client& client, const std::vector< std::string >& params) throw(Reply);
+	std::string					nick(const Client& client, const std::vector< std::string >& params) throw(Reply);
+	struct Command::Privmsg		privmsg(const Client& client, const std::vector< std::string >& params) throw(Reply);
+	struct Command::User		user(const Client& client, const std::vector< std::string >& params) throw(Reply);
+	struct Command::Topic		topic(const Client& client, const std::vector< std::string >& params) throw(Reply);
+	struct Command::Invite		invite(const Client& client, const std::vector< std::string >& params) throw(Reply);
+	struct Command::Kick		kick(const Client& client, const std::vector< std::string >& params) throw(Reply);
+	struct Command::Mode		mode(const Client& client, const std::vector< std::string >& params) throw(Reply);
+	struct Command::Part		part(const Client& client, const std::vector< std::string >& params) throw(Reply);
+	std::vector< std::string >	names(const Client& client, const std::vector< std::string >& params) throw(Reply);
 
 	std::string	concat_string_vector(const std::vector< std::string >& vec, const char identifier = ' ');
 
