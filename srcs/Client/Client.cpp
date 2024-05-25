@@ -4,15 +4,9 @@
 
 Client::Client()
 {
-	//
 }
 
-//Client::~Client()
-//{
-//	std::cout << "Client destroyed" << std::endl;
-//}
-
-Client::Client(int t_sockfd, const struct sockaddr_in& t_addr) : _sockfd(t_sockfd), _addr(t_addr), _writable(false), _nickname("*"), _register_level(Client::NONE)
+Client::Client(int t_sockfd, const struct sockaddr_in& t_addr) :  _writable(false), _sockfd(t_sockfd), _addr(t_addr), _register_level(Client::NONE), _nickname("*")
 {
 	wrapSyscall(fcntl(_sockfd, F_SETFL, O_NONBLOCK), "fcntl");
 }

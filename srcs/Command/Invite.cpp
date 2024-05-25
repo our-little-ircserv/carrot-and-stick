@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct Command::Invite	Parser::invite(const Client& client, const std::vector< std::string >& params) throw(Reply)
+struct Command::Invite	Parser::invite(const std::vector< std::string >& params) throw(Reply)
 {
 	struct Command::Invite		data;
 	std::vector< std::string >	r_params;
@@ -24,7 +24,7 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 	Channel*					channel;
 	Client*						target_client;
 
-	p_data = Parser::invite(client, data.parameters);
+	p_data = Parser::invite(data.parameters);
 
 	// 초대하는 자가 해당 채널에 접속중인지 확인 - 해당 채널이 실존하는지는 검사하지 않음
 	// class Client 쪽에 class Channel 을 목록으로 들고있어야 하나 싶지만

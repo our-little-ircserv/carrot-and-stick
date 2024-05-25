@@ -29,12 +29,12 @@ class	Channel
 
 		Client*	searchMember(const std::string& name);
 
-		const std::string	getCurrentMode() const;
-		const std::string	getCurrentModeParam(const bool key_auth) const;
+		std::string			getCurrentMode() const;
+		std::string			getCurrentModeParam(const bool key_auth) const;
 		const std::string&	getChannelName() const;
 		const std::string&	getKey() const;
-		const size_t		getLimit() const;
-		const size_t		getMemberCnt() const;
+		size_t				getLimit() const;
+		size_t				getMemberCnt() const;
 		const std::string&	getTopic() const;
 
 		std::map<Client*, bool>::iterator	getMemberBegin();
@@ -42,7 +42,7 @@ class	Channel
 
 		std::set< Client* >	getMemberSet();
 
-		void	setMode(const Client& client, std::vector< struct Command::ModeWithParams>& mode_data);
+		void	setMode(std::vector< struct Command::ModeWithParams>& mode_data);
 		void	setTopic(std::string t_topic);
 
 		bool	checkModeSet(const char mode) const;

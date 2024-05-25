@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct Command::User	Parser::user(const Client& client, const std::vector< std::string >& params) throw(Reply)
+struct Command::User	Parser::user(const std::vector< std::string >& params) throw(Reply)
 {
 	struct Command::User		data;
 	std::vector< std::string >	r_params;
@@ -20,7 +20,7 @@ struct Command::User	Parser::user(const Client& client, const std::vector< std::
 
 void	Command::user(IRC& server, Client& client, const struct Parser::Data& data) throw (Reply)
 {
-	struct Command::User		p_data = Parser::user(client, data.parameters);
+	struct Command::User		p_data = Parser::user(data.parameters);
 	std::vector< std::string >	r_params;
 
 	if (client.getRegisterLevel() == Client::NONE)

@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-std::vector< std::string >	Parser::names(const Client& client, const std::vector< std::string >& params) throw(Reply)
+std::vector< std::string >	Parser::names(const std::vector< std::string >& params) throw(Reply)
 {
 	std::vector< std::string >	data;
 	std::vector< std::string >	r_params;
@@ -35,7 +35,7 @@ std::vector< std::string >	Parser::names(const Client& client, const std::vector
 
 void	Command::names(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
 {
-	std::vector< std::string >	channels = Parser::names(client, data.parameters);
+	std::vector< std::string >	channels = Parser::names(data.parameters);
 	size_t						chan_len = channels.size();
 	size_t						chan_idx = 0;
 	std::vector< std::string >	r_params;

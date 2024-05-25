@@ -2,7 +2,7 @@
 #include "Command.hpp"
 #include "Channel.hpp"
 
-struct Command::Mode	Parser::mode(const Client& client, const std::vector< std::string >& params) throw(Reply)
+struct Command::Mode	Parser::mode(const std::vector< std::string >& params) throw(Reply)
 {
 	struct Command::Mode		data;
 	std::vector< std::string >	r_params;
@@ -39,7 +39,7 @@ struct Command::Mode	Parser::mode(const Client& client, const std::vector< std::
 // oitkl
 void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
 {
-	struct Command::Mode		p_data = Parser::mode(client, data.parameters);
+	struct Command::Mode		p_data = Parser::mode(data.parameters);
 	std::vector< std::string >	r_params;
 
 	Channel*	channel = server.searchChannel(p_data.channel);
@@ -63,7 +63,7 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 	}
 
 	// only (member && operator) reaches here
-	channel->setMode(client, p_data.modes);
+	channel->setMode(p_data.modes);
 
 	{
 		std::set< Client* > target_list = channel->getMemberSet();

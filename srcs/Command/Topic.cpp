@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct	Command::Topic	Parser::topic(const Client& client, const std::vector< std::string >& params) throw(Reply)
+struct	Command::Topic	Parser::topic(const std::vector< std::string >& params) throw(Reply)
 {
 	struct	Command::Topic		data;
 	std::vector< std::string >	r_params;
@@ -27,7 +27,7 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 	std::vector< std::string >	r_params;
 	Channel*					channel;
 
-	p_data = ::Parser::topic(client, data.parameters);
+	p_data = ::Parser::topic(data.parameters);
 	/*
 		1. 채널 조회
 		2. 존재하는 채널의 경우 토픽 존재여부에 따라 토픽 조회

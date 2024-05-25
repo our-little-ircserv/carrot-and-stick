@@ -231,7 +231,6 @@ struct sockaddr_in	IRC::setSockAddrIn(int domain) throw(Signal, FatalError)
 void	IRC::get_next_line(Client& client, const std::string& input)
 {
 	std::vector< std::string >&	rdbuf = client._read_buf;
-	bool						add_than_push = false;
 	size_t						old_idx = 0;
 	size_t						crlf = 0;
 

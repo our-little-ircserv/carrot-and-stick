@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct Command::Part	Parser::part(const Client& client, const std::vector< std::string >& params) throw(Reply)
+struct Command::Part	Parser::part(const std::vector< std::string >& params) throw(Reply)
 {
 	struct Command::Part		data;
 	std::vector< std::string >  r_params;
@@ -39,7 +39,7 @@ struct Command::Part	Parser::part(const Client& client, const std::vector< std::
 
 void	Command::part(IRC& server, Client& client, const struct Parser::Data& data) throw (Reply)
 {
-	struct Command::Part		p_data = Parser::part(client, data.parameters);
+	struct Command::Part		p_data = Parser::part(data.parameters);
 	size_t						chan_len = p_data.channels.size();
 	std::vector< std::string >	r_params;
 	std::vector< Channel* >		empty_channels;

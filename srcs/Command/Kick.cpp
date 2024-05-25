@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct Command::Kick	Parser::kick(const Client& client, const std::vector< std::string >& params) throw(Reply)
+struct Command::Kick	Parser::kick(const std::vector< std::string >& params) throw(Reply)
 {
 	struct Command::Kick		data;
 	std::vector< std::string >	r_params;
@@ -62,7 +62,7 @@ struct Command::Kick	Parser::kick(const Client& client, const std::vector< std::
 
 void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
 {
-	struct Command::Kick		p_data = Parser::kick(client, data.parameters);
+	struct Command::Kick		p_data = Parser::kick(data.parameters);
 	size_t						chan_len = p_data.channels.size();
 	size_t						client_len = p_data.users_nick.size();
 	size_t						chan_idx = 0;
