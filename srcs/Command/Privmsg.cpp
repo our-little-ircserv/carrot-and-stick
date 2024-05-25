@@ -2,7 +2,7 @@
 #include "Command.hpp"
 #include "Assert.hpp"
 
-struct Command::Privmsg	Parser::privmsg(const Client& client, const std::vector< std::string >& params) throw(Reply)
+struct Command::Privmsg	Parser::privmsg(const std::vector< std::string >& params) throw(Reply)
 {
 	struct Command::Privmsg		data;
 	std::string					t_msg_targets = params[0];
@@ -50,7 +50,7 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 	struct Command::Privmsg		p_data;
 	std::vector< std::string >	r_params;
 
-	p_data = Parser::privmsg(client, data.parameters);
+	p_data = Parser::privmsg(data.parameters);
 
 	for (size_t i = 0; i < p_data.msg_targets.size(); i++)
 	{

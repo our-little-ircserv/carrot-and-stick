@@ -3,7 +3,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-std::string	Parser::nick(const Client& client, const std::vector< std::string >& params) throw(Reply)
+std::string	Parser::nick(const std::vector< std::string >& params) throw(Reply)
 {
 	std::string					nickname;
 	std::vector< std::string >	r_params;
@@ -51,7 +51,7 @@ void Command::nick(IRC& server, Client& client, const struct Parser::Data& data)
 		return ;
 	}
 
-	new_nickname = Parser::nick(client, data.parameters);
+	new_nickname = Parser::nick(data.parameters);
 	// 이미 사용중인 닉네임일 때
 	if ((server.searchClient(new_nickname) == NULL) == false)
 	{

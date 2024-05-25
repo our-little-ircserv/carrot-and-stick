@@ -27,7 +27,7 @@ int Command::getType(std::string& command)
 		t_str[i] = std::toupper(t_str[i]);
 	}
 
-	for (int i = 0; i < sizeof(Command::CmdList) / sizeof(Command::CmdList[0]); i++)
+	for (size_t i = 0; i < sizeof(Command::CmdList) / sizeof(Command::CmdList[0]); i++)
 	{
 		if (Command::CmdList[i] == t_str)
 		{

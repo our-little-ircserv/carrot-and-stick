@@ -1,6 +1,5 @@
 #include <sys/socket.h>
 #include <sstream>
-//#include <iostream>
 #include "Channel.hpp"
 #include "Parser.hpp"
 
@@ -61,7 +60,7 @@ Client*	Channel::searchMember(const std::string& name)
 	return NULL;
 }
 
-const std::string	Channel::getCurrentMode() const
+std::string	Channel::getCurrentMode() const
 {
 	std::string	current_mode = "+";
 
@@ -76,7 +75,7 @@ const std::string	Channel::getCurrentMode() const
 	return current_mode;
 }
 
-const std::string	Channel::getCurrentModeParam(const bool key_auth) const
+std::string	Channel::getCurrentModeParam(const bool key_auth) const
 {
 	std::vector< std::string >	current_mode_param;
 
@@ -105,12 +104,12 @@ const std::string&	Channel::getKey() const
 	return _key;
 }
 
-const size_t	Channel::getLimit() const
+size_t	Channel::getLimit() const
 {
 	return _limit;
 }
 
-const size_t	Channel::getMemberCnt() const
+size_t	Channel::getMemberCnt() const
 {
 	return _members.size();
 }
@@ -121,7 +120,7 @@ const std::string& Channel::getTopic() const
 }
 
 // oitkl
-void	Channel::setMode(const Client& client, std::vector< struct Command::ModeWithParams>& mode_data)
+void	Channel::setMode(std::vector< struct Command::ModeWithParams>& mode_data)
 {
 	size_t						shift = 0;
 	std::vector< std::string >	r_params;

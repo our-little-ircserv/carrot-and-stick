@@ -29,11 +29,6 @@ struct IRC::AccessData	Parser::checkArgValidity(int argc, char** argv) throw(Fat
 	return data_to_return;
 }
 
-//Tokens:
-//-------
-//:PREFIX
-//COMMAND
-//:PARAM PARAM
 struct Parser::Data	Parser::parseClientMessage(const std::string& message)
 {
 	struct Parser::Data							command_data;
@@ -140,29 +135,141 @@ std::string	Parser::concat_string_vector(const std::vector< std::string >& vec, 
 	return concat_params;
 }
 
-//int	main()
-//{
-//	std::vector<struct Parser::Token> tokens = Parser::splitTokens(":PREFIX   COMMAND      hello world                        \r\n");
-//	std::vector<struct Parser::Token> tokens = Parser::splitTokens(":PREFIX   COMMAND      :hello            world                        \r\n");
-//
-//	for (std::vector<struct Parser::Token>::iterator it = tokens.begin(); it != tokens.end(); it++)
-//	{
-//		std::cout << "Token - type: " << it->type << ", data: " << it->data << std::endl;
-//	}
-//
-//	try
-//	{
-//		struct Parser::Data	command = Parser::parseClientMessage(":PREFIX    COMMAND    hello1\r\n");
-//
-//		std::cout << "Prefix: " << command.prefix << std::endl;
-//		std::cout << "Command: " << command.command << std::endl;
-//		for (std::vector<std::string>::iterator it = command.parameters.begin(); it != command.parameters.end(); it++)
-//		{
-//			std::cout << *it << std::endl;
-//		}
-//	}
-//	catch (std::out_of_range& e)
-//	{
-//		std::cerr << e.what() << std::endl;
-//	}
-//}
+bool	Parser::isAlpha(char c)
+{
+	return std::isalpha(static_cast<unsigned char>(c)) != 0;
+}
+
+bool	Parser::isSpecial(char c)
+{
+	const char*	special_characters = "[]\\`_^{|}";
+
+	size_t	i = 0;
+	while (special_characters[i] != '\0')
+	{
+		if (c == special_characters[i])
+		{
+			return true;
+		}
+		++i;
+	}
+
+	return false;
+}
+
+bool	Parser::isDigit(char c)
+{
+	return std::isdigit(static_cast<unsigned char>(c)) != 0;
+}
+
+bool	Parser::checkChannelPrefixes(char c)
+{
+	const char*	prefixes = "#&+";
+
+	size_t	i = 0;
+	while (prefixes[i] != '\0')
+	{
+		if (c == prefixes[i])
+		{
+			return true;
+		}
+		++i;
+	}
+
+	return false;
+}
+
+bool	Parser::isValidChannelName(const std::string& channel_name)
+{
+	if (checkChannelPrefixes(channel_name[0]) == false)
+	{
+		return false;
+	}
+
+	size_t	i = 1;
+	while (channel_name[i] != '\0')
+	{
+		char c = channel_name[i];
+		if (c == ' ' || c == '\a' || c == ',' || c == ':')
+		{
+			return false;
+		}
+		++i;
+	}
+
+	return true;
+}
+
+bool	Parser::isValidUserName(const std::string& username)
+{
+	size_t	i = 0;
+	while (i < username.size())
+	{
+		if (username[i] == '@' || username[i] == '\n')
+		{
+			return false;
+		}
+		++i;
+	}
+
+	return true;
+}
+
+enum Command::ModeType	Parser::getModeType(const char c)
+{
+	if (c == '+')
+	{
+		return Command::ADD;
+	}
+
+	return Command::DEL;
+}
+
+bool	Parser::isMode(const char c)
+{
+	if (c == '+' || c == '-')
+	{
+		return true;
+	}
+
+	return false;
+}
+
+size_t	Parser::insertModes(struct Command::Mode& data, const std::string& modes, char mtype)
+{
+	struct Command::ModeWithParams	t_mode_with_params;
+
+	size_t	i = 1;
+	while (i < modes.size())
+	{
+		t_mode_with_params.type = Parser::getModeType(mtype);
+		t_mode_with_params.mode = modes[i];
+		data.modes.push_back(t_mode_with_params);
+		++i;
+	}
+
+	return --i;
+}
+
+size_t	Parser::insertModeParameters(struct Command::Mode& data, const std::vector< std::string >& params, size_t new_modes, size_t i)
+{
+	std::vector< struct Command::ModeWithParams >::iterator it = data.modes.end() - new_modes;
+
+	while (i < params.size() && it != data.modes.end())
+	{
+		if (it->mode != 'i' && it->mode != 't')
+		{
+			it->mode_param = params[i];
+			++i;
+		}
+
+		++it;
+	}
+
+	while (i < params.size() && Parser::isMode(params[i][0]) == false)
+	{
+		++i;
+	}
+
+	return i;
+}

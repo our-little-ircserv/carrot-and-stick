@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 
-struct Command::Join	Parser::join(const Client& client, const std::vector< std::string >& params) throw(Reply)
+struct Command::Join	Parser::join(const std::vector< std::string >& params) throw(Reply)
 {
 	struct Command::Join		data;
 	std::vector< std::string >	r_params;
@@ -63,7 +63,7 @@ struct Command::Join	Parser::join(const Client& client, const std::vector< std::
 
 void	Command::join(IRC& server, Client& client, const struct Parser::Data& data) throw (Reply)
 {
-	struct Command::Join		p_data = Parser::join(client, data.parameters);
+	struct Command::Join		p_data = Parser::join(data.parameters);
 	std::vector< std::string >	r_params;
 	size_t						chan_len = p_data.channels.size();
 
