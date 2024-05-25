@@ -28,7 +28,7 @@ std::string	Reply::getReplyMessage(const Client& client)
 			break;
 		case RPL_CREATED:
 			// hostname 3 nickname ...
-			message += ":This server was created <date>";
+			message += ":This server was created " + _parameters[0];
 			break;
 		case RPL_MYINFO:
 			// hostname 4 nickname hostname hostversion avail_usermodes avail_channelmodes

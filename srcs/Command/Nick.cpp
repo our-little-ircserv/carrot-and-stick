@@ -90,6 +90,7 @@ void Command::nick(IRC& server, Client& client, const struct Parser::Data& data)
 			server.deliverMsg(target_list, rp.getReplyMessage(client));
 		}
 		{
+			r_params.push_back(server.getStartTime());
 			Reply rp(Reply::RPL_CREATED, r_params);
 			server.deliverMsg(target_list, rp.getReplyMessage(client));
 		}

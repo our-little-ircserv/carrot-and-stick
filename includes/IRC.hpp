@@ -4,6 +4,7 @@
 # include <sys/types.h>
 # include <sys/event.h>
 # include <sys/time.h>
+# include <ctime>
 # include <vector>
 # include <map>
 # include <string>
@@ -45,6 +46,7 @@ class	IRC
 		std::vector< Channel* >	delClient(Client& client);
 		void					delChannels(const std::vector< Channel* >& channels);
 
+		std::string			getStartTime() const;
 		int					getServerSocketFd() const;
 		const std::string&	getPassword() const;
 
@@ -52,6 +54,7 @@ class	IRC
 		std::set< Client* > getTargetSet(std::vector< std::string >targets);
 
 	private:
+		std::tm*	_start_time;
 		int			_server_sockfd;
 		uint16_t	_port;
 		const char*	_ip_addr;

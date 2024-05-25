@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <cinttypes>
+#include <sstream>
 #include "IRC.hpp"
 #include "Parser.hpp"
 #include "Command.hpp"
@@ -17,6 +18,8 @@ const std::string	IRC::hostname = "carrot-and-stick.ircserv.com";
 
 IRC::IRC(struct AccessData access_data) : _port(access_data.port), _ip_addr("127.0.0.1"), _password(access_data.password)
 {
+	std::time_t	now = std::time(0);
+	_start_time = std::localtime(&now);
 }
 
 IRC::~IRC()
@@ -162,6 +165,15 @@ void	IRC::delChannels(const std::vector< Channel* >& channels)
 		_channels.erase(_channels.find(channels[i]->getChannelName()));
 	}
 
+}
+
+std::string	IRC::getStartTime() const
+{
+	std::stringstream	ss;
+
+	ss << (_start_time->tm_year + 1900) << "-" << (_start_time->tm_mon + 1) << "-" << _start_time->tm_mday;
+
+	return ss.str();
 }
 
 int	IRC::getServerSocketFd() const
