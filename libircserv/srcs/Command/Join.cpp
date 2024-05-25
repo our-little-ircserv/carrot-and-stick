@@ -32,12 +32,6 @@ struct Command::Join	Parser::join(const Client& client, const std::vector< std::
 		}
 
 		channel_name = t_channels.substr(i, offset);
-		if (Parser::isValidChannelName(channel_name) == false)
-		{
-			r_params.push_back(client.getNickname());
-			r_params.push_back(channel_name);
-			throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
-		}
 
 		data.channels.push_back(channel_name);
 		i += offset + 1;
@@ -83,6 +77,13 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 			Channel* channel = server.searchChannel(p_data.channels[i]);	
 			if (channel == NULL)
 			{
+				if (Parser::isValidChannelName(p_data.channels[i]) == false)
+				{
+					r_params.push_back(client.getNickname());
+					r_params.push_back(p_data.channels[i]);
+					throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
+				}
+
 				channel = server.createChannel(client, p_data.channels[i][0], p_data.channels[i]);
 			}
 			else
@@ -119,6 +120,10 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 
 				channel->addMember(client);
 				client.addChannelList(p_data.channels[i]);
+				if (channel->isInvited(client) == true)
+				{
+					channel->delInvited(client);
+				}
 			}
 
 			{
