@@ -8,7 +8,6 @@ struct Command::Part	Parser::part(const Client& client, const std::vector< std::
 
     if (params.size() < 1)
 	{
-		r_params.push_back(client.getNickname());
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
@@ -55,7 +54,6 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
 			Channel* channel = server.searchChannel(p_data.channels[i]);
 			if (channel == NULL)
 			{
-				r_params.push_back(client.getNickname());
 				r_params.push_back(p_data.channels[i]);
 				throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 			}
@@ -63,7 +61,6 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
             // ERR_NOTONCHANNEL
             if (channel->isMember(client) == false)
             {
-                r_params.push_back(client.getNickname());
                 r_params.push_back(p_data.channels[i]);
                 throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
             }
@@ -100,7 +97,7 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
 
 			target_list.insert(&client);
 
-			server.deliverMsg(target_list, e.getReplyMessage());
+			server.deliverMsg(target_list, e.getReplyMessage(client));
 		}
 	}
 

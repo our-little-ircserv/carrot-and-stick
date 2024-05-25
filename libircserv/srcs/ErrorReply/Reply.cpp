@@ -3,29 +3,28 @@
 #include "Reply.hpp"
 #include "IRC.hpp"
 #include "Parser.hpp"
+#include "Assert.hpp"
 
 Reply::Reply(enum Reply::ReplyType t_number, const std::vector< std::string >& t_parameters) : _number(t_number), _parameters(t_parameters)
 {
 }
 
 // :hostname rpl_no parameters :message crlf
-std::string	Reply::getReplyMessage()
+std::string	Reply::getReplyMessage(const Client& client)
 {
 	std::stringstream	ss;
-
 	ss << std::setw(3) << std::setfill('0') << _number;
-	std::string	message = ":" + IRC::hostname + " " + ss.str() + " " + _parameters[0] + " ";
-	_parameters.erase(_parameters.begin());
+	std::string	message = ":" + IRC::hostname + " " + ss.str() + " " + client.getNickname() + " ";
 
 	switch (_number)
 	{
 		case RPL_WELCOME:
 			// hostname 1 nickname ...
-			message += ":Welcome to the Internet Relay Network <nick>!<user>@<host>";
+			message += ":Welcome to the Internet Relay Network " + client.getPrefix().substr(1);
 			break;
 		case RPL_YOURHOST:
 			// hostname 2 nickname ...
-			message += ":Your host is carrot-and-stick.irc.kr, running version 0.0.1";
+			message += ":Your host is " + IRC::hostname + ", running version 0.0.1";
 			break;
 		case RPL_CREATED:
 			// hostname 3 nickname ...
@@ -33,7 +32,7 @@ std::string	Reply::getReplyMessage()
 			break;
 		case RPL_MYINFO:
 			// hostname 4 nickname hostname hostversion avail_usermodes avail_channelmodes
-			message += "carrot-and-stick.irc.kr 0.0.1 0 +oitkl";
+			message += IRC::hostname + "0.0.1 0 +oitkl";
 			break;
 		case RPL_CHANNELMODEIS:
 			// hostname 324 nickname #channel +it

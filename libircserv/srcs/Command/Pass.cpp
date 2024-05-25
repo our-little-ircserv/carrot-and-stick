@@ -14,7 +14,6 @@ void	Command::pass(IRC& server, Client& client, const struct Parser::Data& data)
 
 	if (data.parameters.size() < 1)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back(data.command);
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
@@ -22,7 +21,6 @@ void	Command::pass(IRC& server, Client& client, const struct Parser::Data& data)
 	// 이미 authorized 되었다면 무시한다
 	if (client.getRegisterLevel() == Client::REGISTERED)
 	{
-		r_params.push_back(client.getNickname());
 		throw Reply(Reply::ERR_ALREADYREGISTRED, r_params);
 	}
 

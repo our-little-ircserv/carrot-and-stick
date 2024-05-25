@@ -8,7 +8,6 @@ struct Command::Kick	Parser::kick(const Client& client, const std::vector< std::
 
 	if (params.size() < 2)
 	{
-		r_params.push_back(client.getNickname());
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
@@ -50,7 +49,6 @@ struct Command::Kick	Parser::kick(const Client& client, const std::vector< std::
 	size_t	channels_size = data.channels.size();
 	if (channels_size > 1 && channels_size != data.users_nick.size())
 	{
-		r_params.push_back(client.getNickname());
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
@@ -83,7 +81,6 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 			// ERR_NOSUCHCHANNEL
 			if (channel == NULL)
 			{
-				r_params.push_back(client.getNickname());
 				r_params.push_back(p_data.channels[chan_idx]);
 				throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 			}
@@ -91,7 +88,6 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 			// ERR_NOTONCHANNEL
 			else if (channel->isMember(client) == false)
 			{
-				r_params.push_back(client.getNickname());
 				r_params.push_back(p_data.channels[chan_idx]);
 				throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
 			}
@@ -99,7 +95,6 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 			// ERR_CHANOPRIVSNEEDED
 			else if (channel->isOperator(client) == false)
 			{
-				r_params.push_back(client.getNickname());
 				r_params.push_back(p_data.channels[chan_idx]);
 				throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 			}
@@ -107,7 +102,6 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 			// ERR_USERNOTINCHANNEL
 			else if (channel->isMember(*target_client) == false)
 			{
-				r_params.push_back(client.getNickname());
 				r_params.push_back(p_data.users_nick[chan_idx]);
 				r_params.push_back(p_data.channels[client_idx]);
 				throw Reply(Reply::ERR_USERNOTINCHANNEL, r_params);
@@ -144,7 +138,7 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 			std::set< Client* > target_list;
 
 			target_list.insert(&client);
-			server.deliverMsg(target_list, e.getReplyMessage());
+			server.deliverMsg(target_list, e.getReplyMessage(client));
 		}
 
 		client_idx++;

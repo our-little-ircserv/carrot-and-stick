@@ -10,7 +10,6 @@ std::string	Parser::nick(const Client& client, const std::vector< std::string >&
 
 	if (params.size() < 1)
 	{
-		r_params.push_back(client.getNickname());
 		throw Reply(Reply::ERR_NONICKNAMEGIVEN, r_params);
 	}
 
@@ -19,7 +18,6 @@ std::string	Parser::nick(const Client& client, const std::vector< std::string >&
 	if (Parser::isAlpha(c) == false \
 			&& Parser::isSpecial(c) == false)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back(t_nickname);
 		throw Reply(Reply::ERR_ERRONEUSNICKNAME, r_params);
 	}
@@ -33,7 +31,6 @@ std::string	Parser::nick(const Client& client, const std::vector< std::string >&
 		if (Parser::isAlpha(c) == false && Parser::isSpecial(c) == false \
 				&& Parser::isDigit(c) == false && c != '-')
 		{
-			r_params.push_back(client.getNickname());
 			r_params.push_back(t_nickname);
 			throw Reply(Reply::ERR_ERRONEUSNICKNAME, r_params);
 		}
@@ -58,7 +55,6 @@ void Command::nick(IRC& server, Client& client, const struct Parser::Data& data)
 	// 이미 사용중인 닉네임일 때
 	if ((server.searchClient(new_nickname) == NULL) == false)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back(new_nickname);
 		throw Reply(Reply::ERR_NICKNAMEINUSE, r_params);
 	}
@@ -84,23 +80,22 @@ void Command::nick(IRC& server, Client& client, const struct Parser::Data& data)
 		client.setRegisterLevel(Client::REGISTERED);
 		std::set< Client* > target_list;
 		target_list.insert(&client);
-		r_params.push_back(client.getNickname());
 
 		{
 			Reply rp(Reply::RPL_WELCOME, r_params);
-			server.deliverMsg(target_list, rp.getReplyMessage());
+			server.deliverMsg(target_list, rp.getReplyMessage(client));
 		}
 		{
 			Reply rp(Reply::RPL_YOURHOST, r_params);
-			server.deliverMsg(target_list, rp.getReplyMessage());
+			server.deliverMsg(target_list, rp.getReplyMessage(client));
 		}
 		{
 			Reply rp(Reply::RPL_CREATED, r_params);
-			server.deliverMsg(target_list, rp.getReplyMessage());
+			server.deliverMsg(target_list, rp.getReplyMessage(client));
 		}
 		{
 			Reply rp(Reply::RPL_MYINFO, r_params);
-			server.deliverMsg(target_list, rp.getReplyMessage());
+			server.deliverMsg(target_list, rp.getReplyMessage(client));
 		}
 	}
 }

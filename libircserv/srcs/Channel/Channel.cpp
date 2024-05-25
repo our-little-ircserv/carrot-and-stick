@@ -135,7 +135,6 @@ void	Channel::setMode(const Client& client, std::vector< struct Command::ModeWit
 			Client*	member = searchMember(it->mode_param);
 			if (member == NULL)
 			{
-				r_params.push_back(client.getNickname());
 				r_params.push_back(it->mode_param);
 				r_params.push_back(_name);
 				throw Reply(Reply::ERR_USERNOTINCHANNEL, r_params);
@@ -162,6 +161,14 @@ void	Channel::setMode(const Client& client, std::vector< struct Command::ModeWit
 			{
 				_modes ^= (1 << shift);
 			}
+		}
+		else
+		{
+			std::vector< std::string >	r_params;
+
+			r_params.push_back(std::string(1, it->mode));
+			r_params.push_back(_name);
+			throw Reply(Reply::ERR_UNKNOWNMODE, r_params);
 		}
 	}
 }

@@ -4,6 +4,8 @@
 # include <vector>
 # include <string>
 
+class	Client;
+
 class	Reply
 {
 	public:
@@ -43,7 +45,7 @@ class	Reply
 		};
 
 		Reply(enum Reply::ReplyType t_number, const std::vector< std::string >& t_parameters);
-		std::string	getReplyMessage();
+		std::string	getReplyMessage(const Client& client);
 	
 	private:
 		enum ReplyType				_number;

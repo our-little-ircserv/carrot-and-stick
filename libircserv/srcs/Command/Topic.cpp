@@ -8,7 +8,6 @@ struct	Command::Topic	Parser::topic(const Client& client, const std::vector< std
 
 	if (params.size() < 1)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back("TOPIC");
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
@@ -40,7 +39,6 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 	// 존재하지 않는 채널
 	if (channel == NULL || channel->isMember(client) == false)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
 	}
@@ -55,13 +53,11 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 		// 서버에서 다음 토픽들을 메세지로 클라이언트에게 전달
 		if (t_topic.size() == 0)
 		{
-			r_params.push_back(client.getNickname());
 			r_params.push_back(p_data.channel);
 			throw Reply(Reply::RPL_NOTOPIC, r_params);
 		}
 		else
 		{
-			r_params.push_back(client.getNickname());
 			r_params.push_back(p_data.channel);
 			r_params.push_back(t_topic);
 			throw Reply(Reply::RPL_TOPIC, r_params);
@@ -73,14 +69,12 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 		// 해당 채널의 멤버인지 검사
 		if (channel->isMember(client) == false)
 		{
-			r_params.push_back(client.getNickname());
 			r_params.push_back(p_data.channel);
 			throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
 		}
 		// T플래그가 활성화인경우 관리자인지 검사
 		else if (channel->checkModeSet('t') == true && channel->isOperator(client) == false)
 		{
-			r_params.push_back(client.getNickname());
 			r_params.push_back(p_data.channel);
 			throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 		}
