@@ -12,7 +12,8 @@
 # include "FatalError.hpp"
 
 # define MAX_CLIENTS 128
-# define MAX_EVENTS 10
+# define MAX_EVENTS 100
+# define BUFSIZE 1025
 
 class	Channel;
 

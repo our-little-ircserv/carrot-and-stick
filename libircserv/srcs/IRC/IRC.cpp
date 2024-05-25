@@ -326,9 +326,9 @@ void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal,
 			handleEOF(server, *client);
 		}
 
-		char	buf[512];
+		char	buf[BUFSIZE];
 
-		int	bytes_received = wrapSyscall(recv(event.ident, buf, event.data, 0), "recv");
+		int	bytes_received = wrapSyscall(recv(event.ident, buf, BUFSIZE - 1, 0), "recv");
 		buf[bytes_received] = '\0';
 
 		get_next_line(*client, buf);
