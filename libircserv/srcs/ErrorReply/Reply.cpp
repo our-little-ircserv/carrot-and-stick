@@ -56,6 +56,12 @@ std::string	Reply::getReplyMessage()
 			// hostname 341 nickname #channel user_to_invite
 			message += Parser::concat_string_vector(_parameters);
 			break;
+		case RPL_NAMREPLY:
+			message += Parser::concat_string_vector(_parameters);
+			break;
+		case RPL_ENDOFNAMES:
+			message += Parser::concat_string_vector(_parameters);
+			break;
 		case ERR_NOSUCHNICK:
 			// hostname 401 nickname nick/channel :No such nick/channel
 			message += _parameters[0] + " :No such nick/channel";
