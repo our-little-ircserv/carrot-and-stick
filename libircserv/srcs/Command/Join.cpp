@@ -100,7 +100,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 				{
 					r_params.push_back(client.getNickname());
 					r_params.push_back(p_data.channels[i]);
-					throw Reply(Reply::ERR_USERONCHANNEL, r_params);
+					throw Reply(Reply::ERR_INVITEONLYCHAN, r_params);
 				}
 				// 2. 비밀번호
 				else if (channel->checkModeSet('k') == true && (channel->getKey() == p_data.keys[i]) == false)
