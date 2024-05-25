@@ -80,20 +80,19 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 		{
 			r_params.clear();
 
-			if (Parser::isValidChannelName(p_data.channels[i]) == false)
-			{
-				r_params.push_back(client.getNickname());
-				r_params.push_back(p_data.channels[i]);
-				throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
-			}
-
-			Channel* channel = server.searchChannel(p_data.channels[i]);
+			Channel* channel = server.searchChannel(p_data.channels[i]);	
 			if (channel == NULL)
 			{
 				channel = server.createChannel(client, p_data.channels[i][0], p_data.channels[i]);
 			}
 			else
 			{
+				// 이미 채널에 존재하면 아무 동작도 하지 않습니다.
+				if (channel->isMember(client) == true)
+				{
+					return ;
+				}
+
 				// 채널에 들어가기 위한 유효성 검사
 
 				// 1. 초대여부
