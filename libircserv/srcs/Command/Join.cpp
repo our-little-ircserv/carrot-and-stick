@@ -136,6 +136,11 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
+
+			struct Parser::Data t_data = data;
+			t_data.parameters.clear();
+			t_data.parameters.push_back(p_data.channels[i]);
+			Command::names(server, client, data);
 		}
 		catch(Reply& e)
 		{
