@@ -8,7 +8,6 @@ std::vector< std::string >	Parser::names(const Client& client, const std::vector
 
 	if (params.size() < 1)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back("NAMES");
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
@@ -45,10 +44,9 @@ void	Command::names(IRC& server, Client& client, const struct Parser::Data& data
 
 	// 채널의 존재여부나 이름의 유효성은 검사하지 않는다
 	target_list.insert(&client);
-	r_params.push_back(client.getNickname());
 	while (chan_idx < chan_len)
 	{
-		r_params.resize(1);
+		r_params.clear();
 		try
 		{
 			Channel*	channel = server.searchChannel(channels[chan_idx]);
@@ -85,14 +83,14 @@ void	Command::names(IRC& server, Client& client, const struct Parser::Data& data
 		}
 		catch(Reply& e)
 		{
-			server.deliverMsg(target_list, e.getReplyMessage());
+			server.deliverMsg(target_list, e.getReplyMessage(client));
 		}
 
-		r_params.resize(1);
+		r_params.clear();
 		r_params.push_back(channels[chan_idx]);
 		r_params.push_back(":End of NAMES list");
 
-		server.deliverMsg(target_list, Reply(Reply::RPL_NAMREPLY, r_params).getReplyMessage());
+		server.deliverMsg(target_list, Reply(Reply::RPL_NAMREPLY, r_params).getReplyMessage(client));
 
 		chan_idx++;
 	}
