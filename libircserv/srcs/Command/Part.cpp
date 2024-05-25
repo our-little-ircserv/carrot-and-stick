@@ -68,13 +68,7 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
                 throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
             }
 
-            if (channel->isOperator(client) == true)
-            {
-                channel->delOperator(client);
-            }
-            channel->delMember(client);
-            client.delChannelList(p_data.channels[i]);
-
+			// part 메세지를 브로드캐스트합니다.
 			{
 				std::set< Client* > target_list = channel->getMemberSet();
 
@@ -86,6 +80,13 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
 
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
+
+			if (channel->isOperator(client) == true)
+            {
+                channel->delOperator(client);
+            }
+            channel->delMember(client);
+            client.delChannelList(p_data.channels[i]);
 
 			if (channel->getMemberCnt() == 0)
 			{

@@ -113,18 +113,7 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 				throw Reply(Reply::ERR_USERNOTINCHANNEL, r_params);
 			}
 
-			// 채널에서 해당 클라이언트를 제거한다.
-			// 관리자와 멤버목록 모두에서 제거한다.
-			if (channel->isMember(*target_client) == true)
-			{
-				if (channel->isOperator(*target_client) == true)
-				{
-					channel->delOperator(*target_client);
-				}
-				channel->delMember(*target_client);
-				target_client->delChannelList(p_data.channels[chan_idx]);
-			}
-
+			// kick 메세지를 브로드캐스트합니다.
 			{
 				std::set< Client* > target_list = channel->getMemberSet();
 
@@ -136,6 +125,18 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 				r_params.push_back("\r\n");
 
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+			}
+
+			// 채널에서 해당 클라이언트를 제거한다.
+			// 관리자와 멤버목록 모두에서 제거한다.
+			if (channel->isMember(*target_client) == true)
+			{
+				if (channel->isOperator(*target_client) == true)
+				{
+					channel->delOperator(*target_client);
+				}
+				channel->delMember(*target_client);
+				target_client->delChannelList(p_data.channels[chan_idx]);
 			}
 		}
 		catch(Reply& e)
