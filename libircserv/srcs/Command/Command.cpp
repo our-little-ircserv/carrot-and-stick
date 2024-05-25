@@ -50,13 +50,11 @@ void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 		// command not found
 		if (cmd_type == Command::UNKNOWNCOMMAND)
 		{
-			r_params.push_back(client.getNickname());
 			r_params.push_back(data.command);
 			throw Reply(Reply::ERR_UNKNOWNCOMMAND, r_params);
 		}
 		else if (client.getRegisterLevel() < Client::REGISTERED && cmd_type > Command::USER)
 		{
-			r_params.push_back(client.getNickname());
 			throw Reply(Reply::ERR_NOTREGISTERED, r_params);
 		}
 		Command::cmdFunctions[cmd_type](server, client, data);
@@ -66,6 +64,6 @@ void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 		std::set< Client* > target_list;
 
 		target_list.insert(&client);
-		server.deliverMsg(target_list, reply.getReplyMessage());
+		server.deliverMsg(target_list, reply.getReplyMessage(client));
 	}
 }

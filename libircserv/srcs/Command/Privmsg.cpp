@@ -11,12 +11,10 @@ struct Command::Privmsg	Parser::privmsg(const Client& client, const std::vector<
 
 	if (params.size() < 1)
 	{
-		r_params.push_back(client.getNickname());
 		throw Reply(Reply::ERR_NORECIPIENT, r_params);
 	}
 	else if (params.size() < 2)
 	{
-		r_params.push_back(client.getNickname());
 		throw Reply(Reply::ERR_NOTEXTTOSEND, r_params);
 	}
 
@@ -37,7 +35,6 @@ struct Command::Privmsg	Parser::privmsg(const Client& client, const std::vector<
 		i += offset + 1;
 		if (data.msg_targets.size() == 5)
 		{
-			r_params.push_back(client.getNickname());
 			r_params.push_back(t_msg_targets);
 			throw Reply(Reply::ERR_TOOMANYTARGETS, r_params);
 		}
@@ -69,7 +66,6 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 				t_client = server.searchClient(p_data.msg_targets[i]);
 				if (t_client == NULL)
 				{
-					r_params.push_back(client.getNickname());
 					r_params.push_back(p_data.msg_targets[i]);
 					throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 				}
@@ -102,7 +98,7 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 		{
 			// ErrReply to host client
 			target_list.insert(&client);
-			server.deliverMsg(target_list, e.getReplyMessage());
+			server.deliverMsg(target_list, e.getReplyMessage(client));
 		}
 	}
 }

@@ -8,7 +8,6 @@ struct Command::Join	Parser::join(const Client& client, const std::vector< std::
 
 	if (params.size() < 1)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back("JOIN");
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
@@ -79,7 +78,6 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 			{
 				if (Parser::isValidChannelName(p_data.channels[i]) == false)
 				{
-					r_params.push_back(client.getNickname());
 					r_params.push_back(p_data.channels[i]);
 					throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 				}
@@ -99,21 +97,18 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 				// 1. 초대여부
 				if (channel->checkModeSet('i') == true && channel->isInvited(client) == false)
 				{
-					r_params.push_back(client.getNickname());
 					r_params.push_back(p_data.channels[i]);
 					throw Reply(Reply::ERR_INVITEONLYCHAN, r_params);
 				}
 				// 2. 비밀번호
 				else if (channel->checkModeSet('k') == true && (channel->getKey() == p_data.keys[i]) == false)
 				{
-					r_params.push_back(client.getNickname());
 					r_params.push_back(p_data.channels[i]);
 					throw Reply(Reply::ERR_BADCHANNELKEY, r_params);
 				}
 				// 3. 인원제한
 				else if (channel->checkModeSet('l') == true && channel->getLimit() == channel->getMemberCnt())
 				{
-					r_params.push_back(client.getNickname());
 					r_params.push_back(p_data.channels[i]);
 					throw Reply(Reply::ERR_CHANNELISFULL, r_params);
 				}
@@ -144,7 +139,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 			target_list.insert(&client);
 
 			r_params.push_back("\r\n");
-			server.deliverMsg(target_list, e.getReplyMessage());
+			server.deliverMsg(target_list, e.getReplyMessage(client));
 		}
 	}
 }

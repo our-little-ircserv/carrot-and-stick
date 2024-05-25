@@ -9,7 +9,6 @@ struct Command::Mode	Parser::mode(const Client& client, const std::vector< std::
 
 	if (params.size() < 1)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back("MODE");
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
@@ -46,13 +45,11 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 	Channel*	channel = server.searchChannel(p_data.channel);
 	if (channel == NULL)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 	}
 	else if (p_data.modes.empty() == true)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back(p_data.channel);
 		r_params.push_back(channel->getCurrentMode());
 		r_params.push_back(channel->getCurrentModeParam(channel->isMember(client)));
@@ -60,7 +57,6 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 	}
 	else if (channel->isMember(client) == false || channel->isOperator(client) == false)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back(p_data.channel);
 
 		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);

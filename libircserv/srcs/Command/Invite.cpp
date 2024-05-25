@@ -8,7 +8,6 @@ struct Command::Invite	Parser::invite(const Client& client, const std::vector< s
 
 	if (params.size() < 2)
 	{
-		r_params.push_back(client.getNickname());
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
@@ -34,7 +33,6 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 	channel = server.searchChannel(p_data.channel);
 	if (channel == NULL || channel->isMember(client) == false)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
 	}
@@ -44,7 +42,6 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 	target_client = server.searchClient(p_data.nickname);
 	if (target_client == NULL)
 	{
-		r_params.push_back(client.getNickname());
 		throw Reply(Reply::ERR_NOSUCHNICK, r_params);
 	}
 
@@ -52,7 +49,6 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 	// ERR_USERONCHANNEL
 	if (channel->isMember(*target_client) == true)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back(target_client->getNickname());
 		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_USERONCHANNEL, r_params);
@@ -61,7 +57,6 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 	// ERR_CHANOPRIVSNEEDED
 	else if (channel->checkModeSet('i') == true && channel->isOperator(client) == false)
 	{
-		r_params.push_back(client.getNickname());
 		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 	}
@@ -71,12 +66,11 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 	{
 		channel->addInvited(*target_client);
 		r_params.push_back(p_data.channel);
-		r_params.push_back(client.getNickname());
 
 		std::set< Client* > target_list;
 
 		target_list.insert(&client);
-		server.deliverMsg(target_list, Reply(Reply::RPL_INVITING, r_params).getReplyMessage());
+		server.deliverMsg(target_list, Reply(Reply::RPL_INVITING, r_params).getReplyMessage(client));
 
 		//
 		r_params.clear();
