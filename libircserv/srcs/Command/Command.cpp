@@ -15,6 +15,7 @@ void Command::init()
 	Command::cmdFunctions.push_back(Command::mode);
 	Command::cmdFunctions.push_back(Command::privmsg);
 	Command::cmdFunctions.push_back(Command::part);
+	Command::cmdFunctions.push_back(Command::names);
 }
 
 int Command::getType(std::string& command)

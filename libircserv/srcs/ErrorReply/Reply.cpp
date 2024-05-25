@@ -44,10 +44,21 @@ std::string	Reply::getReplyMessage(const Client& client)
 			break;
 		case RPL_TOPIC:
 			// hostname 332 nickname #channel :topic
-			message += _parameters[0] + " :" + _parameters[1];
+			message += _parameters[0] + " ";
+			if (_parameters[1][0] != ':')
+			{
+				message += ":";
+			}
+			message += _parameters[1];
 			break;
 		case RPL_INVITING:
 			// hostname 341 nickname #channel user_to_invite
+			message += Parser::concat_string_vector(_parameters);
+			break;
+		case RPL_NAMREPLY:
+			message += Parser::concat_string_vector(_parameters);
+			break;
+		case RPL_ENDOFNAMES:
 			message += Parser::concat_string_vector(_parameters);
 			break;
 		case ERR_NOSUCHNICK:
