@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Parser.hpp"
 #include "Command.hpp"
 #include "Assert.hpp"
