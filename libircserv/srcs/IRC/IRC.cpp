@@ -278,16 +278,20 @@ void	IRC::iterate_rdbuf(IRC& server, Client& client)
 	for ( ; it != client._read_buf.end(); )
 	{
 		Assert(it->empty() == false);
-		*it = it->substr(0, 512);
-		if (it->substr(it->size() - 2, 2) == "\r\n")
+		size_t	content_size = it->size();
+		if (it->find("\r\n") != std::string::npos)
 		{
-			struct Parser::Data data = Parser::parseClientMessage(*it);
-			Command::execute(server, client, data);
+			if (content_size > 2 && content_size <= 512)
+			{
+				struct Parser::Data data = Parser::parseClientMessage(*it);
+				Command::execute(server, client, data);
+			}
+
 			it = client._read_buf.erase(it);
 		}
 		else
 		{
-			++it;
+			break;
 		}
 	}
 }
