@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include "Command.hpp"
+#include "Assert.hpp"
 
 struct Command::Privmsg	Parser::privmsg(const Client& client, const std::vector< std::string >& params) throw(Reply)
 {
@@ -74,15 +75,25 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 				}
 				target_list.insert(t_client);
 			}
-			target_list.insert(t_channel->getMemberSet().begin(), t_channel->getMemberSet().end());
-			// except self in channel member list
-			if (target_list.find(&client) == target_list.end())
+			Assert(t_channel->getMemberCnt() != 0);
+			std::set< Client* >	t_member_set = t_channel->getMemberSet();
+
+			target_list.insert(t_member_set.begin(), t_member_set.end());
+
+			std::set< Client* >::iterator it = target_list.find(&client);
+			if (it != target_list.end())
 			{
-				target_list.erase(target_list.find(&client));
+				target_list.erase(it);
 			}
 
-			// Message to client or channel
-			server.deliverMsg(target_list, p_data.text_to_be_sent);
+			r_params.push_back(data.prefix);
+			r_params.push_back(data.command);
+			r_params.push_back(p_data.msg_targets[i]);
+			r_params.push_back(p_data.text_to_be_sent);
+			r_params.push_back("\r\n");
+
+			server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+			r_params.clear();
 		}
 		catch(Reply& e)
 		{

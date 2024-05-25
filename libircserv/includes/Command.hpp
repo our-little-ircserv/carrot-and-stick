@@ -18,6 +18,7 @@ namespace Command
 {
 	enum CmdType
 	{
+		QUIT,
 		PASS,
 		NICK,
 		USER,
@@ -28,7 +29,6 @@ namespace Command
 		MODE,
 		PRIVMSG,
 		PART,
-		QUIT,
 		UNKNOWNCOMMAND = -1
 	};
 	
@@ -98,7 +98,7 @@ namespace Command
 	};
 
 	static std::string CmdList[11] = {
-		"PASS", "NICK", "USER", "JOIN", "TOPIC", "INVITE", "KICK", "MODE", "PRIVMSG", "PART", "QUIT"
+		"QUIT", "PASS", "NICK", "USER", "JOIN", "TOPIC", "INVITE", "KICK", "MODE", "PRIVMSG", "PART"
 	};
 
 	static std::vector< void (*)(IRC&, Client&, const struct Parser::Data&) > cmdFunctions;

@@ -80,30 +80,3 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 	}
 }
-//
-//int main()
-//{
-//	std::vector< std::string > params;
-//	params.push_back("#channel");
-//	params.push_back("+iok");
-////	params.push_back("+i");
-////	params.push_back("+o");
-////	params.push_back("+k");
-//	params.push_back("operator");
-//	params.push_back("key");
-//	params.push_back("-io");
-//	params.push_back("operator");
-//
-//	struct Command::Mode mode = Parser::mode(params);
-//
-//	std::cout << Parser::concat_string_vector(params) << std::endl;
-//	std::cout << "======================" << std::endl;
-//	std::cout << mode.channel << std::endl;
-//	for (std::vector< struct Command::ModeWithParams >::iterator it = mode.modes.begin(); it != mode.modes.end(); it++)
-//	{
-//		std::cout << "======================" << std::endl;
-//		std::cout << it->type << std::endl;
-//		std::cout << it->mode << std::endl;
-//		std::cout << it->mode_param << std::endl;
-//	}
-//}
