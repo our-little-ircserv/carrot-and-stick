@@ -9,11 +9,12 @@ std::vector< std::string >	Parser::names(const Client& client, const std::vector
 	if (params.size() < 1)
 	{
 		r_params.push_back(client.getNickname());
+		r_params.push_back("NAMES");
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
-	size_t	i = 0;
-	size_t	offset;
+	size_t				i = 0;
+	size_t				offset;
 	const std::string&	t_channels = params[0];
 	std::string			channel_name;
 	while (i < t_channels.size())
