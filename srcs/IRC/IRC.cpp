@@ -400,6 +400,6 @@ void	IRC::handleEOF(IRC& server, Client& client) throw(enum Client::REGISTER_LEV
 	EV_SET(&t_event, client.getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, (void*)sendMessages);
 	server._changelist.push_back(t_event);
 
-	struct Parser::Data	data = Parser::parseClientMessage("QUIT\r\n");
+	struct Parser::Data	data = Parser::parseClientMessage("QUIT :Client closed connection\r\n");
 	Command::execute(server, client, data);
 }
