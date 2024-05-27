@@ -57,6 +57,10 @@ struct Command::Kick	Parser::kick(const std::vector< std::string >& params) thro
 	{
 		data.comment += params[2];
 	}
+	else
+	{
+		data.comment += client.getNickname();
+	}
 
 	return data;
 }
