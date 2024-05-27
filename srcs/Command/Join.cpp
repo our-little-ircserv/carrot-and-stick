@@ -135,6 +135,26 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 			struct Parser::Data t_data = data;
 			t_data.parameters.clear();
 			t_data.parameters.push_back(p_data.channels[i]);
+
+			// display topic
+			if (channel->getTopic().empty() == false)
+			{
+				try
+				{
+					Command::topic(server, client, t_data);
+				}
+				catch(Reply& e)
+				{
+					std::set< Client* > target_list;
+
+					target_list.insert(&client);
+
+					r_params.push_back("\r\n");
+					server.deliverMsg(target_list, e.getReplyMessage(client));
+				}
+			}
+
+			// display names
 			Command::names(server, client, t_data);
 		}
 		catch(Reply& e)
