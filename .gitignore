@@ -32,7 +32,5 @@
 *.app
 
 # Test main
-main.cpp
-Main.cpp
 test.cpp
 Test.cpp
