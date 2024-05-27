@@ -11,7 +11,7 @@ CPPFLAGS=-MMD -MP -I$(DIR_INCLUDES)
 RM=rm -fr
 -include $(DEPS)
 
-SRCS= $(addprefix $(DIR_SRCS), \
+SRCS=$(addprefix $(DIR_SRCS), \
 	  Channel/Channel.cpp \
 	  Client/Client.cpp \
 	  Command/Command.cpp \
@@ -33,9 +33,13 @@ SRCS= $(addprefix $(DIR_SRCS), \
 	  Parser/Parser.cpp \
 	  Signal/Signal.cpp )
 
-SRCS+= main.cpp
+SRCS+=main.cpp
 OBJS=$(SRCS:.cpp=.o)
 DEPS=$(OBJS:.o=.d)
+
+ifeq ($(MAKECMDGOALS),debug)
+	CXXFLAGS+=-DDEBUG -g3 -fsanitize=address
+endif
 
 %.o: %.cpp
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
@@ -43,7 +47,9 @@ DEPS=$(OBJS:.o=.d)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CXX) -o $(NAME) $(OBJS)
+	$(LINK.cpp) -o $(NAME) $(OBJS)
+
+debug: all
 
 clean:
 	$(RM) $(OBJS) $(DEPS)
