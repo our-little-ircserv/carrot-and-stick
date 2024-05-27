@@ -37,6 +37,7 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 	channel = server.searchChannel(p_data.channel);
 
 	// 존재하지 않는 채널
+	// 해당 채널의 멤버인지 검사
 	if (channel == NULL || channel->isMember(client) == false)
 	{
 		r_params.push_back(p_data.channel);
@@ -66,14 +67,8 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 	// 토픽 지정
 	else
 	{
-		// 해당 채널의 멤버인지 검사
-		if (channel->isMember(client) == false)
-		{
-			r_params.push_back(p_data.channel);
-			throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
-		}
 		// T플래그가 활성화인경우 관리자인지 검사
-		else if (channel->checkModeSet('t') == true && channel->isOperator(client) == false)
+		if (channel->checkModeSet('t') == true && channel->isOperator(client) == false)
 		{
 			r_params.push_back(p_data.channel);
 			throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
