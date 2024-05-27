@@ -40,7 +40,11 @@ struct Command::Privmsg	Parser::privmsg(const std::vector< std::string >& params
 		}
 	}
 
-	data.text_to_be_sent = params[1];;
+	data.text_to_be_sent = params[1];
+	if (data.text_to_be_sent[0] != ':')
+	{
+		data.text_to_be_sent.insert(data.text_to_be_sent.begin(), ':');
+	}
 
 	return data;
 }
