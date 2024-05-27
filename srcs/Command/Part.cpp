@@ -51,7 +51,7 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
 		{
 			r_params.clear();
 
-            // ERR_NOSUCHCHANNEL
+            // 채널이 존재하는지 검사합니다.
 			Channel* channel = server.searchChannel(p_data.channels[i]);
 			if (channel == NULL)
 			{
@@ -59,7 +59,7 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
 				throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 			}
 
-            // ERR_NOTONCHANNEL
+            // 클라이언트가 해당 채널에 존재하는지 검사합니다.
             if (channel->isMember(client) == false)
             {
                 r_params.push_back(p_data.channels[i]);
@@ -79,13 +79,18 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
 
+			// 채널에서 해당 클라이언트를 제거합니다.
+			// 관리자와 멤버목록 모두에서 제거합니다.
 			if (channel->isOperator(client) == true)
             {
                 channel->delOperator(client);
             }
             channel->delMember(client);
+			// 클라이언트가 가지고있는 채널목록에서 해당 채널을 삭제합니다.
             client.delChannelList(p_data.channels[i]);
 
+			// 채널에 클라이언트가 더이상 남아있지 않으면
+			// 빈 채널 목록에 추가합니다.
 			if (channel->getMemberCnt() == 0)
 			{
 				empty_channels.push_back(channel);
@@ -102,5 +107,6 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
 		}
 	}
 
+	// 빈 채널을 서버에서 일괄적으로 삭제합니다.
 	server.delChannels(empty_channels);
 }

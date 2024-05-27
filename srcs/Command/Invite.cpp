@@ -26,10 +26,9 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 
 	p_data = Parser::invite(data.parameters);
 
-	// 초대하는 자가 해당 채널에 접속중인지 확인 - 해당 채널이 실존하는지는 검사하지 않음
-	// class Client 쪽에 class Channel 을 목록으로 들고있어야 하나 싶지만
-	// 우선 실존하지 않는 채널이면 무조건 해당 채널에 접속중이지 않다는 전제로 구현
-	// ERR_NOTONCHANNEL
+	// 채널의 존재여부를 따로 확인하지 않습니다.
+	// 채널이 존재하지 않거나 초대자가 해당 채널에 존재하지 않을 경우
+	// Reply를 throw 합니다.
 	channel = server.searchChannel(p_data.channel);
 	if (channel == NULL || channel->isMember(client) == false)
 	{
@@ -37,16 +36,14 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 		throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
 	}
 
-	// 초대받는 자가 실존하는 유저인지 검사
-	// ERR_NOSUCHNICK
+	// 초대받는 클라이언트가 실존하는 유저인지 검사합니다.
 	target_client = server.searchClient(p_data.nickname);
 	if (target_client == NULL)
 	{
 		throw Reply(Reply::ERR_NOSUCHNICK, r_params);
 	}
 
-	// 초대받는 자가 해당 채널에 이미 존재하는지 확인
-	// ERR_USERONCHANNEL
+	// 초대받는 클라이언트가 해당 채널에 이미 존재하는지 확인합니다.
 	if (channel->isMember(*target_client) == true)
 	{
 		r_params.push_back(target_client->getNickname());
@@ -54,38 +51,35 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 		throw Reply(Reply::ERR_USERONCHANNEL, r_params);
 	}
 	// +i 플래그가 활성화되었다면 초대하는 자가 채널 관리자인지 확인
-	// ERR_CHANOPRIVSNEEDED
 	else if (channel->checkModeSet('i') == true && channel->isOperator(client) == false)
 	{
 		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 	}
-	// 이미 초대받은 상태인지 중복확인 후 초대목록에 추가
-	// RPL_INVITING
-	else if (channel->isInvited(*target_client) == false)
+
+	// 이미 초대받은 상태인지 중복확인 후 초대목록에 추가합니다.
+	if (channel->checkModeSet('i') == true)
 	{
-		if (channel->checkModeSet('i') == true)
-		{
-			channel->addInvited(*target_client);
-		}
-		r_params.push_back(p_data.channel);
-		r_params.push_back(p_data.nickname);
-
-		std::set< Client* > target_list;
-
-		target_list.insert(&client);
-		server.deliverMsg(target_list, Reply(Reply::RPL_INVITING, r_params).getReplyMessage(client));
-
-		r_params.insert(r_params.begin(), data.command);
-		r_params.insert(r_params.begin(), data.prefix);
-		r_params[2] = p_data.nickname;
-		r_params[3] = p_data.channel;
-		r_params.push_back("\r\n");
-
-		target_list.clear();
-		target_list.insert(target_client);
-		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+		channel->addInvited(*target_client);
 	}
 
-	// invite-only가 아니면 invite_list에 추가하지 않는다...?
+	// RPL_INVITING 메세지를 초대자에게 전송합니다.
+	r_params.push_back(p_data.channel);
+	r_params.push_back(p_data.nickname);
+
+	std::set< Client* > target_list;
+
+	target_list.insert(&client);
+	server.deliverMsg(target_list, Reply(Reply::RPL_INVITING, r_params).getReplyMessage(client));
+
+	// 초대받는 클라이언트에게 INVITE 메세지를 전송합니다.
+	r_params.insert(r_params.begin(), data.command);
+	r_params.insert(r_params.begin(), data.prefix);
+	r_params[2] = p_data.nickname;
+	r_params[3] = p_data.channel;
+	r_params.push_back("\r\n");
+
+	target_list.clear();
+	target_list.insert(target_client);
+	server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 }

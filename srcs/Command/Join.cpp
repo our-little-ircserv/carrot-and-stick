@@ -71,17 +71,22 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 	{
 		try
 		{
+			// r_params 를 초기화합니다.
 			r_params.clear();
 
-			Channel* channel = server.searchChannel(p_data.channels[i]);	
+			// 채널의 존재여부를 확인합니다.
+			Channel* channel = server.searchChannel(p_data.channels[i]);
+			// 채널이 존재하지 않을경우...
 			if (channel == NULL)
 			{
+				// 채널 이름이 문법에 적합하지 않으면 Reply를 throw합니다.
 				if (Parser::isValidChannelName(p_data.channels[i]) == false)
 				{
 					r_params.push_back(p_data.channels[i]);
 					throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 				}
 
+				// 채널 이름이 문법에 적합하다면 새 채널을 생성합니다.
 				channel = server.createChannel(client, p_data.channels[i][0], p_data.channels[i]);
 			}
 			else
@@ -92,8 +97,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 					return ;
 				}
 
-				// 채널에 들어가기 위한 유효성 검사
-
+				// 채널에 들어가기 위한 유효성 검사를 수행합니다.
 				// 1. 초대여부
 				if (channel->checkModeSet('i') == true && channel->isInvited(client) == false)
 				{
@@ -113,6 +117,8 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 					throw Reply(Reply::ERR_CHANNELISFULL, r_params);
 				}
 
+				// 채널에 클라이언트를 추가합니다.
+				// +i 플래그가 활성화되었다면 초대권을 소모합니다.
 				channel->addMember(client);
 				client.addChannelList(p_data.channels[i]);
 				if (channel->isInvited(client) == true)
@@ -122,6 +128,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 			}
 
 			{
+				// JOIN 메세지를 브로드캐스팅합니다.
 				std::set< Client* > target_list = channel->getMemberSet();
 
 				r_params.push_back(data.prefix);
@@ -132,11 +139,12 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
 
+			// TOPIC, NAMES 메세지를 위한 임시변수입니다.
 			struct Parser::Data t_data = data;
 			t_data.parameters.clear();
 			t_data.parameters.push_back(p_data.channels[i]);
 
-			// display topic
+			// 채널 접속시 해당 채널에 토픽이 있다면 표시합니다.
 			if (channel->getTopic().empty() == false)
 			{
 				try
@@ -154,11 +162,12 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 				}
 			}
 
-			// display names
+			// 채널 접속시 해당 채널의 유저목록을 표시합니다.
 			Command::names(server, client, t_data);
 		}
 		catch(Reply& e)
 		{
+			// 채널 접속에 실패하거나 문법적 오류가 발생할경우 해당 클라이언트에게 Reply를 전달합니다.
 			std::set< Client* > target_list;
 
 			target_list.insert(&client);

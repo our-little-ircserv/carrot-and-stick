@@ -28,35 +28,32 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 	Channel*					channel;
 
 	p_data = ::Parser::topic(data.parameters);
-	/*
-		1. 채널 조회
-		2. 존재하는 채널의 경우 토픽 존재여부에 따라 토픽 조회
-		3. 토픽 설정의 경우 채널 멤버인지 먼저 검사
-		4. 채널 멤버인경우 +t 플래그에 따라 토픽 설정 여부 분기
-	*/
+
 	channel = server.searchChannel(p_data.channel);
 
-	// 존재하지 않는 채널
-	// 해당 채널의 멤버인지 검사
+	// 채널의 존재여부를 따로 확인하지 않습니다.
+	// 채널이 존재하지 않거나 클라이언트가 해당 채널에 존재하지 않을 경우
+	// Reply 를 throw 합니다.
 	if (channel == NULL || channel->isMember(client) == false)
 	{
 		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
 	}
 
-	// 단순 토픽 조회
+	// 매개변수가 하나일경우 해당 채널의 토픽만 조회합니다.
 	if (p_data.topic.empty() == true)
 	{
 		std::string t_topic;
 
 		t_topic = channel->getTopic();
 
-		// 서버에서 다음 토픽들을 메세지로 클라이언트에게 전달
+		// 설정되어있는 토픽이 없으면 RPL_NOTOPIC 를 throw 합니다.
 		if (t_topic.size() == 0)
 		{
 			r_params.push_back(p_data.channel);
 			throw Reply(Reply::RPL_NOTOPIC, r_params);
 		}
+		// 해당 채널의 토픽을 RPL_TOPIC 로 throw 하여 클라이언트에게 전달합니다.
 		else
 		{
 			r_params.push_back(p_data.channel);
@@ -64,18 +61,19 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 			throw Reply(Reply::RPL_TOPIC, r_params);
 		}
 	}
-	// 토픽 지정
+	// 매개변수가 둘 이상일경우 해당 채널의 토픽을 설정합니다.
 	else
 	{
-		// T플래그가 활성화인경우 관리자인지 검사
+		// +t 플래그가 활성화인경우 클라이언트가 해당 채널의 관리자인지 검사합니다.
 		if (channel->checkModeSet('t') == true && channel->isOperator(client) == false)
 		{
 			r_params.push_back(p_data.channel);
 			throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 		}
+		// 해당 채널의 토픽을 설정합니다.
 		channel->setTopic(p_data.topic);
 
-		// 서버에서 해당 채널 구성원들에게 브로드캐스트
+		// 해당 채널의 멤버들에게 토픽이 변경되었다는 메세지를 브로드캐스트합니다.
 		{
 			std::set< Client* > target_list = channel->getMemberSet();
 

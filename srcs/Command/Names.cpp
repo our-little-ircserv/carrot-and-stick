@@ -42,7 +42,7 @@ void	Command::names(IRC& server, Client& client, const struct Parser::Data& data
 	std::set< Client* >			target_list;
 
 
-	// 채널의 존재여부나 이름의 유효성은 검사하지 않는다
+	// 채널의 존재여부나 이름의 유효성은 검사하지 않습니다.
 	target_list.insert(&client);
 	while (chan_idx < chan_len)
 	{
@@ -51,6 +51,7 @@ void	Command::names(IRC& server, Client& client, const struct Parser::Data& data
 		{
 			Channel*	channel = server.searchChannel(channels[chan_idx]);
 
+			// 채널이 실존하고 해당 채널에 접속해 있는 경우만 목록을 표시합니다.
 			if ((channel == NULL) == false && channel->isMember(client) == true)
 			{
 				r_params.push_back("=");
@@ -61,6 +62,7 @@ void	Command::names(IRC& server, Client& client, const struct Parser::Data& data
 				std::vector< std::string > nick_list;
 				std::string t_nick;
 
+				// 가장 최근에 접속한 클라이언트부터 목록에 추가합니다.
 				--it;
 				while (true)
 				{
@@ -86,6 +88,7 @@ void	Command::names(IRC& server, Client& client, const struct Parser::Data& data
 			server.deliverMsg(target_list, e.getReplyMessage(client));
 		}
 
+		// 목록의 끝을 나타내는 메세지를 전달합니다.
 		r_params.clear();
 		r_params.push_back(channels[chan_idx]);
 		r_params.push_back(":End of NAMES list");

@@ -46,20 +46,25 @@ void Command::nick(IRC& server, Client& client, const struct Parser::Data& data)
 	std::string					new_nickname;
 	std::vector< std::string >	r_params;
 
+	// 서버의 비밀번호를 제대로 입력하지 않았다면 무시합니다.
 	if (client.getRegisterLevel() == Client::NONE)
 	{
 		return ;
 	}
 
 	new_nickname = Parser::nick(data.parameters);
-	// 이미 사용중인 닉네임일 때
+
+	// 이미 사용중인 닉네임인지 검사합니다.
 	if ((server.searchClient(new_nickname) == NULL) == false)
 	{
 		r_params.push_back(new_nickname);
 		throw Reply(Reply::ERR_NICKNAMEINUSE, r_params);
 	}
 
+	// 클라이언트의 닉네임을 변경합니다.
 	client.setNickname(new_nickname);
+	// 이미 등록을 마친 상태일경우
+	// 접속해있는 모든 채널에 닉네임이 변경되었다는 메세지를 브로드캐스트합니다.
 	if (client.getRegisterLevel() == Client::REGISTERED)
 	{
 		std::vector< std::string > target_names;
@@ -74,9 +79,11 @@ void Command::nick(IRC& server, Client& client, const struct Parser::Data& data)
 
 		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 	}
-	// 환영합니다
+	// 등록이 완료된 직후
+	// Reply 001 ~ 004 까지 해당 클라이언트에게 전달합니다.
 	else if ((client.getUsername() == "") == false)
 	{
+		// 등록 단계를 REGISTERED로 설정합니다.
 		client.setRegisterLevel(Client::REGISTERED);
 		std::set< Client* > target_list;
 		target_list.insert(&client);
