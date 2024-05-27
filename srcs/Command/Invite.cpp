@@ -76,8 +76,6 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 		target_list.insert(&client);
 		server.deliverMsg(target_list, Reply(Reply::RPL_INVITING, r_params).getReplyMessage(client));
 
-		//
-		// r_params.clear();
 		r_params.insert(r_params.begin(), data.command);
 		r_params.insert(r_params.begin(), data.prefix);
 		r_params[2] = p_data.nickname;
