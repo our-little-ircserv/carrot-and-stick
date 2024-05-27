@@ -57,10 +57,6 @@ struct Command::Kick	Parser::kick(const std::vector< std::string >& params) thro
 	{
 		data.comment += params[2];
 	}
-	else
-	{
-		data.comment += client.getNickname();
-	}
 
 	return data;
 }
@@ -120,6 +116,10 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 				r_params.push_back(data.command);
 				r_params.push_back(p_data.channels[chan_idx]);
 				r_params.push_back(p_data.users_nick[client_idx]);
+				if (p_data.comment.size() == 1)
+				{
+					p_data.comment += client.getNickname();
+				}
 				r_params.push_back(p_data.comment);
 				r_params.push_back("\r\n");
 
