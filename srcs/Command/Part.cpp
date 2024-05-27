@@ -29,9 +29,10 @@ struct Command::Part	Parser::part(const std::vector< std::string >& params) thro
 		i += offset + 1;
 	}
 
+	data.comment = ":";
     if (params.size() > 1)
     {
-		data.comment = params[1];
+		data.comment += params[1];
     }
 
 	return data;
