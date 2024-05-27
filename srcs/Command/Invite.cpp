@@ -64,19 +64,22 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 	// RPL_INVITING
 	else if (channel->isInvited(*target_client) == false)
 	{
-		channel->addInvited(*target_client);
+		if (channel->checkModeSet('i') == true)
+		{
+			channel->addInvited(*target_client);
+		}
 		r_params.push_back(p_data.channel);
+		r_params.push_back(p_data.nickname);
 
 		std::set< Client* > target_list;
 
 		target_list.insert(&client);
 		server.deliverMsg(target_list, Reply(Reply::RPL_INVITING, r_params).getReplyMessage(client));
 
-		//
-		r_params.clear();
-		r_params.push_back(data.prefix);
-		r_params.push_back(data.command);
-		r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+		r_params.insert(r_params.begin(), data.command);
+		r_params.insert(r_params.begin(), data.prefix);
+		r_params[2] = p_data.nickname;
+		r_params[3] = p_data.channel;
 		r_params.push_back("\r\n");
 
 		target_list.clear();

@@ -90,7 +90,7 @@ void	Command::names(IRC& server, Client& client, const struct Parser::Data& data
 		r_params.push_back(channels[chan_idx]);
 		r_params.push_back(":End of NAMES list");
 
-		server.deliverMsg(target_list, Reply(Reply::RPL_NAMREPLY, r_params).getReplyMessage(client));
+		server.deliverMsg(target_list, Reply(Reply::RPL_ENDOFNAMES, r_params).getReplyMessage(client));
 
 		chan_idx++;
 	}

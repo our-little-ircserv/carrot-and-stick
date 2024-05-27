@@ -266,14 +266,7 @@ void	Channel::addOperator(Client& client)
 
 void	Channel::addInvited(Client& client)
 {
-	if (isMember(client) == false)
-	{
-		_invite_list.insert(&client);
-	}
-	else
-	{
-		// 에러처리
-	}
+	_invite_list.insert(&client);
 }
 
 void	Channel::delMember(Client& client)

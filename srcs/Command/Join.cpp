@@ -101,13 +101,13 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 					throw Reply(Reply::ERR_INVITEONLYCHAN, r_params);
 				}
 				// 2. 비밀번호
-				else if (channel->checkModeSet('k') == true && (channel->getKey() == p_data.keys[i]) == false)
+				if (channel->checkModeSet('k') == true && (i >= p_data.keys.size() || channel->getKey() != p_data.keys[i]))
 				{
 					r_params.push_back(p_data.channels[i]);
 					throw Reply(Reply::ERR_BADCHANNELKEY, r_params);
 				}
 				// 3. 인원제한
-				else if (channel->checkModeSet('l') == true && channel->getLimit() == channel->getMemberCnt())
+				if (channel->checkModeSet('l') == true && channel->getLimit() == channel->getMemberCnt())
 				{
 					r_params.push_back(p_data.channels[i]);
 					throw Reply(Reply::ERR_CHANNELISFULL, r_params);
@@ -135,7 +135,27 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 			struct Parser::Data t_data = data;
 			t_data.parameters.clear();
 			t_data.parameters.push_back(p_data.channels[i]);
-			Command::names(server, client, data);
+
+			// display topic
+			if (channel->getTopic().empty() == false)
+			{
+				try
+				{
+					Command::topic(server, client, t_data);
+				}
+				catch(Reply& e)
+				{
+					std::set< Client* > target_list;
+
+					target_list.insert(&client);
+
+					r_params.push_back("\r\n");
+					server.deliverMsg(target_list, e.getReplyMessage(client));
+				}
+			}
+
+			// display names
+			Command::names(server, client, t_data);
 		}
 		catch(Reply& e)
 		{
