@@ -23,26 +23,26 @@ void	Command::user(IRC& server, Client& client, const struct Parser::Data& data)
 	struct Command::User		p_data = Parser::user(data.parameters);
 	std::vector< std::string >	r_params;
 
-	// 서버의 비밀번호를 제대로 입력하지 않았다면 무시합니다.
+	// 서버의 비밀번호를 제대로 입력하지 않았다면 무시한다.
 	if (client.getRegisterLevel() == Client::NONE)
 	{
 		return ;
 	}
-	// 이미 등록을 마친 상태라면 무시합니다.
+	// 이미 등록을 마친 상태라면 무시한다.
 	else if (client.getRegisterLevel() == Client::REGISTERED)
 	{
 		throw Reply(Reply::ERR_ALREADYREGISTRED, r_params);
 	}
 
-	// 매개변수 중 username 과 realname 만 설정합니다
+	// 매개변수 중 username 과 realname 만 설정한다
 	client.setUsername(p_data.username);
 	client.setRealname(p_data.real_name);
 
 	// 등록이 완료된 직후
-	// Reply 001 ~ 004 까지 해당 클라이언트에게 전달합니다.
+	// Reply 001 ~ 004 까지 해당 클라이언트에게 전달한다.
 	if ((client.getNickname() == "*") == false)
 	{
-		// 등록 단계를 REGISTERED로 설정합니다.
+		// 등록 단계를 REGISTERED로 설정한다.
 		client.setRegisterLevel(Client::REGISTERED);
 		std::set< Client* > target_list;
 		target_list.insert(&client);

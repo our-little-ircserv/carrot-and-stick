@@ -64,8 +64,8 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 
 		try
 		{
-			// 전달 대상의 목록을 구합니다.
-			// 해당 이름으로 채널이 존재하지 않으면 클라이언트 중에서 찾아보고 목록에 추가합니다.
+			// 전달 대상의 목록을 구한다.
+			// 해당 이름으로 채널이 존재하지 않으면 클라이언트 중에서 찾아보고 목록에 추가한다.
 			t_channel = server.searchChannel(p_data.msg_targets[i]);
 			if (t_channel == NULL)
 			{
@@ -77,7 +77,7 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 				}
 				target_list.insert(t_client);
 			}
-			// 채널이 존재하면 해당 채널의 클라이언트들을 목록에 추가합니다.
+			// 채널이 존재하면 해당 채널의 클라이언트들을 목록에 추가한다.
 			else
 			{
 				Assert(t_channel->getMemberCnt() != 0);
@@ -85,7 +85,7 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 
 				target_list.insert(t_member_set.begin(), t_member_set.end());
 
-				// 채널 대상으로 메세지를 보낼때 자기자신은 제외합니다.
+				// 채널 대상으로 메세지를 보낼때 자기자신은 제외한다.
 				std::set< Client* >::iterator it = target_list.find(&client);
 				if (it != target_list.end())
 				{
@@ -93,7 +93,7 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 				}
 			}
 
-			// 전달 대상들에게 중복없이 메세지를 전달합니다.
+			// 전달 대상들에게 중복없이 메세지를 전달한다.
 			r_params.push_back(data.prefix);
 			r_params.push_back(data.command);
 			r_params.push_back(p_data.msg_targets[i]);
@@ -105,7 +105,7 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 		}
 		catch(Reply& e)
 		{
-			// Privmsg 관련 오류상황에 대한 Reply를 해당 클라이언트에게 전달합니다.
+			// Privmsg 관련 오류상황에 대한 Reply를 해당 클라이언트에게 전달한다.
 			target_list.insert(&client);
 			server.deliverMsg(target_list, e.getReplyMessage(client));
 		}

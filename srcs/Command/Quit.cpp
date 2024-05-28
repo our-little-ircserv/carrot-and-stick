@@ -33,7 +33,7 @@ void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data)
 	r_params.push_back(t_str);
 	r_params.push_back("\r\n");
 
-	// quit 메세지를 브로드캐스트합니다.
+	// quit 메세지를 브로드캐스트한다.
 	chan_list.insert(chan_list.end(), client.getChannelList().begin(), client.getChannelList().end());
 	if (chan_list.empty() == false)
 	{
@@ -41,7 +41,7 @@ void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data)
 		std::set< Client* >::iterator it = target_list.find(&client);
 		Assert(it != target_list.end());
 
-		// 자기자신을 제외합니다.
+		// 자기자신을 제외한다.
 		target_list.erase(it);
 
 		if (target_list.empty() == false)
@@ -51,7 +51,7 @@ void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data)
 		}
 	}
 
-	// 본인에게는 ERROR 메세지를 전달합니다.
+	// 본인에게는 ERROR 메세지를 전달한다.
 	r_params.clear();
 	target_list.insert(&client);
 	r_params.push_back("ERROR");

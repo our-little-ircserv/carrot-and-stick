@@ -79,25 +79,25 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 
 			r_params.clear();
 
-			// 채널이 존재하는지 검사합니다.
+			// 채널이 존재하는지 검사한다.
 			if (channel == NULL)
 			{
 				r_params.push_back(p_data.channels[chan_idx]);
 				throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 			}
-			// 추방하는 클라이언트가 채널에 존재하는지 검사합니다.
+			// 추방하는 클라이언트가 채널에 존재하는지 검사한다.
 			else if (channel->isMember(client) == false)
 			{
 				r_params.push_back(p_data.channels[chan_idx]);
 				throw Reply(Reply::ERR_NOTONCHANNEL, r_params);
 			}
-			// 추방하는 클라이언트가가 채널의 관리자인지 검사합니다.
+			// 추방하는 클라이언트가가 채널의 관리자인지 검사한다.
 			else if (channel->isOperator(client) == false)
 			{
 				r_params.push_back(p_data.channels[chan_idx]);
 				throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 			}
-			// 추방당하는 클라이언트가 채널에 존재하는지 검사합니다.
+			// 추방당하는 클라이언트가 채널에 존재하는지 검사한다.
 			else if (channel->isMember(*target_client) == false)
 			{
 				r_params.push_back(p_data.users_nick[chan_idx]);
@@ -105,7 +105,7 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 				throw Reply(Reply::ERR_USERNOTINCHANNEL, r_params);
 			}
 
-			// kick 메세지를 브로드캐스트합니다.
+			// kick 메세지를 브로드캐스팅한다.
 			{
 				std::set< Client* > target_list = channel->getMemberSet();
 
@@ -123,8 +123,8 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
 
-			// 채널에서 해당 클라이언트를 제거합니다.
-			// 관리자와 멤버목록 모두에서 제거합니다.
+			// 채널에서 해당 클라이언트를 제거한다.
+			// 관리자와 멤버목록 모두에서 제거한다.
 			if (channel->isMember(*target_client) == true)
 			{
 				if (channel->isOperator(*target_client) == true)
@@ -137,7 +137,7 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 		}
 		catch(Reply& e)
 		{
-			// 추방 실패시 오류에 관한 Reply를 추방을 시도한 클라이언트에게 전달합니다.
+			// 추방 실패시 오류에 관한 Reply를 추방을 시도한 클라이언트에게 전달한다.
 			std::set< Client* > target_list;
 
 			target_list.insert(&client);
@@ -145,7 +145,7 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 		}
 
 		client_idx++;
-		// 채널 인자가 1개인경우 하나의 채널에서 여러 클라이언트를 추방합니다.
+		// 채널 인자가 1개인경우 하나의 채널에서 여러 클라이언트를 추방한다.
 		if (chan_len == 1)
 		{
 			continue;
