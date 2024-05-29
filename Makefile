@@ -53,7 +53,9 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	$(LINK.cpp) $(OUTPUT_OPTION) $(OBJS)
 
-debug: all
+debug:
+	$(MAKE) fclean
+	$(MAKE) all
 
 clean:
 	$(RM) $(OBJS) $(DEPS)

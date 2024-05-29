@@ -9,8 +9,6 @@
 # include "FatalError.hpp"
 
 class	IRC;
-class	Signal;
-class	FatalError;
 
 class	IEventHandler
 {

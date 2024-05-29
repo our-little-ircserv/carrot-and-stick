@@ -1,7 +1,6 @@
 #ifndef FATALERROR_HPP
 # define FATALERROR_HPP
 
-# include <signal.h>
 # include "Signal.hpp"
 
 extern volatile sig_atomic_t g_signo;

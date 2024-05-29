@@ -39,11 +39,14 @@ class	IRC
 		void	init() throw(Signal, FatalError);
 		void	run() throw(Signal, FatalError);
 
+		void	pushEvent(struct kevent& event);
+
 		Channel*	searchChannel(const std::string& channel_name);
 		Channel*	createChannel(Client& client, const char prefix, const std::string& channel_name);
 
 		Client*		searchClient(const int sockfd);
 		Client*		searchClient(const std::string& nickname);
+		void		createClient(int sockfd, struct sockaddr_in addr);
 
 		void					disconnectClient(Client& client);
 		std::vector< Channel* >	delClient(Client& client);
@@ -52,6 +55,8 @@ class	IRC
 		std::string			getStartTime() const;
 		int					getServerSocketFd() const;
 		const std::string&	getPassword() const;
+		ServerEventHandler&	getServerEventHandler();
+		ClientEventHandler&	getClientEventHandler();
 
 		void				deliverMsg(std::set< Client* >& target_list, std::string msg);
 		std::set< Client* > getTargetSet(std::vector< std::string >targets);
@@ -59,21 +64,21 @@ class	IRC
 		static void	get_next_line(Client& client, const std::string& input);
 		static void	iterate_rdbuf(IRC& server, Client& client);
 
-		std::vector< struct kevent >		_changelist;
-		struct kevent						_eventlist[MAX_EVENTS];
-
-		std::map< int, Client >				_clients;
-		std::map< std::string, Channel >	_channels;
-
-		ServerEventHandler	_server_event_handler;
-		ClientEventHandler	_client_event_handler;
-
 	private:
 		std::tm*	_start_time;
 		int			_server_sockfd;
 		uint16_t	_port;
 		const char*	_ip_addr;
 		std::string	_password;
+
+		std::vector< struct kevent >	_changelist;
+		struct kevent					_eventlist[MAX_EVENTS];
+
+		ServerEventHandler	_server_event_handler;
+		ClientEventHandler	_client_event_handler;
+
+		std::map< int, Client >				_clients;
+		std::map< std::string, Channel >	_channels;
 
 		void				setUpSocket() throw(Signal, FatalError);
 		struct sockaddr_in	setSockAddrIn(int domain) throw(Signal, FatalError);

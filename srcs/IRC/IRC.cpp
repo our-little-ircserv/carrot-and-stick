@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <cinttypes>
 #include <sstream>
+#include <iostream>
 #include "IRC.hpp"
 #include "IEventHandler.hpp"
 #include "Parser.hpp"
@@ -74,6 +75,12 @@ void	IRC::run() throw(Signal, FatalError)
 	}
 }
 
+void	IRC::pushEvent(struct kevent& event)
+{
+	std::cout << "pushEvent" << std::endl;
+	_changelist.push_back(event);
+}
+
 Channel* IRC::searchChannel(const std::string& channel_name)
 {
 	std::map<std::string, Channel>::iterator it;
@@ -128,6 +135,12 @@ Client* IRC::searchClient(const std::string& nickname)
 	}
 
 	return NULL;
+}
+
+void	IRC::createClient(int sockfd, struct sockaddr_in addr)
+{
+	Client	client(sockfd, addr);
+	_clients[sockfd] = client;
 }
 
 // client socket disconnect
@@ -194,6 +207,16 @@ int	IRC::getServerSocketFd() const
 const std::string& IRC::getPassword() const
 {
 	return _password;
+}
+
+ServerEventHandler&	IRC::getServerEventHandler()
+{
+	return _server_event_handler;
+}
+
+ClientEventHandler&	IRC::getClientEventHandler()
+{
+	return _client_event_handler;
 }
 
 void	IRC::deliverMsg(std::set< Client* >& target_list, std::string msg)

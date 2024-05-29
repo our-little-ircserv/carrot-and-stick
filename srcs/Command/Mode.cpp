@@ -112,7 +112,6 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 		r_params.push_back(data.parameters.front());
 		r_params.push_back(valid_param_add);
 		r_params.push_back(valid_param_del);
-//		r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
 		r_params.push_back("\r\n");
 
 		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));

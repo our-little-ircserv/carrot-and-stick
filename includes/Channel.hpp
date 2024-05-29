@@ -1,15 +1,11 @@
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
-# include <netinet/ip.h>
 # include <map>
 # include <set>
 # include "Client.hpp"
 # include "Command.hpp"
-//# include "Signal.hpp"
 # include "Reply.hpp"
-
-class	IRC;
 
 class	Channel
 {
@@ -22,7 +18,6 @@ class	Channel
 		};
 
 		Channel();
-//		~Channel();
 		Channel(Client& client, const char t_prefix, std::string t_name);
 		Channel(const Channel& other);
 		Channel& operator=(const Channel& other);

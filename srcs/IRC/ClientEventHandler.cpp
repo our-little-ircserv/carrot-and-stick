@@ -1,4 +1,5 @@
 #include <sys/stat.h>
+#include <iostream>
 #include "ClientEventHandler.hpp"
 #include "IRC.hpp"
 #include "Parser.hpp"
@@ -10,6 +11,7 @@ ClientEventHandler::~ClientEventHandler()
 
 void	ClientEventHandler::read(IRC& server, const struct kevent& event) throw(Signal, FatalError, enum Client::REGISTER_LEVEL)
 {
+	std::cout << "read" << std::endl;
 	Client*	client = server.searchClient((int)event.ident);
 	Assert(client != NULL);
 
@@ -37,6 +39,7 @@ void	ClientEventHandler::read(IRC& server, const struct kevent& event) throw(Sig
 
 void	ClientEventHandler::write(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
+	std::cout << "write" << std::endl;
 	struct stat	statbuf;
 	if (fstat(event.ident, &statbuf) == -1)
 	{
@@ -73,7 +76,7 @@ void	ClientEventHandler::handleEOF(IRC& server, Client& client) throw(enum Clien
 {
 	struct kevent	t_event;
 	EV_SET(&t_event, client.getSocketFd(), EVFILT_READ, EV_DELETE, 0, 0, NULL);
-	server._changelist.push_back(t_event);
+	server.pushEvent(t_event);
 
 	struct Parser::Data	data = Parser::parseClientMessage("QUIT :Client is disconnected\r\n");
 	Command::execute(server, client, data);
