@@ -65,7 +65,6 @@ class	IRC
 		std::map< int, Client >				_clients;
 		std::map< std::string, Channel >	_channels;
 
-
 		ServerEventHandler	_server_event_handler;
 		ClientEventHandler	_client_event_handler;
 
@@ -78,12 +77,6 @@ class	IRC
 
 		void				setUpSocket() throw(Signal, FatalError);
 		struct sockaddr_in	setSockAddrIn(int domain) throw(Signal, FatalError);
-
-		static void	acceptClient(IRC& server, const struct kevent& event) throw(Signal, FatalError);
-		static void	receiveMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
-		static void	sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);
-
-		static void	handleEOF(IRC& server, Client& client) throw(enum Client::REGISTER_LEVEL);
 };
 
 #endif

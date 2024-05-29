@@ -1,5 +1,4 @@
 #include <limits.h>
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <exception>
@@ -181,7 +180,7 @@ bool	Parser::checkChannelPrefixes(char c)
 
 bool	Parser::isValidChannelName(const std::string& channel_name)
 {
-	if (checkChannelPrefixes(channel_name[0]) == false)
+	if (channel_name.size() < 2 || checkChannelPrefixes(channel_name[0]) == false)
 	{
 		return false;
 	}

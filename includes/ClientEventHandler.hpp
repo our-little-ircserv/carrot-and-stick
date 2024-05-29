@@ -2,7 +2,6 @@
 # define CLIENTEVENTHANDLER_HPP
 
 # include "IEventHandler.hpp"
-//# include "Client.hpp"
 
 class	ClientEventHandler : public IEventHandler
 {

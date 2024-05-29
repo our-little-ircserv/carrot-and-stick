@@ -42,7 +42,7 @@ class	Channel
 
 		std::set< Client* >	getMemberSet();
 
-		void	setMode(std::vector< struct Command::ModeWithParams>& mode_data);
+		void	setMode(struct Command::ModeWithParams& mode_data);
 		void	setTopic(std::string t_topic);
 
 		bool	checkModeSet(const char mode) const;

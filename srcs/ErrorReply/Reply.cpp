@@ -10,7 +10,7 @@ Reply::Reply(enum Reply::ReplyType t_number, const std::vector< std::string >& t
 }
 
 // :hostname rpl_no parameters :message crlf
-std::string	Reply::getReplyMessage(const Client& client)
+std::string	Reply::getReplyMessage(const Client& client) const
 {
 	std::stringstream	ss;
 	ss << std::setw(3) << std::setfill('0') << _number;
@@ -32,7 +32,7 @@ std::string	Reply::getReplyMessage(const Client& client)
 			break;
 		case RPL_MYINFO:
 			// hostname 4 nickname hostname hostversion avail_usermodes avail_channelmodes
-			message += IRC::hostname + "0.0.1 0 +oitkl";
+			message += IRC::hostname + " 0.0.1 0 +oitkl";
 			break;
 		case RPL_CHANNELMODEIS:
 			// hostname 324 nickname #channel +it

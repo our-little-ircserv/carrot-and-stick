@@ -1,6 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 #include "Channel.hpp"
+#include "Assert.hpp"
 
 struct Command::Mode	Parser::mode(const std::vector< std::string >& params) throw(Reply)
 {
@@ -63,14 +64,55 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 	}
 
 	// only (member && operator) reaches here
-	channel->setMode(p_data.modes);
+	std::string	valid_param_del;
+	std::string	valid_param_add;
+
+	std::vector< struct Command::ModeWithParams >::iterator it = p_data.modes.begin();
+	std::vector< struct Command::ModeWithParams >::iterator ite = p_data.modes.end();
+	for (; it != ite; it++)
+	{
+		try
+		{
+			channel->setMode(*it);
+			if (it->type == Command::DEL)
+			{
+				if (valid_param_del.empty() == true)
+				{
+					valid_param_del = "-";
+				}
+
+				valid_param_del += it->mode;
+			}
+			else
+			{
+				if (valid_param_add.empty() == true)
+				{
+					valid_param_add = "+";
+				}
+
+				valid_param_add += it->mode;
+			}
+		}
+		catch (const Reply& e)
+		{
+			std::set< Client* > target_list;
+
+			target_list.insert(&client);
+
+			server.deliverMsg(target_list, e.getReplyMessage(client));
+		}
+	}
 
 	{
 		std::set< Client* > target_list = channel->getMemberSet();
 
 		r_params.push_back(data.prefix);
 		r_params.push_back(data.command);
-		r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+		Assert(data.parameters.empty() == false);
+		r_params.push_back(data.parameters.front());
+		r_params.push_back(valid_param_add);
+		r_params.push_back(valid_param_del);
+//		r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
 		r_params.push_back("\r\n");
 
 		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));

@@ -1,5 +1,4 @@
 #include <sys/stat.h>
-#include <iostream>
 #include "ClientEventHandler.hpp"
 #include "IRC.hpp"
 #include "Parser.hpp"
@@ -47,7 +46,6 @@ void	ClientEventHandler::write(IRC& server, const struct kevent& event) throw(Si
 	Client*	client = server.searchClient((int)event.ident);
 	Assert(client != NULL);
 
-	// 한번에 보낼 수 있는 최대 블럭수
 	size_t	sent_size;
 	while (client->_write_buf.empty() == false)
 	{
@@ -67,21 +65,14 @@ void	ClientEventHandler::write(IRC& server, const struct kevent& event) throw(Si
 		if (client->getRegisterLevel() == Client::LEFT)
 		{
 			server.disconnectClient(*client);
-			return;
 		}
-
-		client->_writable = false;
-
-		struct kevent	t_event;
-		EV_SET(&t_event, client->getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, (void*)(&(server._client_event_handler)));
-		server._changelist.push_back(t_event);
 	}
 }
 
 void	ClientEventHandler::handleEOF(IRC& server, Client& client) throw(enum Client::REGISTER_LEVEL)
 {
 	struct kevent	t_event;
-	EV_SET(&t_event, client.getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, (void*)(&(server._client_event_handler)));
+	EV_SET(&t_event, client.getSocketFd(), EVFILT_READ, EV_DELETE, 0, 0, NULL);
 	server._changelist.push_back(t_event);
 
 	struct Parser::Data	data = Parser::parseClientMessage("QUIT :Client is disconnected\r\n");
