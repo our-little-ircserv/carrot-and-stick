@@ -5,11 +5,10 @@ DIR_INCLUDES=includes/
 
 NAME=ircserv
 CXX=c++
-CXXFLAGS=-Wall -Wextra -Werror --std=c++98
+CXXFLAGS=-Wall -Wextra -Werror --std=c++98 -Wpedantic 
 CPPFLAGS=-MMD -MP -I$(DIR_INCLUDES)
 
 RM=rm -fr
--include $(DEPS)
 
 SRCS=$(addprefix $(DIR_SRCS), \
 	  Channel/Channel.cpp \
@@ -29,6 +28,9 @@ SRCS=$(addprefix $(DIR_SRCS), \
 	  Command/Names.cpp \
 	  ErrorReply/FatalError.cpp \
 	  ErrorReply/Reply.cpp \
+	  IRC/ClientEventHandler.cpp \
+	  IRC/SereverEventHandler.cpp \
+	  IRC/IEventHandler.cpp \
 	  IRC/IRC.cpp \
 	  Parser/Parser.cpp \
 	  Signal/Signal.cpp )
@@ -36,9 +38,11 @@ SRCS=$(addprefix $(DIR_SRCS), \
 SRCS+=main.cpp
 OBJS=$(SRCS:.cpp=.o)
 DEPS=$(OBJS:.o=.d)
+-include $(DEPS)
 
 ifeq ($(MAKECMDGOALS),debug)
-	CXXFLAGS+=-DDEBUG -g3 -fsanitize=address
+	CPPFLAGS+=-DDEBUG 
+	CXXFLAGS+=-g3 -fsanitize=address
 endif
 
 %.o: %.cpp
@@ -47,7 +51,7 @@ endif
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(LINK.cpp) -o $(NAME) $(OBJS)
+	$(LINK.cpp) $(OUTPUT_OPTION) $(OBJS)
 
 debug: all
 
@@ -57,6 +61,7 @@ clean:
 fclean: clean
 	$(RM) $(NAME)
 
-re: fclean all
+re: fclean
+	$(MAKE) all
 
 .PHONY: all clean fclean re

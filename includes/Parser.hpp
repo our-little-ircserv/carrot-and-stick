@@ -1,7 +1,7 @@
 #ifndef PARSER_HPP
 # define PARSER_HPP
 
-# include <cinttypes>
+//# include <cinttypes>
 # include <vector>
 # include "IRC.hpp"
 # include "Command.hpp"
@@ -13,7 +13,7 @@ namespace	Parser
 	enum	TokenType
 	{
 		COLON,
-		NOCOLON,
+		NOCOLON
 	};
 
 	struct	Token
@@ -62,6 +62,6 @@ namespace	Parser
 	size_t	insertModes(struct Command::Mode& data, const std::string& modes, char mtype);
 	size_t	insertModeParameters(struct Command::Mode& data, const std::vector< std::string >& params, size_t new_modes, size_t i);
 	
-};
+}
 
 #endif

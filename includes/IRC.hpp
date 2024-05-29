@@ -8,6 +8,8 @@
 # include <vector>
 # include <map>
 # include <string>
+# include "ServerEventHandler.hpp"
+# include "ClientEventHandler.hpp"
 # include "Client.hpp"
 # include "Channel.hpp"
 # include "FatalError.hpp"
@@ -17,8 +19,9 @@
 # define BUFSIZE 1025
 
 class	Channel;
+class	ServerEventHandler;
+class	ClientEventHandler;
 
-// SocketManager
 class	IRC
 {
 	public:
@@ -60,6 +63,9 @@ class	IRC
 		const char*	_ip_addr;
 		std::string	_password;
 
+		ServerEventHandler	_server_event_handler;
+		ClientEventHandler	_client_event_handler;
+
 		std::vector< struct kevent >		_changelist;
 		struct kevent						_eventlist[MAX_EVENTS];
 		std::map< int, Client >				_clients;
@@ -77,11 +83,5 @@ class	IRC
 
 		static void	handleEOF(IRC& server, Client& client) throw(enum Client::REGISTER_LEVEL);
 };
-//
-//inline void	disconnectClient(IRC& server, Client& client)
-//{
-//	std::vector< Channel* >	empty_channels = server.delClient(client);
-//	server.delChannels(empty_channels);
-//}
 
 #endif

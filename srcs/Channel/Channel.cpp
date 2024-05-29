@@ -7,13 +7,7 @@ const std::string	Channel::st_valid_modes = "itkl";
 
 Channel::Channel() : _modes(0), _limit(0)
 {
-	//
 }
-//
-//Channel::~Channel()
-//{
-//	std::cout << _name << " destroyed" << std::endl;
-//}
 
 Channel::Channel(Client& client, const char t_prefix, std::string t_name) : _name(t_name), _modes(0), _limit(0)
 {

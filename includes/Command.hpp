@@ -10,7 +10,7 @@
 namespace	Parser
 {
 	struct Data;
-};
+}
 
 class	IRC;
 
@@ -123,6 +123,6 @@ namespace Command
 	void	part(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	quit(IRC& server, Client& client, const struct Parser::Data& data) throw(enum Client::REGISTER_LEVEL);
 	void	names(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
-};
+}
 
 #endif

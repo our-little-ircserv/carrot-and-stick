@@ -16,7 +16,7 @@ struct Command::User	Parser::user(const std::vector< std::string >& params) thro
 	data.real_name = params[3];
 
 	return data;
-};
+}
 
 void	Command::user(IRC& server, Client& client, const struct Parser::Data& data) throw (Reply)
 {

@@ -1,45 +1,55 @@
-#include "Assert.hpp"
-#include "Channel.hpp"
-#include "Client.hpp"
-#include "Command.hpp"
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/event.h>
+#include <sys/time.h>
+#include <iostream>
+#include <vector>
+#include <cstdlib>
 #include "FatalError.hpp"
-#include "IRC.hpp"
 #include "Parser.hpp"
-#include "Reply.hpp"
+#include "IRC.hpp"
 #include "Signal.hpp"
 
-#include <iostream>
-#include <sstream>
-
-int kq = 0;
 volatile sig_atomic_t g_signo = 0;
+int	kq;
 
-int main(int argc, char** argv)
+void	handleSignals(int signo)
 {
-	if (argc != 3)
-	{
-		std::cout << "argc error\n";
-		return (1);
-	}
+	g_signo = signo;
+}
 
-	IRC::AccessData ad;
-	std::stringstream ss(argv[1]);
-	int a;
-	ss >> a;
-	std::cout << "port: " << a << "\n";
-	ad.port = a;
-	ad.password = argv[2];
-	IRC server(ad);
+#include <unistd.h>
+void	check_leaks(void)
+{
+	char	command[256];
 
-	server.init();
+	snprintf(command, sizeof(command), "%d", getpid());
+	system(command);
+}
 
+int	main(int argc, char** argv)
+{
+	int	ret = 0;
+
+	atexit(check_leaks);
 	try
 	{
-		server.run();
+		IRC	network_manager(Parser::checkArgValidity(argc, argv));
+		network_manager.init();
+		signal(SIGINT, handleSignals);
+		std::cout << "\033[32m[SERVER STARTED]\033[0m" << std::endl;
+		network_manager.run();
 	}
-	catch(FatalError& e)
+	catch (Signal& signal)
 	{
-		e.ftPerror();
+		std::cout << "\033[2D";
 	}
-	
+	catch (FatalError& err)
+	{
+		err.ftPerror();
+		ret = err.getErrNo();
+	}
+
+	std::cout << "\033[32m[SERVER CLOSED]\033[0m" << std::endl;
+	return ret;
 }
