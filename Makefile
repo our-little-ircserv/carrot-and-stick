@@ -29,7 +29,7 @@ SRCS=$(addprefix $(DIR_SRCS), \
 	  ErrorReply/FatalError.cpp \
 	  ErrorReply/Reply.cpp \
 	  IRC/ClientEventHandler.cpp \
-	  IRC/SereverEventHandler.cpp \
+	  IRC/ServerEventHandler.cpp \
 	  IRC/IEventHandler.cpp \
 	  IRC/IRC.cpp \
 	  Parser/Parser.cpp \

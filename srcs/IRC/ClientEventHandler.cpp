@@ -1,11 +1,15 @@
+#include <sys/stat.h>
+#include <iostream>
 #include "ClientEventHandler.hpp"
+#include "IRC.hpp"
+#include "Parser.hpp"
 #include "Assert.hpp"
 
 ClientEventHandler::~ClientEventHandler()
 {
 }
 
-void	ClientEventHandler::read(IRC& server, const struct kevent& event) throw(Signal, FatalError)
+void	ClientEventHandler::read(IRC& server, const struct kevent& event) throw(Signal, FatalError, enum Client::REGISTER_LEVEL)
 {
 	Client*	client = server.searchClient((int)event.ident);
 	Assert(client != NULL);
@@ -74,7 +78,7 @@ void	ClientEventHandler::write(IRC& server, const struct kevent& event) throw(Si
 	}
 }
 
-void	IRC::handleEOF(IRC& server, Client& client) throw(enum Client::REGISTER_LEVEL)
+void	ClientEventHandler::handleEOF(IRC& server, Client& client) throw(enum Client::REGISTER_LEVEL)
 {
 	struct kevent	t_event;
 	EV_SET(&t_event, client.getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, (void*)(&(server._client_event_handler)));

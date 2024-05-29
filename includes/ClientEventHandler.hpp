@@ -2,13 +2,14 @@
 # define CLIENTEVENTHANDLER_HPP
 
 # include "IEventHandler.hpp"
+//# include "Client.hpp"
 
 class	ClientEventHandler : public IEventHandler
 {
 	public:
 		virtual	~ClientEventHandler();
 
-		virtual void	read(IRC& server, const struct kevent& event) throw(Signal, FatalError);
+		virtual void	read(IRC& server, const struct kevent& event) throw(Signal, FatalError, enum Client::REGISTER_LEVEL);
 		virtual void	write(IRC& server, const struct kevent& event) throw(Signal, FatalError);
 
 		void	handleEOF(IRC& server, Client& client) throw(enum Client::REGISTER_LEVEL);

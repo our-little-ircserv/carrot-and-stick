@@ -56,6 +56,19 @@ class	IRC
 		void				deliverMsg(std::set< Client* >& target_list, std::string msg);
 		std::set< Client* > getTargetSet(std::vector< std::string >targets);
 
+		static void	get_next_line(Client& client, const std::string& input);
+		static void	iterate_rdbuf(IRC& server, Client& client);
+
+		std::vector< struct kevent >		_changelist;
+		struct kevent						_eventlist[MAX_EVENTS];
+
+		std::map< int, Client >				_clients;
+		std::map< std::string, Channel >	_channels;
+
+
+		ServerEventHandler	_server_event_handler;
+		ClientEventHandler	_client_event_handler;
+
 	private:
 		std::tm*	_start_time;
 		int			_server_sockfd;
@@ -63,19 +76,8 @@ class	IRC
 		const char*	_ip_addr;
 		std::string	_password;
 
-		ServerEventHandler	_server_event_handler;
-		ClientEventHandler	_client_event_handler;
-
-		std::vector< struct kevent >		_changelist;
-		struct kevent						_eventlist[MAX_EVENTS];
-		std::map< int, Client >				_clients;
-		std::map< std::string, Channel >	_channels;
-
 		void				setUpSocket() throw(Signal, FatalError);
 		struct sockaddr_in	setSockAddrIn(int domain) throw(Signal, FatalError);
-
-		static void	get_next_line(Client& client, const std::string& input);
-		static void	iterate_rdbuf(IRC& server, Client& client);
 
 		static void	acceptClient(IRC& server, const struct kevent& event) throw(Signal, FatalError);
 		static void	receiveMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError);

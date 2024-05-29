@@ -6,7 +6,7 @@
 # include <set>
 # include "Client.hpp"
 # include "Command.hpp"
-# include "Signal.hpp"
+//# include "Signal.hpp"
 # include "Reply.hpp"
 
 class	IRC;

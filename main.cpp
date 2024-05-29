@@ -31,7 +31,7 @@ int	main(int argc, char** argv)
 {
 	int	ret = 0;
 
-	atexit(check_leaks);
+//	atexit(check_leaks);
 	try
 	{
 		IRC	network_manager(Parser::checkArgValidity(argc, argv));
