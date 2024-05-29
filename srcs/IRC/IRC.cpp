@@ -5,7 +5,6 @@
 #include <fcntl.h>
 #include <cinttypes>
 #include <sstream>
-#include <iostream>
 #include "IRC.hpp"
 #include "IEventHandler.hpp"
 #include "Parser.hpp"
@@ -77,7 +76,6 @@ void	IRC::run() throw(Signal, FatalError)
 
 void	IRC::pushEvent(struct kevent& event)
 {
-	std::cout << "pushEvent" << std::endl;
 	_changelist.push_back(event);
 }
 
@@ -137,10 +135,12 @@ Client* IRC::searchClient(const std::string& nickname)
 	return NULL;
 }
 
-void	IRC::createClient(int sockfd, struct sockaddr_in addr)
+Client*	IRC::createClient(int sockfd, struct sockaddr_in addr)
 {
 	Client	client(sockfd, addr);
 	_clients[sockfd] = client;
+
+	return &_clients[sockfd];
 }
 
 // client socket disconnect
