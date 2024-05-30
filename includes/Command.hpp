@@ -1,18 +1,15 @@
 #ifndef COMMAND_HPP
 # define COMMAND_HPP
 
-# include <cctype>
-# include <string>
 # include <vector>
+# include <string>
 # include "Reply.hpp"
 # include "IRC.hpp"
 
 namespace	Parser
 {
 	struct Data;
-};
-
-class	IRC;
+}
 
 namespace Command
 {
@@ -123,6 +120,6 @@ namespace Command
 	void	part(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	quit(IRC& server, Client& client, const struct Parser::Data& data) throw(enum Client::REGISTER_LEVEL);
 	void	names(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
-};
+}
 
 #endif

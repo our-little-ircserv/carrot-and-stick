@@ -1,6 +1,7 @@
 #include "Parser.hpp"
 #include "Command.hpp"
 #include "Channel.hpp"
+#include "Assert.hpp"
 
 struct Command::Mode	Parser::mode(const std::vector< std::string >& params) throw(Reply)
 {
@@ -43,34 +44,77 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 	std::vector< std::string >	r_params;
 
 	Channel*	channel = server.searchChannel(p_data.channel);
+	// 1. 채널 존재 여부
 	if (channel == NULL)
 	{
 		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_NOSUCHCHANNEL, r_params);
 	}
-	else if (p_data.modes.empty() == true)
+	// 2. 모드 조회 (외부인도 조회 가능)
+	if (p_data.modes.empty() == true)
 	{
 		r_params.push_back(p_data.channel);
 		r_params.push_back(channel->getCurrentMode());
 		r_params.push_back(channel->getCurrentModeParam(channel->isMember(client)));
 		throw Reply(Reply::RPL_CHANNELMODEIS, r_params);
 	}
-	else if (channel->isMember(client) == false || channel->isOperator(client) == false)
+	// 3. 모드 변경 (채널 오퍼레이터 권한 확인)
+	if (channel->isMember(client) == false || channel->isOperator(client) == false)
 	{
 		r_params.push_back(p_data.channel);
 
 		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 	}
 
-	// only (member && operator) reaches here
-	channel->setMode(p_data.modes);
+	// 채널 오퍼레이터만 모드를 변경할 수 있다.
+	std::string	valid_param_del = "-";
+	std::string	valid_param_add = "+";
 
+	std::vector< struct Command::ModeWithParams >::iterator it = p_data.modes.begin();
+	std::vector< struct Command::ModeWithParams >::iterator ite = p_data.modes.end();
+	for (; it != ite; it++)
+	{
+		// 채널에 모드 설정을 요청한다.
+		try
+		{
+			channel->setMode(*it);
+			if (it->type == Command::DEL && channel->checkModeSet(it->mode) == false)
+			{
+				valid_param_del += it->mode;
+			}
+			else if (it->type == Command::ADD && channel->checkModeSet(it->mode) == true)
+			{
+				valid_param_add += it->mode;
+			}
+		}
+		// 채널에서 모드 설정을 거부할 경우 에러 메시지를 전송한다.
+		catch (const Reply& e)
+		{
+			std::set< Client* > target_list;
+
+			target_list.insert(&client);
+
+			server.deliverMsg(target_list, e.getReplyMessage(client));
+		}
+	}
+
+	// 성공한 설정들만 모아서 브로드캐스트한다.
 	{
 		std::set< Client* > target_list = channel->getMemberSet();
 
 		r_params.push_back(data.prefix);
 		r_params.push_back(data.command);
-		r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+		Assert(data.parameters.empty() == false);
+		r_params.push_back(data.parameters.front());
+		if (valid_param_add.size() > 1)
+		{
+			r_params.push_back(valid_param_add);
+		}
+		if (valid_param_del.size() > 1)
+		{
+			r_params.push_back(valid_param_del);
+		}
+		r_params.push_back(channel->getCurrentModeParam(channel->isMember(client) == true));
 		r_params.push_back("\r\n");
 
 		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));

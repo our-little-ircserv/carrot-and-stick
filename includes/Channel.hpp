@@ -1,15 +1,11 @@
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
-# include <netinet/ip.h>
 # include <map>
 # include <set>
 # include "Client.hpp"
 # include "Command.hpp"
-# include "Signal.hpp"
 # include "Reply.hpp"
-
-class	IRC;
 
 class	Channel
 {
@@ -22,7 +18,6 @@ class	Channel
 		};
 
 		Channel();
-//		~Channel();
 		Channel(Client& client, const char t_prefix, std::string t_name);
 		Channel(const Channel& other);
 		Channel& operator=(const Channel& other);
@@ -42,7 +37,7 @@ class	Channel
 
 		std::set< Client* >	getMemberSet();
 
-		void	setMode(std::vector< struct Command::ModeWithParams>& mode_data);
+		void	setMode(struct Command::ModeWithParams& mode_data);
 		void	setTopic(std::string t_topic);
 
 		bool	checkModeSet(const char mode) const;

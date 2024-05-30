@@ -6,6 +6,7 @@
 #include <cinttypes>
 #include <sstream>
 #include "IRC.hpp"
+#include "IEventHandler.hpp"
 #include "Parser.hpp"
 #include "Command.hpp"
 #include "Channel.hpp"
@@ -40,7 +41,7 @@ void	IRC::init() throw(Signal, FatalError)
 	wrapSyscall(listen(_server_sockfd, MAX_CLIENTS), "listen");
 
 	kq = wrapSyscall(kqueue(), "kqueue");
-	EV_SET(&event, _server_sockfd, EVFILT_READ, EV_ADD, 0, 0, (void*)acceptClient);
+	EV_SET(&event, _server_sockfd, EVFILT_READ, EV_ADD, 0, 0, reinterpret_cast< void* >(&_server_event_handler));
 	_changelist.push_back(event);
 
 	Command::init();
@@ -59,9 +60,27 @@ void	IRC::run() throw(Signal, FatalError)
 
 		for (int i = 0; i < real_events; i++)
 		{
-			reinterpret_cast< void (*)(IRC&, struct kevent&) >(_eventlist[i].udata)(*this, _eventlist[i]);
+			IEventHandler*	handler = static_cast< IEventHandler* >(_eventlist[i].udata);
+			if (handler == NULL)
+			{
+				continue;
+			}
+
+			if (_eventlist[i].filter == EVFILT_READ)
+			{
+				handler->read(*this, _eventlist[i]);
+			}
+			else if (_eventlist[i].filter == EVFILT_WRITE)
+			{
+				handler->write(*this, _eventlist[i]);
+			}
 		}
 	}
+}
+
+void	IRC::pushEvent(struct kevent& event)
+{
+	_changelist.push_back(event);
 }
 
 Channel* IRC::searchChannel(const std::string& channel_name)
@@ -118,6 +137,14 @@ Client* IRC::searchClient(const std::string& nickname)
 	}
 
 	return NULL;
+}
+
+Client&	IRC::createClient(int sockfd, struct sockaddr_in addr)
+{
+	Client	client(sockfd, addr);
+	_clients[sockfd] = client;
+
+	return _clients[sockfd];
 }
 
 // client socket disconnect
@@ -186,6 +213,16 @@ const std::string& IRC::getPassword() const
 	return _password;
 }
 
+ServerEventHandler&	IRC::getServerEventHandler()
+{
+	return _server_event_handler;
+}
+
+ClientEventHandler&	IRC::getClientEventHandler()
+{
+	return _client_event_handler;
+}
+
 void	IRC::deliverMsg(std::set< Client* >& target_list, std::string msg)
 {
 	std::set< Client* >::iterator it = target_list.begin();
@@ -198,7 +235,7 @@ void	IRC::deliverMsg(std::set< Client* >& target_list, std::string msg)
 		{
 			(*it)->_writable = true;
 			struct kevent	t_event;
-			EV_SET(&t_event, (*it)->getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, (void*)sendMessages);
+			EV_SET(&t_event, (*it)->getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, reinterpret_cast< void* >(&_client_event_handler));
 			_changelist.push_back(t_event);
 		}
 	}
@@ -305,101 +342,4 @@ void	IRC::iterate_rdbuf(IRC& server, Client& client)
 			break;
 		}
 	}
-}
-
-void	IRC::acceptClient(IRC& server, const struct kevent& event) throw(Signal, FatalError)
-{
-	struct kevent		t_event;
-	struct sockaddr_in	client_addr;
-	socklen_t			socklen = sizeof(struct sockaddr_in);
-
-	int client_fd = wrapSyscall(accept(server.getServerSocketFd(), (struct sockaddr*)&client_addr, &socklen), "accept");
-	Client	client(client_fd, client_addr);
-
-	server._clients[client.getSocketFd()] = client;
-
-	EV_SET(&t_event, client.getSocketFd(), EVFILT_READ, EV_ADD, 0, 0, (void*)receiveMessages);
-	server._changelist.push_back(t_event);
-
-	EV_SET(&t_event, client.getSocketFd(), EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, (void*)sendMessages);
-	server._changelist.push_back(event);
-}
-
-void	IRC::receiveMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
-{
-	Client*	client = server.searchClient((int)event.ident);
-	Assert(client != NULL);
-
-	try
-	{
-		if ((event.flags & EV_EOF) != 0)
-		{
-			handleEOF(server, *client);
-		}
-
-		char	buf[BUFSIZE];
-
-		int	bytes_received = wrapSyscall(recv(event.ident, buf, BUFSIZE - 1, 0), "recv");
-		buf[bytes_received] = '\0';
-
-		get_next_line(*client, buf);
-
-		iterate_rdbuf(server, *client);
-	}
-	catch(enum Client::REGISTER_LEVEL& left)
-	{
-		client->setRegisterLevel(left);
-	}
-}
-
-void	IRC::sendMessages(IRC& server, const struct kevent& event) throw(Signal, FatalError)
-{
-	struct stat	statbuf;
-	if (fstat(event.ident, &statbuf) == -1)
-	{
-		return;
-	}
-
-	Client*	client = server.searchClient((int)event.ident);
-	Assert(client != NULL);
-
-	// 한번에 보낼 수 있는 최대 블럭수
-	size_t	sent_size;
-	while (client->_write_buf.empty() == false)
-	{
-		size_t	data_size = client->_write_buf[0].size();
-		sent_size = wrapSyscall(send(event.ident, client->_write_buf[0].c_str(), data_size, 0), "send");
-		if (sent_size < data_size)
-		{
-			client->_write_buf[0] = client->_write_buf[0].substr(sent_size);
-			break;
-		}
-
-		client->_write_buf.erase(client->_write_buf.begin());
-	}
-
-	if (client->_write_buf.empty() == true && client->_writable == true)
-	{
-		if (client->getRegisterLevel() == Client::LEFT)
-		{
-			server.disconnectClient(*client);
-			return;
-		}
-
-		client->_writable = false;
-
-		struct kevent	t_event;
-		EV_SET(&t_event, client->getSocketFd(), EVFILT_WRITE, EV_DISABLE, 0, 0, (void*)sendMessages);
-		server._changelist.push_back(t_event);
-	}
-}
-
-void	IRC::handleEOF(IRC& server, Client& client) throw(enum Client::REGISTER_LEVEL)
-{
-	struct kevent	t_event;
-	EV_SET(&t_event, client.getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, (void*)sendMessages);
-	server._changelist.push_back(t_event);
-
-	struct Parser::Data	data = Parser::parseClientMessage("QUIT :Client is disconnected\r\n");
-	Command::execute(server, client, data);
 }

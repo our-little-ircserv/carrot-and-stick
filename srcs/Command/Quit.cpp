@@ -16,27 +16,27 @@ void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data)
 	std::set< Client* >         target_list;
 	std::string					t_str;
 
-	r_params.push_back(data.prefix);
-	r_params.push_back(data.command);
-	if (data.parameters.empty() == false)
-	{
-		t_str = data.parameters[0];
-	}
-	else
-	{
-		t_str = client.getNickname();
-	}
-	if (t_str[0] != ':')
-	{
-		t_str.insert(0, ":");
-	}
-	r_params.push_back(t_str);
-	r_params.push_back("\r\n");
-
 	// quit 메세지를 브로드캐스트한다.
 	chan_list.insert(chan_list.end(), client.getChannelList().begin(), client.getChannelList().end());
 	if (chan_list.empty() == false)
 	{
+		r_params.push_back(data.prefix);
+		r_params.push_back(data.command);
+		if (data.parameters.empty() == false)
+		{
+			t_str = data.parameters[0];
+		}
+		else
+		{
+			t_str = client.getNickname();
+		}
+		if (t_str[0] != ':')
+		{
+			t_str.insert(0, ":");
+		}
+		r_params.push_back(t_str);
+		r_params.push_back("\r\n");
+
 		target_list = server.getTargetSet(chan_list);
 		std::set< Client* >::iterator it = target_list.find(&client);
 		Assert(it != target_list.end());
@@ -49,10 +49,11 @@ void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data)
 			server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			target_list.clear();
 		}
+
+		r_params.clear();
 	}
 
 	// 본인에게는 ERROR 메세지를 전달한다.
-	r_params.clear();
 	target_list.insert(&client);
 	r_params.push_back("ERROR");
 	if (data.parameters.empty() == false)

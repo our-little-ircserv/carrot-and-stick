@@ -46,7 +46,7 @@ class	Reply
 		};
 
 		Reply(enum Reply::ReplyType t_number, const std::vector< std::string >& t_parameters);
-		std::string	getReplyMessage(const Client& client);
+		std::string	getReplyMessage(const Client& client) const;
 	
 	private:
 		enum ReplyType				_number;

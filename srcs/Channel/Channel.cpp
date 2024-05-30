@@ -1,4 +1,3 @@
-#include <sys/socket.h>
 #include <sstream>
 #include "Channel.hpp"
 #include "Parser.hpp"
@@ -7,13 +6,7 @@ const std::string	Channel::st_valid_modes = "itkl";
 
 Channel::Channel() : _modes(0), _limit(0)
 {
-	//
 }
-//
-//Channel::~Channel()
-//{
-//	std::cout << _name << " destroyed" << std::endl;
-//}
 
 Channel::Channel(Client& client, const char t_prefix, std::string t_name) : _name(t_name), _modes(0), _limit(0)
 {
@@ -120,55 +113,49 @@ const std::string& Channel::getTopic() const
 }
 
 // oitkl
-void	Channel::setMode(std::vector< struct Command::ModeWithParams>& mode_data)
+void	Channel::setMode(struct Command::ModeWithParams& mode_data)
 {
 	size_t						shift = 0;
 	std::vector< std::string >	r_params;
-	std::vector< struct Command::ModeWithParams >::iterator it = mode_data.begin();
-	std::vector< struct Command::ModeWithParams >::iterator ite = mode_data.end();
-
-	for (; it != ite; it++)
+	if (mode_data.mode == 'o')
 	{
-		if (it->mode == 'o')
+		Client*	member = searchMember(mode_data.mode_param);
+		if (member == NULL)
 		{
-			Client*	member = searchMember(it->mode_param);
-			if (member == NULL)
-			{
-				r_params.push_back(it->mode_param);
-				r_params.push_back(_name);
-				throw Reply(Reply::ERR_USERNOTINCHANNEL, r_params);
-			}
-			else if (it->type == Command::ADD)
-			{
-				addOperator(*member);
-			}
-			else
-			{
-				delOperator(*member);
-			}
+			r_params.push_back(mode_data.mode_param);
+			r_params.push_back(_name);
+			throw Reply(Reply::ERR_USERNOTINCHANNEL, r_params);
 		}
-		else if ((shift = st_valid_modes.find(it->mode, 0)) != std::string::npos)
+		else if (mode_data.type == Command::ADD)
 		{
-			if (it->type == Command::ADD)
+			addOperator(*member);
+		}
+		else
+		{
+			delOperator(*member);
+		}
+	}
+	else if ((shift = st_valid_modes.find(mode_data.mode, 0)) != std::string::npos)
+	{
+		if (mode_data.type == Command::ADD)
+		{
+			if (setModeParam(mode_data.mode, mode_data.mode_param) == true)
 			{
-				if (setModeParam(it->mode, it->mode_param) == true)
-				{
-					_modes |= (1 << shift);
-				}
-			}
-			else
-			{
-				_modes ^= (1 << shift);
+				_modes |= (1 << shift);
 			}
 		}
 		else
 		{
-			std::vector< std::string >	r_params;
-
-			r_params.push_back(std::string(1, it->mode));
-			r_params.push_back(_name);
-			throw Reply(Reply::ERR_UNKNOWNMODE, r_params);
+			_modes ^= (1 << shift);
 		}
+	}
+	else
+	{
+		std::vector< std::string >	r_params;
+
+		r_params.push_back(std::string(1, mode_data.mode));
+		r_params.push_back(_name);
+		throw Reply(Reply::ERR_UNKNOWNMODE, r_params);
 	}
 }
 
