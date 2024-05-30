@@ -46,7 +46,7 @@ class	IRC
 
 		Client*		searchClient(const int sockfd);
 		Client*		searchClient(const std::string& nickname);
-		Client*		createClient(int sockfd, struct sockaddr_in addr);
+		Client&		createClient(int sockfd, struct sockaddr_in addr);
 
 		void					disconnectClient(Client& client);
 		std::vector< Channel* >	delClient(Client& client);

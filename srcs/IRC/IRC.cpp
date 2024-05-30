@@ -135,12 +135,12 @@ Client* IRC::searchClient(const std::string& nickname)
 	return NULL;
 }
 
-Client*	IRC::createClient(int sockfd, struct sockaddr_in addr)
+Client&	IRC::createClient(int sockfd, struct sockaddr_in addr)
 {
 	Client	client(sockfd, addr);
 	_clients[sockfd] = client;
 
-	return &_clients[sockfd];
+	return _clients[sockfd];
 }
 
 // client socket disconnect
