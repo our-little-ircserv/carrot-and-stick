@@ -65,6 +65,7 @@ void	ClientEventHandler::write(IRC& server, const struct kevent& event) throw(Si
 		if (client->getRegisterLevel() == Client::LEFT)
 		{
 			server.disconnectClient(*client);
+			return ;
 		}
 
 		client->_writable = false;

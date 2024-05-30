@@ -60,7 +60,12 @@ void	IRC::run() throw(Signal, FatalError)
 
 		for (int i = 0; i < real_events; i++)
 		{
-			IEventHandler*	handler = (IEventHandler*)_eventlist[i].udata;
+			IEventHandler*	handler = static_cast< IEventHandler* >(_eventlist[i].udata);
+			if (handler == NULL)
+			{
+				continue;
+			}
+
 			if (_eventlist[i].filter == EVFILT_READ)
 			{
 				handler->read(*this, _eventlist[i]);
@@ -69,7 +74,6 @@ void	IRC::run() throw(Signal, FatalError)
 			{
 				handler->write(*this, _eventlist[i]);
 			}
-//			reinterpret_cast< void (*)(IRC&, struct kevent&) >(_eventlist[i].udata)(*this, _eventlist[i]);
 		}
 	}
 }

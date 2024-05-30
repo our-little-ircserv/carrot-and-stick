@@ -41,7 +41,7 @@ DEPS=$(OBJS:.o=.d)
 -include $(DEPS)
 
 ifeq ($(MAKECMDGOALS),debug)
-	CPPFLAGS+=-DDEBUG 
+	CPPFLAGS+=-DDEBUG
 	CXXFLAGS+=-g3 -fsanitize=address
 endif
 
@@ -53,9 +53,7 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	$(LINK.cpp) $(OUTPUT_OPTION) $(OBJS)
 
-debug:
-	$(MAKE) fclean
-	$(MAKE) all
+debug: all
 
 clean:
 	$(RM) $(OBJS) $(DEPS)
