@@ -1,9 +1,8 @@
 #ifndef COMMAND_HPP
 # define COMMAND_HPP
 
-# include <cctype>
-# include <string>
 # include <vector>
+# include <string>
 # include "Reply.hpp"
 # include "IRC.hpp"
 

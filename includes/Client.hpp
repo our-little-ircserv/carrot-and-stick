@@ -1,10 +1,6 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <netdb.h>
-# include <netinet/ip.h>
 # include <arpa/inet.h>
 # include <string>
 # include <vector>
@@ -26,7 +22,7 @@ class	Client
 		bool	_writable;
 
 		Client();
-		Client(int t_sockfd, const struct sockaddr_in& addr);
+		Client(int t_sockfd, const struct sockaddr_in& t_addr);
 
 		int					getSocketFd() const;
 		std::string			getPrefix() const;

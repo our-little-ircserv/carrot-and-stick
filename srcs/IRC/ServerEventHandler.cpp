@@ -1,4 +1,3 @@
-#include <sys/socket.h>
 #include <arpa/inet.h>
 #include "ServerEventHandler.hpp"
 #include "IRC.hpp"
