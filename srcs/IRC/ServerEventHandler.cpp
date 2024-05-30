@@ -27,6 +27,7 @@ void	ServerEventHandler::read(IRC& server, const struct kevent& event) throw(Sig
 
 void	ServerEventHandler::write(IRC& server, const struct kevent& event) throw(Signal, FatalError)
 {
+	// this is never called
 	(void)server;
 	(void)event;
 }
