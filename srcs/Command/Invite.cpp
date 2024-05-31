@@ -8,6 +8,7 @@ struct Command::Invite	Parser::invite(const std::vector< std::string >& params) 
 
 	if (params.size() < 2)
 	{
+		r_params.push_back("INVITE");
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
@@ -40,6 +41,7 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 	target_client = server.searchClient(p_data.nickname);
 	if (target_client == NULL)
 	{
+		r_params.push_back(p_data.nickname);
 		throw Reply(Reply::ERR_NOSUCHNICK, r_params);
 	}
 

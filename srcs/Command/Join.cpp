@@ -12,16 +12,17 @@ struct Command::Join	Parser::join(const std::vector< std::string >& params) thro
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
-	size_t				i = 0;
-	size_t				offset;
 	const std::string&	t_channels = params[0];
 	std::string			channel_name;
-	while (i < t_channels.size())
+	size_t				i = 0;
+	size_t				offset;
+	size_t				t_channels_size = t_channels.size();
+	while (i < t_channels_size)
 	{
 		offset = t_channels.find_first_of(',', i);
 		if (offset == std::string::npos)
 		{
-			offset = t_channels.size();
+			offset = t_channels_size;
 		}
 		offset -= i;
 
@@ -42,9 +43,10 @@ struct Command::Join	Parser::join(const std::vector< std::string >& params) thro
 	}
 
 	const std::string&	t_keys = params[1];
+	size_t				t_keys_size = t_keys.size();
 	std::string			key_value;
 	i = 0;
-	while (i < t_keys.size())
+	while (i < t_keys_size)
 	{
 		offset = t_keys.find_first_of(',', i);
 		if (offset == std::string::npos)

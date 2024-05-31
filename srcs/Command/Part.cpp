@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Parser.hpp"
 #include "Command.hpp"
 
@@ -6,21 +7,24 @@ struct Command::Part	Parser::part(const std::vector< std::string >& params) thro
 	struct Command::Part		data;
 	std::vector< std::string >  r_params;
 
-    if (params.size() < 1)
+	size_t	params_size = params.size();
+    if (params_size < 1)
 	{
+		r_params.push_back("PART");
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
 	size_t	i = 0;
 	size_t	offset;
 	const std::string&	t_channels = params[0];
+	size_t				t_channels_size = t_channels.size();
 	std::string			channel_name;
-	while (i < t_channels.size())
+	while (i < t_channels_size)
 	{
 		offset = t_channels.find_first_of(',', i);
 		if (offset == std::string::npos)
 		{
-			offset = t_channels.size();
+			offset = t_channels_size;
 		}
 		offset -= i;
 
@@ -30,7 +34,7 @@ struct Command::Part	Parser::part(const std::vector< std::string >& params) thro
 	}
 
 	data.comment = ":";
-    if (params.size() > 1)
+    if (params_size > 1)
     {
 		data.comment += params[1];
     }
@@ -41,11 +45,11 @@ struct Command::Part	Parser::part(const std::vector< std::string >& params) thro
 void	Command::part(IRC& server, Client& client, const struct Parser::Data& data) throw (Reply)
 {
 	struct Command::Part		p_data = Parser::part(data.parameters);
-	size_t						chan_len = p_data.channels.size();
+	size_t						channels_size = p_data.channels.size();
 	std::vector< std::string >	r_params;
 	std::vector< Channel* >		empty_channels;
 
-	for (size_t i = 0; i < chan_len; i++)
+	for (size_t i = 0; i < channels_size; i++)
 	{
 		try
 		{
