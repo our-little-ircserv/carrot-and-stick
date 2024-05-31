@@ -118,17 +118,19 @@ enum Parser::TokenType	Parser::extractTokenType(const std::string& token)
 std::string	Parser::concat_string_vector(const std::vector< std::string >& vec, const char identifier)
 {
 	std::string	concat_params;
+	size_t	vec_size = vec.size();
 
 	size_t	i = 0;
-	while (i < vec.size())
+	while (i < vec_size)
 	{
 		concat_params += vec[i];
-		++i;
 
-		if (i != vec.size())
+		if (i != vec_size - 1)
 		{
 			concat_params += identifier;
 		}
+
+		++i;
 	}
 
 	return concat_params;

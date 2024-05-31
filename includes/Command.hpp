@@ -85,9 +85,6 @@ namespace Command
 	{
 		std::string										channel;
 		std::vector< struct Command::ModeWithParams >	modes;
-		// addMode로 모드 설정할 때
-		// modes iterator->mode를 전부 하나의 문자열로 합친 다음
-		// +ikl 꼴로 만들어서 addMode 해준다...
 	};
 
 	struct	Part
