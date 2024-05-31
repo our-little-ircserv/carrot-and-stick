@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Parser.hpp"
 #include "Command.hpp"
 
@@ -52,10 +53,14 @@ struct Command::Kick	Parser::kick(const std::vector< std::string >& params) thro
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
 	}
 
-	data.comment = ":";
 	if (params.size() > 2)
 	{
 		data.comment += params[2];
+	}
+
+	if (data.comment.empty() == true || data.comment[0] != ':')
+	{
+		data.comment.insert(0, ":");
 	}
 
 	return data;
@@ -119,6 +124,9 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 				}
 				r_params.push_back(p_data.comment);
 				r_params.push_back("\r\n");
+
+				std::cout << p_data.comment << std::endl;
+				std::cout << Parser::concat_string_vector(r_params) << std::endl;
 
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
