@@ -22,7 +22,7 @@ class	Client
 		bool	_writable;
 
 		Client();
-		Client(int t_sockfd, const struct sockaddr_in& t_addr);
+		Client(const int t_sockfd, const struct sockaddr_in& t_addr);
 
 		int					getSocketFd() const;
 		std::string			getPrefix() const;

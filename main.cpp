@@ -11,7 +11,6 @@
 #include "Signal.hpp"
 
 volatile sig_atomic_t g_signo = 0;
-int	kq;
 
 void	handleSignals(int signo)
 {

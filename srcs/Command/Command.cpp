@@ -79,3 +79,14 @@ void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 		server.deliverMsg(target_list, reply.getReplyMessage(client));
 	}
 }
+
+void	Command::handleClientDepartment(IRC& server, Channel* channel, Client& client)
+{
+	client.delChannelList(channel->getChannelName());
+
+	channel->delMember(client);
+	if (channel->getMemberCnt() == 0)
+	{
+		server.delChannel(channel);
+	}
+}
