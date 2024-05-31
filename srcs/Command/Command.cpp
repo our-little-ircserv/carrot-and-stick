@@ -24,13 +24,15 @@ int Command::getType(std::string& command)
 {
 	// command 인자를 대문자로 변환한 값을 담기위한 임시변수.
 	std::string t_str(command);
+	size_t	t_str_size = t_str.size();
 
-	for (size_t i = 0; i < t_str.size(); i++)
+	for (size_t i = 0; i < t_str_size; i++)
 	{
 		t_str[i] = std::toupper(t_str[i]);
 	}
 
-	for (size_t i = 0; i < sizeof(Command::CmdList) / sizeof(Command::CmdList[0]); i++)
+	size_t	cmdlist_size = sizeof(Command::CmdList) / sizeof(Command::CmdList[0]);
+	for (size_t i = 0; i < cmdlist_size; i++)
 	{
 		if (Command::CmdList[i] == t_str)
 		{

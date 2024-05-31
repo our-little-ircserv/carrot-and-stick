@@ -80,12 +80,14 @@ void Client::addChannelList(const std::string& channel_name)
 	std::vector< std::string >::iterator it = _w_channels.begin();
 	std::vector< std::string >::iterator ite = _w_channels.end();
 
-	for (; it != ite; it++)
+	while (it != ite)
 	{
 		if (*it == channel_name)
 		{
 			return ;
 		}
+
+		++it;
 	}
 	_w_channels.push_back(channel_name);
 }
@@ -95,13 +97,15 @@ void Client::delChannelList(const std::string& channel_name)
 	std::vector< std::string >::iterator it = _w_channels.begin();
 	std::vector< std::string >::iterator ite = _w_channels.end();
 
-	for (; it != ite; it++)
+	while (it != ite)
 	{
 		if (*it == channel_name)
 		{
 			_w_channels.erase(it);
 			return ;
 		}
+
+		++it;
 	}
 }
 
