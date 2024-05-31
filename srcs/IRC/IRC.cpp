@@ -85,7 +85,7 @@ void	IRC::pushEvent(struct kevent& event)
 
 Channel* IRC::searchChannel(const std::string& channel_name)
 {
-	std::map<std::string, Channel>::iterator it;
+	std::map< std::string, Channel >::iterator it;
 
 	it = _channels.find(channel_name);
 	if (it == _channels.end())
@@ -115,12 +115,15 @@ void	IRC::setUpSocket() throw(Signal, FatalError)
 
 Client* IRC::searchClient(const int sockfd)
 {
-	if (_clients.find(sockfd) == _clients.end())
+	std::map< int, Client >::iterator it;
+
+	it = _clients.find(sockfd);
+	if (it == _clients.end())
 	{
 		return NULL;
 	}
 
-	return &(_clients[sockfd]);
+	return &(it->second);
 }
 
 Client* IRC::searchClient(const std::string& nickname)
@@ -141,8 +144,7 @@ Client* IRC::searchClient(const std::string& nickname)
 
 Client&	IRC::createClient(int sockfd, struct sockaddr_in addr)
 {
-	Client	client(sockfd, addr);
-	_clients[sockfd] = client;
+	_clients.insert(std::make_pair(sockfd, Client(sockfd, addr)));
 
 	return _clients[sockfd];
 }
