@@ -111,7 +111,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 					throw Reply(Reply::ERR_BADCHANNELKEY, r_params);
 				}
 				// 3. 인원제한
-				if (channel->checkModeSet('l') == true && channel->getLimit() == channel->getMemberCnt())
+				if (channel->checkModeSet('l') == true && channel->getLimit() <= channel->getMemberCnt())
 				{
 					r_params.push_back(p_data.channels[i]);
 					throw Reply(Reply::ERR_CHANNELISFULL, r_params);
