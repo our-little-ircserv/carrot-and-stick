@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Parser.hpp"
 #include "Command.hpp"
 
@@ -128,9 +127,6 @@ void	Command::kick(IRC& server, Client& client, const struct Parser::Data& data)
 				}
 				r_params.push_back(p_data.comment);
 				r_params.push_back("\r\n");
-
-				std::cout << p_data.comment << std::endl;
-				std::cout << Parser::concat_string_vector(r_params) << std::endl;
 
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
