@@ -78,7 +78,7 @@ void	IRC::run() throw(Signal, FatalError)
 	}
 }
 
-void	IRC::pushEvent(struct kevent& event)
+void	IRC::pushEvent(const struct kevent& event)
 {
 	_changelist.push_back(event);
 }
@@ -142,7 +142,7 @@ Client* IRC::searchClient(const std::string& nickname)
 	return NULL;
 }
 
-Client&	IRC::createClient(int sockfd, struct sockaddr_in addr)
+Client&	IRC::createClient(const int sockfd, const struct sockaddr_in& addr)
 {
 	_clients.insert(std::make_pair(sockfd, Client(sockfd, addr)));
 

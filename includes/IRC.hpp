@@ -39,14 +39,14 @@ class	IRC
 		void	init() throw(Signal, FatalError);
 		void	run() throw(Signal, FatalError);
 
-		void	pushEvent(struct kevent& event);
+		void	pushEvent(const struct kevent& event);
 
 		Channel*	searchChannel(const std::string& channel_name);
 		Channel*	createChannel(Client& client, const char prefix, const std::string& channel_name);
 
 		Client*		searchClient(const int sockfd);
 		Client*		searchClient(const std::string& nickname);
-		Client&		createClient(int sockfd, struct sockaddr_in addr);
+		Client&		createClient(const int sockfd, const struct sockaddr_in& addr);
 
 		void					disconnectClient(Client& client);
 		std::vector< Channel* >	delClient(Client& client);

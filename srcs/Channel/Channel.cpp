@@ -189,7 +189,7 @@ bool	Channel::setModeParam(const char mode, const std::string& param)
 	return shift_or_not;
 }
 
-void Channel::setTopic(std::string t_topic)
+void Channel::setTopic(const std::string& t_topic)
 {
 	_topic = t_topic;
 }
