@@ -44,25 +44,23 @@ void	Command::user(IRC& server, Client& client, const struct Parser::Data& data)
 	{
 		// 등록 단계를 REGISTERED로 설정한다.
 		client.setRegisterLevel(Client::REGISTERED);
-		std::set< Client* > target_list;
-		target_list.insert(&client);
 
 		{
 			Reply rp(Reply::RPL_WELCOME, r_params);
-			server.deliverMsg(target_list, rp.getReplyMessage(client));
+			server.deliverMsg(&client, rp.getReplyMessage(client));
 		}
 		{
 			Reply rp(Reply::RPL_YOURHOST, r_params);
-			server.deliverMsg(target_list, rp.getReplyMessage(client));
+			server.deliverMsg(&client, rp.getReplyMessage(client));
 		}
 		{
 			r_params.push_back(server.getStartTime());
 			Reply rp(Reply::RPL_CREATED, r_params);
-			server.deliverMsg(target_list, rp.getReplyMessage(client));
+			server.deliverMsg(&client, rp.getReplyMessage(client));
 		}
 		{
 			Reply rp(Reply::RPL_MYINFO, r_params);
-			server.deliverMsg(target_list, rp.getReplyMessage(client));
+			server.deliverMsg(&client, rp.getReplyMessage(client));
 		}
 	}
 }

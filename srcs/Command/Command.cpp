@@ -73,9 +73,6 @@ void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 	// 오류 메세지를 해당 클라이언트에게 전달한다.
 	catch (Reply& reply)
 	{
-		std::set< Client* > target_list;
-
-		target_list.insert(&client);
-		server.deliverMsg(target_list, reply.getReplyMessage(client));
+		server.deliverMsg(&client, reply.getReplyMessage(client));
 	}
 }

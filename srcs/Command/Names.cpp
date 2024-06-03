@@ -39,11 +39,8 @@ void	Command::names(IRC& server, Client& client, const struct Parser::Data& data
 	size_t						chan_len = channels.size();
 	size_t						chan_idx = 0;
 	std::vector< std::string >	r_params;
-	std::set< Client* >			target_list;
-
 
 	// 채널의 존재여부나 이름의 유효성은 검사하지 않는다.
-	target_list.insert(&client);
 	while (chan_idx < chan_len)
 	{
 		r_params.clear();
@@ -85,7 +82,7 @@ void	Command::names(IRC& server, Client& client, const struct Parser::Data& data
 		}
 		catch(Reply& e)
 		{
-			server.deliverMsg(target_list, e.getReplyMessage(client));
+			server.deliverMsg(&client, e.getReplyMessage(client));
 		}
 
 		// 목록의 끝을 나타내는 메세지를 전달한다.
@@ -93,7 +90,7 @@ void	Command::names(IRC& server, Client& client, const struct Parser::Data& data
 		r_params.push_back(channels[chan_idx]);
 		r_params.push_back(":End of NAMES list");
 
-		server.deliverMsg(target_list, Reply(Reply::RPL_ENDOFNAMES, r_params).getReplyMessage(client));
+		server.deliverMsg(&client, Reply(Reply::RPL_ENDOFNAMES, r_params).getReplyMessage(client));
 
 		chan_idx++;
 	}
