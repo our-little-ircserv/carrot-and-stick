@@ -45,22 +45,10 @@ void	Command::user(IRC& server, Client& client, const struct Parser::Data& data)
 		// 등록 단계를 REGISTERED로 설정한다.
 		client.setRegisterLevel(Client::REGISTERED);
 
-		{
-			Reply rp(Reply::RPL_WELCOME, r_params);
-			server.deliverMsg(&client, rp.getReplyMessage(client));
-		}
-		{
-			Reply rp(Reply::RPL_YOURHOST, r_params);
-			server.deliverMsg(&client, rp.getReplyMessage(client));
-		}
-		{
-			r_params.push_back(server.getStartTime());
-			Reply rp(Reply::RPL_CREATED, r_params);
-			server.deliverMsg(&client, rp.getReplyMessage(client));
-		}
-		{
-			Reply rp(Reply::RPL_MYINFO, r_params);
-			server.deliverMsg(&client, rp.getReplyMessage(client));
-		}
+		server.deliverMsg(&client, Reply(Reply::RPL_WELCOME, r_params).getReplyMessage(client));
+		server.deliverMsg(&client, Reply(Reply::RPL_YOURHOST, r_params).getReplyMessage(client));
+		r_params.push_back(server.getStartTime());
+		server.deliverMsg(&client, Reply(Reply::RPL_CREATED, r_params).getReplyMessage(client));
+		server.deliverMsg(&client, Reply(Reply::RPL_MYINFO, r_params).getReplyMessage(client));
 	}
 }
