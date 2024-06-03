@@ -52,6 +52,8 @@ class	IRC
 		std::vector< Channel* >	delClient(Client& client);
 		void					delChannels(const std::vector< Channel* >& channels);
 
+		void	clearFromAllInviteList(const Client& client);
+
 		std::string			getStartTime() const;
 		int					getServerSocketFd() const;
 		const std::string&	getPassword() const;

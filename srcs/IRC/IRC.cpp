@@ -186,6 +186,21 @@ std::vector< Channel* >	IRC::delClient(Client& client)
 	return empty_channels;
 }
 
+void	IRC::clearFromAllInviteList(const Client& client)
+{
+	std::map< std::string, Channel >::iterator it = _channels.begin();
+	std::map< std::string, Channel >::iterator ite = _channels.end();
+
+	for (; it != ite; it++)
+	{
+		if (it->second.isInvited(const_cast< Client& >(client)) == false)
+		{
+			continue ;
+		}
+		it->second.delInvited(const_cast< Client& >(client));
+	}
+}
+
 void	IRC::delChannels(const std::vector< Channel* >& channels)
 {
 	size_t	channels_size = channels.size();
