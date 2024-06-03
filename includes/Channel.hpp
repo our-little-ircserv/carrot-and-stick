@@ -32,8 +32,8 @@ class	Channel
 		size_t				getMemberCnt() const;
 		const std::string&	getTopic() const;
 
-		std::map<Client*, bool>::iterator	getMemberBegin();
-		std::map<Client*, bool>::iterator	getMemberEnd();
+		std::map< Client*, bool >::iterator	getMemberBegin();
+		std::map< Client*, bool >::iterator	getMemberEnd();
 
 		std::set< Client* >	getMemberSet();
 
@@ -56,13 +56,13 @@ class	Channel
 	private:
 		static const std::string	st_valid_modes;
 
-		std::string				_name;
-		size_t					_modes;
-		std::string				_topic;
-		std::string				_key;
-		size_t					_limit;
-		std::set<Client*>		_invite_list;
-		std::map<Client*, bool>	_members;
+		std::string					_name;
+		size_t						_modes;
+		std::string					_topic;
+		std::string					_key;
+		size_t						_limit;
+		std::set< Client* >			_invite_list;
+		std::map< Client*, bool >	_members;
 
 		bool	setModeParam(const char mode, const std::string& param);
 };
