@@ -146,14 +146,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 			// 채널 접속시 해당 채널에 토픽이 있다면 표시한다.
 			if (channel->getTopic().empty() == false)
 			{
-				try
-				{
-					Command::topic(server, client, t_data);
-				}
-				catch(Reply& e)
-				{
-					server.deliverMsg(&client, e.getReplyMessage(client));
-				}
+				Command::topic(server, client, t_data);
 			}
 
 			// 채널 접속시 해당 채널의 유저목록을 표시한다.
