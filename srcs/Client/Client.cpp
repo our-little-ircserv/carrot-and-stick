@@ -18,16 +18,16 @@ int Client::getSocketFd() const
 
 std::string Client::getPrefix() const
 {
-	std::string ret;
-
-	ret += ":";
-	ret += getNickname();
-	ret += "!";
-	ret += getUsername();
-	ret += "@";
-	ret += getHostname();
-
-	return ret;
+	 return std::string(":" + getNickname() + "!" + getUsername() + "@" + getHostname());
+//
+//	ret += ":";
+//	ret += getNickname();
+//	ret += "!";
+//	ret += getUsername();
+//	ret += "@";
+//	ret += getHostname();
+//
+//	return ret;
 }
 
 std::string Client::getHostname() const

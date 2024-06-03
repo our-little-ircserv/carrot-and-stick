@@ -19,33 +19,34 @@ void Command::init()
 	Command::cmdFunctions.push_back(Command::part);
 	Command::cmdFunctions.push_back(Command::names);
 }
+//
+//int Command::getType(std::string& command)
+//{
+//	// command 인자를 대문자로 변환한 값을 담기위한 임시변수.
+//	std::string t_str(command);
+//	size_t	t_str_size = t_str.size();
+//
+//	for (size_t i = 0; i < t_str_size; i++)
+//	{
+//		t_str[i] = std::toupper(t_str[i]);
+//	}
+//
+//	size_t	cmdlist_size = sizeof(Command::CmdList) / sizeof(Command::CmdList[0]);
+//	for (size_t i = 0; i < cmdlist_size; i++)
+//	{
+//		if (Command::CmdList[i] == t_str)
+//		{
+//			// command 인자를 대문자 버전으로 덮어쓴다.
+//			command = t_str;
+//			return (i);
+//		}
+//	}
+//	// 찾을 수 없는 명령이라면 command 인자를 원본 그대로 둔다.
+//	// enum UNKNOWNCOMMAND 를 반환한다.
+//	return Command::UNKNOWNCOMMAND;
+//}
 
-int Command::getType(std::string& command)
-{
-	// command 인자를 대문자로 변환한 값을 담기위한 임시변수.
-	std::string t_str(command);
-	size_t	t_str_size = t_str.size();
-
-	for (size_t i = 0; i < t_str_size; i++)
-	{
-		t_str[i] = std::toupper(t_str[i]);
-	}
-
-	size_t	cmdlist_size = sizeof(Command::CmdList) / sizeof(Command::CmdList[0]);
-	for (size_t i = 0; i < cmdlist_size; i++)
-	{
-		if (Command::CmdList[i] == t_str)
-		{
-			// command 인자를 대문자 버전으로 덮어쓴다.
-			command = t_str;
-			return (i);
-		}
-	}
-	// 찾을 수 없는 명령이라면 command 인자를 원본 그대로 둔다.
-	// enum UNKNOWNCOMMAND 를 반환한다.
-	return (Command::UNKNOWNCOMMAND);
-}
-
+// execute command with trimmed data
 void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 {
 	int							cmd_type;
@@ -53,8 +54,29 @@ void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
 
 	// 메세지 브로드캐스팅 시 필요한, 해당 클라이언트의 prefix 부분을 저장한다.
 	data.prefix = client.getPrefix();
-	// 문자열 비교를 통해 함수포인터 배열의 인덱스를 탐색한다.
-	cmd_type = getType(data.command);
+
+	// command를 복사해서 대문자로 바꾼다.
+	std::string t_str(data.command);
+	size_t	t_str_size = t_str.size();
+
+	for (size_t i = 0; i < t_str_size; i++)
+	{
+		t_str[i] = std::toupper(t_str[i]);
+	}
+
+	// 대문자로 바꾼 command를 cmdlist와 비교해서 찾는다.
+	size_t	cmdlist_size = sizeof(Command::CmdList) / sizeof(Command::CmdList[0]);
+	size_t	i = 0;
+	for ( ; i < cmdlist_size; i++)
+	{
+		if (Command::CmdList[i] == t_str)
+		{
+			// command 인자를 대문자 버전으로 덮어쓴다.
+			data.command = t_str;
+			break;
+		}
+	}
+	cmd_type = i < cmdlist_size ? i : Command::UNKNOWNCOMMAND;
 
 	try
 	{
