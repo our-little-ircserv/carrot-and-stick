@@ -258,6 +258,18 @@ void	IRC::deliverMsg(std::set< Client* >& target_list, std::string msg)
 	}
 }
 
+void	IRC::deliverMsg(Client* target, std::string msg)
+{
+	target->_write_buf.push_back(msg);
+	if (target->_writable == false)
+	{
+		target->_writable = true;
+		struct kevent	t_event;
+		EV_SET(&t_event, target->getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, reinterpret_cast< void* >(&_client_event_handler));
+		_changelist.push_back(t_event);
+	}
+}
+
 std::set< Client* > IRC::getTargetSet(std::vector< std::string >targets)
 {
 	std::set< Client* > ret;
