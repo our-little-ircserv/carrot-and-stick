@@ -27,9 +27,12 @@ void	Command::pass(IRC& server, Client& client, const struct Parser::Data& data)
 
 	// 등록을 마치기전까진 비밀번호의 일치여부에 따라
 	// 클라이언트의 등록 단계를 토글한다.
-	if (server.getPassword() == data.parameters[0] && client.getRegisterLevel() == Client::NONE)
+	if (server.getPassword() == data.parameters[0])
 	{
-		client.setRegisterLevel(Client::AUTHORIZED);
+		if (client.getRegisterLevel() == Client::NONE)
+		{
+			client.setRegisterLevel(Client::AUTHORIZED);
+		}
 	}
 	else if (client.getRegisterLevel() == Client::AUTHORIZED)
 	{

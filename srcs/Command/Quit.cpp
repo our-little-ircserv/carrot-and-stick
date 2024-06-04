@@ -80,5 +80,7 @@ void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data)
 		Command::handleClientDepartment(server, channel, client);
 	}
 
+	server.clearFromAllInviteList(client);
+
 	throw Client::LEFT;
 }

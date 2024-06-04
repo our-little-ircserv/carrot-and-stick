@@ -155,6 +155,21 @@ void	IRC::delChannel(const Channel* channel)
 	_channels.erase(_channels.find(channel->getChannelName()));
 }
 
+void	IRC::clearFromAllInviteList(const Client& client)
+{
+	std::map< std::string, Channel >::iterator it = _channels.begin();
+	std::map< std::string, Channel >::iterator ite = _channels.end();
+
+	while (it != ite)
+	{
+		if (it->second.isInvited(const_cast< Client& >(client)) == true)
+		{
+			it->second.delInvited(const_cast< Client& >(client));
+		}
+		++it;
+	}
+}
+
 std::string	IRC::getStartTime() const
 {
 	std::stringstream	ss;

@@ -5,7 +5,7 @@
 struct Command::Privmsg	Parser::privmsg(const std::vector< std::string >& params) throw(Reply)
 {
 	struct Command::Privmsg		data;
-	std::string					t_msg_targets = params[0];
+	std::string					t_msg_targets;
 	std::string					t_target;
 	std::vector< std::string >	r_params;
 
@@ -18,6 +18,7 @@ struct Command::Privmsg	Parser::privmsg(const std::vector< std::string >& params
 	{
 		throw Reply(Reply::ERR_NOTEXTTOSEND, r_params);
 	}
+	t_msg_targets = params[0];
 
 	size_t	i = 0;
 	size_t	offset;
@@ -52,10 +53,8 @@ struct Command::Privmsg	Parser::privmsg(const std::vector< std::string >& params
 
 void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
 {
-	struct Command::Privmsg		p_data;
+	struct Command::Privmsg		p_data = Parser::privmsg(data.parameters);
 	std::vector< std::string >	r_params;
-
-	p_data = Parser::privmsg(data.parameters);
 
 	for (size_t i = 0; i < p_data.msg_targets.size(); i++)
 	{
