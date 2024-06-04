@@ -11,6 +11,7 @@ struct Command::Privmsg	Parser::privmsg(const std::vector< std::string >& params
 
 	if (params.size() < 1)
 	{
+		r_params.push_back("PRIVMSG");
 		throw Reply(Reply::ERR_NORECIPIENT, r_params);
 	}
 	else if (params.size() < 2)

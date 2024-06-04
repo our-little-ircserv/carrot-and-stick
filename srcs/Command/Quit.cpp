@@ -73,5 +73,13 @@ void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data)
 
 	server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 
+	for (size_t i = 0; i < chan_list.size(); i++)
+	{
+		Channel*	channel = server.searchChannel(chan_list[i]);
+		Assert(channel != NULL);
+
+		Command::handleClientDepartment(server, channel, client);
+	}
+
 	throw Client::LEFT;
 }

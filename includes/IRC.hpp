@@ -39,27 +39,27 @@ class	IRC
 		void	init() throw(Signal, FatalError);
 		void	run() throw(Signal, FatalError);
 
-		void	pushEvent(struct kevent& event);
+		void	pushEvent(const struct kevent& event);
 
 		Channel*	searchChannel(const std::string& channel_name);
 		Channel*	createChannel(Client& client, const char prefix, const std::string& channel_name);
 
 		Client*		searchClient(const int sockfd);
 		Client*		searchClient(const std::string& nickname);
-		Client&		createClient(int sockfd, struct sockaddr_in addr);
+		Client&		createClient(const int sockfd, const struct sockaddr_in& addr);
 
-		void					disconnectClient(Client& client);
-		std::vector< Channel* >	delClient(Client& client);
-		void					delChannels(const std::vector< Channel* >& channels);
+		void	delClient(const Client& client);
+		void	delChannel(const Channel* channel);
 
-		std::string			getStartTime() const;
-		int					getServerSocketFd() const;
-		const std::string&	getPassword() const;
-		ServerEventHandler&	getServerEventHandler();
-		ClientEventHandler&	getClientEventHandler();
+		std::string				getStartTime() const;
+		int						getServerSocketFd() const;
+		const std::string&		getPassword() const;
+		ServerEventHandler&		getServerEventHandler();
+		ClientEventHandler&		getClientEventHandler();
+		std::vector< Channel* >	getEmptyChannels(const std::vector< std::string >& chan_list);
+		std::set< Client* >		getTargetSet(const std::vector< std::string >& targets);
 
-		void				deliverMsg(std::set< Client* >& target_list, std::string msg);
-		std::set< Client* > getTargetSet(std::vector< std::string >targets);
+		void	deliverMsg(const std::set< Client* >& target_list, const std::string& msg);
 
 		static void	get_next_line(Client& client, const std::string& input);
 		static void	iterate_rdbuf(IRC& server, Client& client);

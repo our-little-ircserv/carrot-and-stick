@@ -5,7 +5,7 @@ DIR_INCLUDES=includes/
 
 NAME=ircserv
 CXX=c++
-CXXFLAGS=-Wall -Wextra -Werror --std=c++98 -Wpedantic 
+CXXFLAGS=-Wall -Wextra -Werror -Wpedantic --std=c++98 
 CPPFLAGS=-MMD -MP -I$(DIR_INCLUDES)
 
 RM=rm -fr

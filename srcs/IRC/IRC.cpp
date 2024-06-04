@@ -13,7 +13,7 @@
 #include "FatalError.hpp"
 #include "Assert.hpp"
 
-extern int	kq;
+int	kq;
 
 const std::string	IRC::hostname = "carrot-and-stick.ircserv.com";
 
@@ -78,7 +78,7 @@ void	IRC::run() throw(Signal, FatalError)
 	}
 }
 
-void	IRC::pushEvent(struct kevent& event)
+void	IRC::pushEvent(const struct kevent& event)
 {
 	_changelist.push_back(event);
 }
@@ -115,12 +115,13 @@ void	IRC::setUpSocket() throw(Signal, FatalError)
 
 Client* IRC::searchClient(const int sockfd)
 {
-	if (_clients.find(sockfd) == _clients.end())
+	std::map< int, Client>::iterator	it = _clients.find(sockfd);
+	if (it == _clients.end())
 	{
 		return NULL;
 	}
 
-	return &(_clients[sockfd]);
+	return &(it->second);
 }
 
 Client* IRC::searchClient(const std::string& nickname)
@@ -128,70 +129,37 @@ Client* IRC::searchClient(const std::string& nickname)
 	std::map<int, Client>::iterator it = _clients.begin();
 	std::map<int, Client>::iterator ite = _clients.end();
 
-	for (; it != ite; it++)
+	while (it != ite)
 	{
 		if ((it->second).getNickname() == nickname)
 		{
 			return &(it->second);
 		}
+
+		++it;
 	}
 
 	return NULL;
 }
 
-Client&	IRC::createClient(int sockfd, struct sockaddr_in addr)
+Client&	IRC::createClient(const int sockfd, const struct sockaddr_in& addr)
 {
-	Client	client(sockfd, addr);
-	_clients[sockfd] = client;
+	Client	t_client(sockfd, addr);
+	_clients[sockfd] = t_client;
 
 	return _clients[sockfd];
 }
 
-// client socket disconnect
-void	IRC::disconnectClient(Client& client)
+void	IRC::delClient(const Client& client)
 {
-	int	t_sockfd = client.getSocketFd();
-	std::vector< Channel* >	empty_channels = delClient(client);
-	delChannels(empty_channels);
+	size_t	t_sockfd = client.getSocketFd();
+	_clients.erase(_clients.find(t_sockfd));
 	close(t_sockfd);
 }
 
-// map에 담긴 client 객체 소멸
-std::vector< Channel* >	IRC::delClient(Client& client)
+void	IRC::delChannel(const Channel* channel)
 {
-	std::vector< Channel* >		empty_channels;
-	std::vector< std::string >	chan_list;
-	chan_list.insert(chan_list.end(), client.getChannelList().begin(), client.getChannelList().end());
-	for (size_t i = 0; i < chan_list.size(); i++)
-	{
-		Channel* channel = searchChannel(chan_list[i]);
-		Assert(channel != NULL && channel->isMember(client) == true);
-
-		if (channel->isOperator(client) == true)
-		{
-			channel->delOperator(client);
-		}
-		channel->delMember(client);
-
-		if (channel->getMemberCnt() == 0)
-		{
-			empty_channels.push_back(channel);
-		}
-	}
-
-	_clients.erase(_clients.find(client.getSocketFd()));
-
-	return empty_channels;
-}
-
-void	IRC::delChannels(const std::vector< Channel* >& channels)
-{
-	size_t	channels_size = channels.size();
-	for (size_t i = 0; i < channels_size; i++)
-	{
-		_channels.erase(_channels.find(channels[i]->getChannelName()));
-	}
-
+	_channels.erase(_channels.find(channel->getChannelName()));
 }
 
 std::string	IRC::getStartTime() const
@@ -223,7 +191,7 @@ ClientEventHandler&	IRC::getClientEventHandler()
 	return _client_event_handler;
 }
 
-void	IRC::deliverMsg(std::set< Client* >& target_list, std::string msg)
+void	IRC::deliverMsg(const std::set< Client* >& target_list, const std::string& msg)
 {
 	std::set< Client* >::iterator it = target_list.begin();
 	std::set< Client* >::iterator ite = target_list.end();
@@ -241,7 +209,7 @@ void	IRC::deliverMsg(std::set< Client* >& target_list, std::string msg)
 	}
 }
 
-std::set< Client* > IRC::getTargetSet(std::vector< std::string >targets)
+std::set< Client* > IRC::getTargetSet(const std::vector< std::string >& targets)
 {
 	std::set< Client* > ret;
 	std::set< Client* > t_list;
