@@ -60,7 +60,7 @@ class	IRC
 		std::set< Client* >		getTargetSet(const std::vector< std::string >& targets);
 
 		void				deliverMsg(const std::set< Client* >& target_list, const std::string& msg);
-  	void				deliverMsg(Client* target, const std::string& msg);
+		void				deliverMsg(Client* target, const std::string& msg);
 
 		static void	get_next_line(Client& client, const std::string& input);
 		static void	iterate_rdbuf(IRC& server, Client& client);
