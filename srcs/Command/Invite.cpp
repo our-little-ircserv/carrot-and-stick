@@ -52,17 +52,20 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_USERONCHANNEL, r_params);
 	}
-	// +i 플래그가 활성화되었다면 초대하는 자가 채널 관리자인지 확인한다.
-	else if (channel->checkModeSet('i') == true && channel->isOperator(client) == false)
+	// +i 플래그가 활성화되었다면
+	else if (channel->checkModeSet('i') == true)
 	{
-		r_params.push_back(p_data.channel);
-		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
-	}
-
-	// 이미 초대받은 상태인지 중복확인 후 초대목록에 추가한다.
-	if (channel->checkModeSet('i') == true)
-	{
-		channel->addInvited(*target_client);
+		// 초대하는 자가 채널 관리자인지 확인한다.
+		if (channel->isOperator(client) == false)
+		{
+			r_params.push_back(p_data.channel);
+			throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
+		}
+		// 이미 초대받은 상태인지 중복확인 후 초대목록에 추가한다.
+		else if (channel->isInvited(client) == false)
+		{
+			channel->addInvited(*target_client);
+		}
 	}
 
 	// RPL_INVITING 메세지를 초대자에게 전송한다.
