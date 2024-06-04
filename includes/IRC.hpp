@@ -50,6 +50,7 @@ class	IRC
 
 		void	delClient(const Client& client);
 		void	delChannel(const Channel* channel);
+		void	clearFromAllInviteList(const Client& client);
 
 		std::string				getStartTime() const;
 		int						getServerSocketFd() const;
