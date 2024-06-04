@@ -67,15 +67,6 @@ void	IRC::run() throw(Signal, FatalError)
 			}
 
 			handler->interpretEvent(*this, _eventlist[i]);
-
-//			if (_eventlist[i].filter == EVFILT_READ)
-//			{
-//				handler->read(*this, _eventlist[i]);
-//			}
-//			else if (_eventlist[i].filter == EVFILT_WRITE)
-//			{
-//				handler->write(*this, _eventlist[i]);
-//			}
 		}
 	}
 }
@@ -183,16 +174,6 @@ const std::string& IRC::getPassword() const
 	return _password;
 }
 
-//ServerEventHandler&	IRC::getServerEventHandler()
-//{
-//	return _server_event_handler;
-//}
-//
-//ClientEventHandler&	IRC::getClientEventHandler()
-//{
-//	return _client_event_handler;
-//}
-//
 ClientReadEventHandler&	IRC::getClientReadEventHandler()
 {
 	return _client_read_handler;
