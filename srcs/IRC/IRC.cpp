@@ -204,7 +204,7 @@ void	IRC::deliverMsg(Client* target, const std::string& msg)
 	{
 		target->_writable = true;
 		struct kevent	t_event;
-		EV_SET(&t_event, target->getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, reinterpret_cast< void* >(&_client_event_handler));
+		EV_SET(&t_event, target->getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, reinterpret_cast< void* >(&_client_write_handler));
 		_changelist.push_back(t_event);
 	}
 }
