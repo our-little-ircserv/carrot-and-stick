@@ -8,8 +8,9 @@
 # include <vector>
 # include <map>
 # include <string>
-# include "ServerEventHandler.hpp"
-# include "ClientEventHandler.hpp"
+# include "ServerReadEventHandler.hpp"
+# include "ClientReadEventHandler.hpp"
+# include "ClientWriteEventHandler.hpp"
 # include "Client.hpp"
 # include "Channel.hpp"
 # include "FatalError.hpp"
@@ -51,13 +52,12 @@ class	IRC
 		void	delClient(const Client& client);
 		void	delChannel(const Channel* channel);
 
-		std::string				getStartTime() const;
-		int						getServerSocketFd() const;
-		const std::string&		getPassword() const;
-		ServerEventHandler&		getServerEventHandler();
-		ClientEventHandler&		getClientEventHandler();
-		std::vector< Channel* >	getEmptyChannels(const std::vector< std::string >& chan_list);
-		std::set< Client* >		getTargetSet(const std::vector< std::string >& targets);
+		std::string					getStartTime() const;
+		int							getServerSocketFd() const;
+		const std::string&			getPassword() const;
+		ClientReadEventHandler&		getClientReadEventHandler();
+		std::vector< Channel* >		getEmptyChannels(const std::vector< std::string >& chan_list);
+		std::set< Client* >			getTargetSet(const std::vector< std::string >& targets);
 
 		void				deliverMsg(const std::set< Client* >& target_list, const std::string& msg);
 		void				deliverMsg(Client* target, const std::string& msg);
@@ -75,8 +75,9 @@ class	IRC
 		std::vector< struct kevent >	_changelist;
 		struct kevent					_eventlist[MAX_EVENTS];
 
-		ServerEventHandler	_server_event_handler;
-		ClientEventHandler	_client_event_handler;
+		ServerReadEventHandler	_server_read_handler;
+		ClientReadEventHandler	_client_read_handler;
+		ClientWriteEventHandler	_client_write_handler;
 
 		std::map< int, Client >				_clients;
 		std::map< std::string, Channel >	_channels;
