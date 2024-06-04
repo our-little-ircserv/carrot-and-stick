@@ -87,7 +87,7 @@ std::string	Reply::getReplyMessage(const Client& client) const
 			break;
 		case ERR_NONICKNAMEGIVEN:
 			// hostname 431 nickname/* :No nickname given
-			message += ":No nickname given";
+			message += _parameters[0] + " :No nickname given";
 			break;
 		case ERR_ERRONEUSNICKNAME:
 			// hostname 432 nickname/* invalid_nickname :Erroneous nickname
