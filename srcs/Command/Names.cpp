@@ -51,10 +51,10 @@ void	Command::names(IRC& server, Client& client, const struct Parser::Data& data
 			r_params.push_back("=");
 			r_params.push_back(channels[chan_idx]);
 
-			std::map<Client*, bool>::iterator it = channel->getMemberEnd();
-			std::map<Client*, bool>::iterator ite = channel->getMemberBegin();
-			std::vector< std::string > nick_list;
-			std::string t_nick;
+			std::map<Client*, bool>::iterator	it = channel->getMemberEnd();
+			std::map<Client*, bool>::iterator	ite = channel->getMemberBegin();
+			std::vector< std::string >			nick_list;
+			std::string							t_nick;
 
 			// 가장 최근에 접속한 클라이언트부터 목록에 추가한다.
 			--it;

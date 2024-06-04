@@ -60,8 +60,8 @@ class	IRC
 		ServerEventHandler&	getServerEventHandler();
 		ClientEventHandler&	getClientEventHandler();
 
-		void				deliverMsg(std::set< Client* >& target_list, std::string msg);
-		void				deliverMsg(Client* target, std::string msg);
+		void				deliverMsg(std::set< Client* >& target_list, const std::string& msg);
+		void				deliverMsg(Client* target, const std::string& msg);
 		std::set< Client* > getTargetSet(std::vector< std::string >targets);
 
 		static void	get_next_line(Client& client, const std::string& input);

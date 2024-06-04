@@ -31,7 +31,7 @@ namespace	Parser
 	struct IRC::AccessData	checkArgValidity(int argc, char** argv) throw(FatalError);
 	
 	struct Parser::Data		 			parseClientMessage(const std::string& message);
-	std::vector<struct Parser::Token>	splitTokens(const std::string& message);
+	std::vector< struct Parser::Token >	splitTokens(const std::string& message);
 	enum Parser::TokenType				extractTokenType(const std::string& token);
 
 	struct Command::Join		join(const std::vector< std::string >& params) throw(Reply);

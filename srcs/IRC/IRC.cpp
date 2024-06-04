@@ -115,9 +115,8 @@ void	IRC::setUpSocket() throw(Signal, FatalError)
 
 Client* IRC::searchClient(const int sockfd)
 {
-	std::map< int, Client >::iterator it;
+	std::map< int, Client >::iterator it = _clients.find(sockfd);
 
-	it = _clients.find(sockfd);
 	if (it == _clients.end())
 	{
 		return NULL;
@@ -191,13 +190,13 @@ void	IRC::clearFromAllInviteList(const Client& client)
 	std::map< std::string, Channel >::iterator it = _channels.begin();
 	std::map< std::string, Channel >::iterator ite = _channels.end();
 
-	for (; it != ite; it++)
+	while (it != ite)
 	{
-		if (it->second.isInvited(const_cast< Client& >(client)) == false)
+		if (it->second.isInvited(const_cast< Client& >(client)) == true)
 		{
-			continue ;
+			it->second.delInvited(const_cast< Client& >(client));
 		}
-		it->second.delInvited(const_cast< Client& >(client));
+		++it;
 	}
 }
 
@@ -240,7 +239,7 @@ ClientEventHandler&	IRC::getClientEventHandler()
 	return _client_event_handler;
 }
 
-void	IRC::deliverMsg(std::set< Client* >& target_list, std::string msg)
+void	IRC::deliverMsg(std::set< Client* >& target_list, const std::string& msg)
 {
 	std::set< Client* >::iterator it = target_list.begin();
 	std::set< Client* >::iterator ite = target_list.end();
@@ -258,7 +257,7 @@ void	IRC::deliverMsg(std::set< Client* >& target_list, std::string msg)
 	}
 }
 
-void	IRC::deliverMsg(Client* target, std::string msg)
+void	IRC::deliverMsg(Client* target, const std::string& msg)
 {
 	target->_write_buf.push_back(msg);
 	if (target->_writable == false)
