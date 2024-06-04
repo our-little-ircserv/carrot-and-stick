@@ -7,8 +7,9 @@ struct Command::Mode	Parser::mode(const std::vector< std::string >& params) thro
 {
 	struct Command::Mode		data;
 	std::vector< std::string >	r_params;
+	size_t	params_size = params.size();
 
-	if (params.size() < 1)
+	if (params_size < 1)
 	{
 		r_params.push_back("MODE");
 		throw Reply(Reply::ERR_NEEDMOREPARAMS, r_params);
@@ -17,7 +18,7 @@ struct Command::Mode	Parser::mode(const std::vector< std::string >& params) thro
 	data.channel = params[0];
 
 	size_t	i = 1;
-	while (i < params.size())
+	while (i < params_size)
 	{
 		struct Command::ModeWithParams	t_mode_with_params;
 
@@ -28,7 +29,7 @@ struct Command::Mode	Parser::mode(const std::vector< std::string >& params) thro
 			++i;
 		}
 
-		if (i < params.size() && Parser::isMode(params[i][0]) == false)
+		if (i < params_size && Parser::isMode(params[i][0]) == false)
 		{
 			i = Parser::insertModeParameters(data, params, new_modes, i);
 		}
@@ -62,7 +63,6 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 	if (channel->isMember(client) == false || channel->isOperator(client) == false)
 	{
 		r_params.push_back(p_data.channel);
-
 		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
 	}
 
@@ -72,7 +72,7 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 
 	std::vector< struct Command::ModeWithParams >::iterator it = p_data.modes.begin();
 	std::vector< struct Command::ModeWithParams >::iterator ite = p_data.modes.end();
-	for (; it != ite; it++)
+	while (it != ite)
 	{
 		// 채널에 모드 설정을 요청한다.
 		try
@@ -92,6 +92,8 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 		{
 			server.deliverMsg(&client, e.getReplyMessage(client));
 		}
+
+		++it;
 	}
 
 	// 성공한 설정들만 모아서 브로드캐스트한다.

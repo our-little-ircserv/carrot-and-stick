@@ -11,6 +11,8 @@ namespace	Parser
 	struct Data;
 }
 
+class	Channel;
+
 namespace Command
 {
 	enum CmdType
@@ -83,9 +85,6 @@ namespace Command
 	{
 		std::string										channel;
 		std::vector< struct Command::ModeWithParams >	modes;
-		// addMode로 모드 설정할 때
-		// modes iterator->mode를 전부 하나의 문자열로 합친 다음
-		// +ikl 꼴로 만들어서 addMode 해준다...
 	};
 
 	struct	Part
@@ -120,6 +119,8 @@ namespace Command
 	void	part(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
 	void	quit(IRC& server, Client& client, const struct Parser::Data& data) throw(enum Client::REGISTER_LEVEL);
 	void	names(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply);
+	void	handleClientDepartment(IRC& server, Channel* channel, Client& client);
 }
+
 
 #endif

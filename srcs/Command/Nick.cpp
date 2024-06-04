@@ -10,6 +10,7 @@ std::string	Parser::nick(const std::vector< std::string >& params) throw(Reply)
 
 	if (params.size() < 1)
 	{
+		r_params.push_back("NICK");
 		throw Reply(Reply::ERR_NONICKNAMEGIVEN, r_params);
 	}
 

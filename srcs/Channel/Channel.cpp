@@ -42,12 +42,14 @@ Client*	Channel::searchMember(const std::string& name)
 	std::map<Client*, bool>::iterator it = _members.begin();
 	std::map<Client*, bool>::iterator ite = _members.end();
 
-	for (; it != ite; it++)
+	while (it != ite)
 	{
 		if (it->first->getNickname() == name)
 		{
 			return it->first;
 		}
+
+		++it;
 	}
 	
 	return NULL;
@@ -55,14 +57,18 @@ Client*	Channel::searchMember(const std::string& name)
 
 std::string	Channel::getCurrentMode() const
 {
-	std::string	current_mode = "+";
+	std::string					current_mode = "+";
+	std::string::const_iterator	it = st_valid_modes.begin();
+	std::string::const_iterator	ite = st_valid_modes.end();
 
-	for (std::string::const_iterator it = st_valid_modes.begin(); it != st_valid_modes.end(); it++)
+	while (it != ite)
 	{
 		if (checkModeSet(*it) == true)
 		{
 			current_mode += *it;
 		}
+
+		++it;
 	}
 
 	return current_mode;
@@ -146,7 +152,7 @@ void	Channel::setMode(struct Command::ModeWithParams& mode_data)
 		}
 		else
 		{
-			_modes ^= (1 << shift);
+			_modes &= ~(1 << shift);
 		}
 	}
 	else
@@ -218,9 +224,10 @@ std::set< Client* >	Channel::getMemberSet()
 	std::map<Client*, bool>::iterator it = _members.begin();
 	std::map<Client*, bool>::iterator ite = _members.end();
 
-	for (; it != ite; it++)
+	while (it != ite)
 	{
 		target_list.insert(it->first);
+		++it;
 	}
 
 	return target_list;

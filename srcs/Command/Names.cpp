@@ -15,13 +15,14 @@ std::vector< std::string >	Parser::names(const std::vector< std::string >& param
 	size_t				i = 0;
 	size_t				offset;
 	const std::string&	t_channels = params[0];
+	size_t				t_channels_size = t_channels.size();
 	std::string			channel_name;
-	while (i < t_channels.size())
+	while (i < t_channels_size)
 	{
 		offset = t_channels.find_first_of(',', i);
 		if (offset == std::string::npos)
 		{
-			offset = t_channels.size();
+			offset = t_channels_size;
 		}
 		offset -= i;
 
@@ -36,12 +37,12 @@ std::vector< std::string >	Parser::names(const std::vector< std::string >& param
 void	Command::names(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
 {
 	std::vector< std::string >	channels = Parser::names(data.parameters);
-	size_t						chan_len = channels.size();
+	size_t						channels_size = channels.size();
 	size_t						chan_idx = 0;
 	std::vector< std::string >	r_params;
 
 	// 채널의 존재여부나 이름의 유효성은 검사하지 않는다.
-	while (chan_idx < chan_len)
+	while (chan_idx < channels_size)
 	{
 		Channel*	channel = server.searchChannel(channels[chan_idx]);
 
