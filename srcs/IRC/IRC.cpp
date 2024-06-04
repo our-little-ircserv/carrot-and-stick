@@ -41,7 +41,7 @@ void	IRC::init() throw(Signal, FatalError)
 	wrapSyscall(listen(_server_sockfd, MAX_CLIENTS), "listen");
 
 	kq = wrapSyscall(kqueue(), "kqueue");
-	EV_SET(&event, _server_sockfd, EVFILT_READ, EV_ADD, 0, 0, reinterpret_cast< void* >(&_server_event_handler));
+	EV_SET(&event, _server_sockfd, EVFILT_READ, EV_ADD, 0, 0, reinterpret_cast< void* >(&_server_read_handler));
 	_changelist.push_back(event);
 
 	Command::init();
@@ -66,14 +66,16 @@ void	IRC::run() throw(Signal, FatalError)
 				continue;
 			}
 
-			if (_eventlist[i].filter == EVFILT_READ)
-			{
-				handler->read(*this, _eventlist[i]);
-			}
-			else if (_eventlist[i].filter == EVFILT_WRITE)
-			{
-				handler->write(*this, _eventlist[i]);
-			}
+			handler->interpretEvent(*this, _eventlist[i]);
+
+//			if (_eventlist[i].filter == EVFILT_READ)
+//			{
+//				handler->read(*this, _eventlist[i]);
+//			}
+//			else if (_eventlist[i].filter == EVFILT_WRITE)
+//			{
+//				handler->write(*this, _eventlist[i]);
+//			}
 		}
 	}
 }
@@ -181,14 +183,19 @@ const std::string& IRC::getPassword() const
 	return _password;
 }
 
-ServerEventHandler&	IRC::getServerEventHandler()
+//ServerEventHandler&	IRC::getServerEventHandler()
+//{
+//	return _server_event_handler;
+//}
+//
+//ClientEventHandler&	IRC::getClientEventHandler()
+//{
+//	return _client_event_handler;
+//}
+//
+ClientReadEventHandler&	IRC::getClientReadEventHandler()
 {
-	return _server_event_handler;
-}
-
-ClientEventHandler&	IRC::getClientEventHandler()
-{
-	return _client_event_handler;
+	return _client_read_handler;
 }
 
 void	IRC::deliverMsg(const std::set< Client* >& target_list, const std::string& msg)
@@ -203,7 +210,7 @@ void	IRC::deliverMsg(const std::set< Client* >& target_list, const std::string& 
 		{
 			(*it)->_writable = true;
 			struct kevent	t_event;
-			EV_SET(&t_event, (*it)->getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, reinterpret_cast< void* >(&_client_event_handler));
+			EV_SET(&t_event, (*it)->getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, reinterpret_cast< void* >(&_client_write_handler));
 			_changelist.push_back(t_event);
 		}
 	}
