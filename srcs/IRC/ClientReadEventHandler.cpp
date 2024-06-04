@@ -41,5 +41,5 @@ void	ClientReadEventHandler::handleEOF(IRC& server, Client& client) throw(enum C
 	server.pushEvent(t_event);
 
 	struct Parser::Data	data = Parser::parseClientMessage("QUIT :Client is disconnected\r\n");
-	Command::execute(server, client, data);
+	Command::quit(server, client, data);
 }
