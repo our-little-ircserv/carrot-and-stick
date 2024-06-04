@@ -207,12 +207,12 @@ bool	Channel::checkModeSet(const char mode) const
 	return mode_bit == (_modes & mode_bit);
 }
 
-std::map<Client*, bool>::iterator Channel::getMemberBegin()
+std::map< Client*, bool >::iterator Channel::getMemberBegin()
 {
 	return _members.begin();
 }
 
-std::map<Client*, bool>::iterator Channel::getMemberEnd()
+std::map< Client*, bool >::iterator Channel::getMemberEnd()
 {
 	return _members.end();
 }

@@ -85,7 +85,7 @@ void	IRC::pushEvent(const struct kevent& event)
 
 Channel* IRC::searchChannel(const std::string& channel_name)
 {
-	std::map<std::string, Channel>::iterator it;
+	std::map< std::string, Channel >::iterator it;
 
 	it = _channels.find(channel_name);
 	if (it == _channels.end())
@@ -115,7 +115,8 @@ void	IRC::setUpSocket() throw(Signal, FatalError)
 
 Client* IRC::searchClient(const int sockfd)
 {
-	std::map< int, Client>::iterator	it = _clients.find(sockfd);
+	std::map< int, Client >::iterator it = _clients.find(sockfd);
+
 	if (it == _clients.end())
 	{
 		return NULL;
@@ -144,8 +145,7 @@ Client* IRC::searchClient(const std::string& nickname)
 
 Client&	IRC::createClient(const int sockfd, const struct sockaddr_in& addr)
 {
-	Client	t_client(sockfd, addr);
-	_clients[sockfd] = t_client;
+	_clients.insert(std::make_pair(sockfd, Client(sockfd, addr)));
 
 	return _clients[sockfd];
 }
@@ -209,7 +209,20 @@ void	IRC::deliverMsg(const std::set< Client* >& target_list, const std::string& 
 	}
 }
 
+void	IRC::deliverMsg(Client* target, const std::string& msg)
+{
+	target->_write_buf.push_back(msg);
+	if (target->_writable == false)
+	{
+		target->_writable = true;
+		struct kevent	t_event;
+		EV_SET(&t_event, target->getSocketFd(), EVFILT_WRITE, EV_ENABLE, 0, 0, reinterpret_cast< void* >(&_client_event_handler));
+		_changelist.push_back(t_event);
+	}
+}
+
 std::set< Client* > IRC::getTargetSet(const std::vector< std::string >& targets)
+
 {
 	std::set< Client* > ret;
 	std::set< Client* > t_list;

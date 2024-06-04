@@ -113,7 +113,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 					throw Reply(Reply::ERR_BADCHANNELKEY, r_params);
 				}
 				// 3. 인원제한
-				if (channel->checkModeSet('l') == true && channel->getLimit() == channel->getMemberCnt())
+				if (channel->checkModeSet('l') == true && channel->getLimit() <= channel->getMemberCnt())
 				{
 					r_params.push_back(p_data.channels[i]);
 					throw Reply(Reply::ERR_CHANNELISFULL, r_params);
@@ -131,13 +131,12 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 
 			{
 				// JOIN 메세지를 브로드캐스팅한다.
-				std::set< Client* > target_list = channel->getMemberSet();
-
 				r_params.push_back(data.prefix);
 				r_params.push_back(data.command);
 				r_params.push_back(p_data.channels[i]);
 				r_params.push_back("\r\n");
 
+				std::set< Client* > target_list = channel->getMemberSet();
 				server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 			}
 
@@ -149,19 +148,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 			// 채널 접속시 해당 채널에 토픽이 있다면 표시한다.
 			if (channel->getTopic().empty() == false)
 			{
-				try
-				{
-					Command::topic(server, client, t_data);
-				}
-				catch(Reply& e)
-				{
-					std::set< Client* > target_list;
-
-					target_list.insert(&client);
-
-					r_params.push_back("\r\n");
-					server.deliverMsg(target_list, e.getReplyMessage(client));
-				}
+				Command::topic(server, client, t_data);
 			}
 
 			// 채널 접속시 해당 채널의 유저목록을 표시한다.
@@ -170,12 +157,7 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 		catch(Reply& e)
 		{
 			// 채널 접속에 실패하거나 문법적 오류가 발생할경우 해당 클라이언트에게 Reply를 전달한다.
-			std::set< Client* > target_list;
-
-			target_list.insert(&client);
-
-			r_params.push_back("\r\n");
-			server.deliverMsg(target_list, e.getReplyMessage(client));
+			server.deliverMsg(&client, e.getReplyMessage(client));
 		}
 	}
 }

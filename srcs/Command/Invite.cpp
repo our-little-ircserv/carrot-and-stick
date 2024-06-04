@@ -69,10 +69,7 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 	r_params.push_back(p_data.channel);
 	r_params.push_back(p_data.nickname);
 
-	std::set< Client* > target_list;
-
-	target_list.insert(&client);
-	server.deliverMsg(target_list, Reply(Reply::RPL_INVITING, r_params).getReplyMessage(client));
+	server.deliverMsg(&client, Reply(Reply::RPL_INVITING, r_params).getReplyMessage(client));
 
 	// 초대받는 클라이언트에게 INVITE 메세지를 전송한다.
 	r_params.insert(r_params.begin(), data.command);
@@ -81,7 +78,5 @@ void	Command::invite(IRC& server, Client& client, const struct Parser::Data& dat
 	r_params[3] = p_data.channel;
 	r_params.push_back("\r\n");
 
-	target_list.clear();
-	target_list.insert(target_client);
-	server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+	server.deliverMsg(target_client, Parser::concat_string_vector(r_params));
 }

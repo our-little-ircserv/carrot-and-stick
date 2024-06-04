@@ -54,7 +54,6 @@ void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data)
 	}
 
 	// 본인에게는 ERROR 메세지를 전달한다.
-	target_list.insert(&client);
 	r_params.push_back("ERROR");
 	if (data.parameters.empty() == false)
 	{
@@ -71,7 +70,7 @@ void	Command::quit(IRC& server, Client& client, const struct Parser::Data& data)
 	r_params.push_back(t_str);
 	r_params.push_back("\r\n");
 
-	server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
+	server.deliverMsg(&client, Parser::concat_string_vector(r_params));
 
 	for (size_t i = 0; i < chan_list.size(); i++)
 	{

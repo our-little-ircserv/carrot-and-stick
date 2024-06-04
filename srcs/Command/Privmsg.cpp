@@ -107,8 +107,7 @@ void	Command::privmsg(IRC& server, Client& client, const struct Parser::Data& da
 		catch(Reply& e)
 		{
 			// Privmsg 관련 오류상황에 대한 Reply를 해당 클라이언트에게 전달한다.
-			target_list.insert(&client);
-			server.deliverMsg(target_list, e.getReplyMessage(client));
+			server.deliverMsg(&client, e.getReplyMessage(client));
 		}
 	}
 }

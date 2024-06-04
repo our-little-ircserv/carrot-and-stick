@@ -87,11 +87,7 @@ void	Command::part(IRC& server, Client& client, const struct Parser::Data& data)
 		}
 		catch(Reply& e)
 		{
-			std::set< Client* > target_list;
-
-			target_list.insert(&client);
-
-			server.deliverMsg(target_list, e.getReplyMessage(client));
+			server.deliverMsg(&client, e.getReplyMessage(client));
 		}
 	}
 }

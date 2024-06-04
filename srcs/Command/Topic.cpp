@@ -23,13 +23,9 @@ struct	Command::Topic	Parser::topic(const std::vector< std::string >& params) th
 
 void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data) throw(Reply)
 {
-	struct Command::Topic		p_data;
+	struct Command::Topic		p_data = Parser::topic(data.parameters);
 	std::vector< std::string >	r_params;
-	Channel*					channel;
-
-	p_data = ::Parser::topic(data.parameters);
-
-	channel = server.searchChannel(p_data.channel);
+	Channel*					channel = server.searchChannel(p_data.channel);
 
 	// 채널의 존재여부를 따로 확인하지 않는다.
 	// 채널이 존재하지 않거나 클라이언트가 해당 채널에 존재하지 않을 경우
@@ -51,14 +47,14 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 		if (t_topic.size() == 0)
 		{
 			r_params.push_back(p_data.channel);
-			throw Reply(Reply::RPL_NOTOPIC, r_params);
+			server.deliverMsg(&client, Reply(Reply::RPL_NOTOPIC, r_params).getReplyMessage(client));
 		}
 		// 해당 채널의 토픽을 RPL_TOPIC 로 throw 하여 클라이언트에게 전달한다.
 		else
 		{
 			r_params.push_back(p_data.channel);
 			r_params.push_back(t_topic);
-			throw Reply(Reply::RPL_TOPIC, r_params);
+			server.deliverMsg(&client, Reply(Reply::RPL_TOPIC, r_params).getReplyMessage(client));
 		}
 	}
 	// 매개변수가 둘 이상일경우 해당 채널의 토픽을 설정한다.

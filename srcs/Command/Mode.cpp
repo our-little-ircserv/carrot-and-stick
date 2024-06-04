@@ -90,11 +90,7 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 		// 채널에서 모드 설정을 거부할 경우 에러 메시지를 전송한다.
 		catch (const Reply& e)
 		{
-			std::set< Client* > target_list;
-
-			target_list.insert(&client);
-
-			server.deliverMsg(target_list, e.getReplyMessage(client));
+			server.deliverMsg(&client, e.getReplyMessage(client));
 		}
 
 		++it;
@@ -102,8 +98,6 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 
 	// 성공한 설정들만 모아서 브로드캐스트한다.
 	{
-		std::set< Client* > target_list = channel->getMemberSet();
-
 		r_params.push_back(data.prefix);
 		r_params.push_back(data.command);
 		Assert(data.parameters.empty() == false);
@@ -119,6 +113,7 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 		r_params.push_back(channel->getCurrentModeParam(channel->isMember(client) == true));
 		r_params.push_back("\r\n");
 
+		std::set< Client* > target_list = channel->getMemberSet();
 		server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
 	}
 }
