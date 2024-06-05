@@ -44,7 +44,7 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 		t_topic = channel->getTopic();
 
 		// 설정되어있는 토픽이 없으면 RPL_NOTOPIC 를 throw 한다.
-		if (t_topic.size() == 0)
+		if (t_topic.size() == 0 || (t_topic.size() == 1 && t_topic[0] == ':'))
 		{
 			r_params.push_back(p_data.channel);
 			server.deliverMsg(&client, Reply(Reply::RPL_NOTOPIC, r_params).getReplyMessage(client));
@@ -75,7 +75,7 @@ void	Command::topic(IRC& server, Client& client, const struct Parser::Data& data
 
 			r_params.push_back(data.prefix);
 			r_params.push_back(data.command);
-			r_params.insert(r_params.end(), data.parameters.begin(), data.parameters.end());
+			r_params.push_back(p_data.topic);
 			r_params.push_back("\r\n");
 
 			server.deliverMsg(target_list, Parser::concat_string_vector(r_params));
