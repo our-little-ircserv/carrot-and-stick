@@ -8,7 +8,7 @@ Channel::Channel() : _modes(0), _limit(0)
 {
 }
 
-Channel::Channel(Client& client, const char t_prefix, std::string t_name) : _name(t_name), _modes(0), _limit(0)
+Channel::Channel(Client& client, const char t_prefix, std::string t_name) : _name(t_name), _modes(0), _topic(":"), _limit(0)
 {
 	addMember(client);
 	client.addChannelList(_name);
@@ -17,24 +17,6 @@ Channel::Channel(Client& client, const char t_prefix, std::string t_name) : _nam
 	{
 		addOperator(client);
 	}
-}
-
-Channel::Channel(const Channel& other) : _name(other._name)
-{
-	*this = other;
-}
-
-Channel& Channel::operator=(const Channel& other)
-{
-	if (this != &other)
-	{
-		_modes = other._modes;
-		_topic = other._topic;
-		_key = other._key;
-		_limit = other._limit;
-		_members = other._members;
-	}
-	return *this;
 }
 
 Client*	Channel::searchMember(const std::string& name)
