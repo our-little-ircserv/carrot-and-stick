@@ -125,7 +125,7 @@ std::string	Parser::concat_string_vector(const std::vector< std::string >& vec, 
 	{
 		concat_params += vec[i];
 
-		if (i != vec_size - 1)
+		if (i != vec_size - 1 && vec[i].empty() == false)
 		{
 			concat_params += identifier;
 		}

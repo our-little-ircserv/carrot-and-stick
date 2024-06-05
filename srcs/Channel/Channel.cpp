@@ -240,7 +240,9 @@ bool	Channel::isMember(Client& client) const
 
 bool	Channel::isOperator(Client& client) const
 {
-	return isMember(client) == true && _members.find(&client)->second == true;
+	std::map< Client*, bool >::const_iterator	it = _members.find(&client);
+
+	return it != _members.end() && it->second == true;
 }
 
 bool	Channel::isInvited(Client& client) const
