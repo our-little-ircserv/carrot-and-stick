@@ -19,8 +19,6 @@ class	Channel
 
 		Channel();
 		Channel(Client& client, const char t_prefix, std::string t_name);
-		Channel(const Channel& other);
-		Channel& operator=(const Channel& other);
 
 		Client*	searchMember(const std::string& name);
 

@@ -146,7 +146,8 @@ void	Command::join(IRC& server, Client& client, const struct Parser::Data& data)
 			t_data.parameters.push_back(p_data.channels[i]);
 
 			// 채널 접속시 해당 채널에 토픽이 있다면 표시한다.
-			if (channel->getTopic().empty() == false)
+			std::string t_topic = channel->getTopic();
+			if ((t_topic.size() == 1 && t_topic[0] == ':') == false)
 			{
 				Command::topic(server, client, t_data);
 			}
