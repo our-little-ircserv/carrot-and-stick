@@ -63,7 +63,7 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 		throw Reply(Reply::RPL_CHANNELMODEIS, r_params);
 	}
 	// 3. 모드 변경 (채널 오퍼레이터 권한 확인)
-	if (channel->isMember(client) == false || channel->isOperator(client) == false)
+	if (channel->isOperator(client) == false)
 	{
 		r_params.push_back(p_data.channel);
 		throw Reply(Reply::ERR_CHANOPRIVSNEEDED, r_params);
@@ -91,8 +91,7 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 			if (it->type == Command::ADD)
 			{
 				t_modes_set_add += it->mode;
-				if (channel->checkModeSet(it->mode) == true \
-						&& it->mode != 'i' && it->mode != 't' && (it->mode != 'k' || channel->isMember(client) == true))
+				if (channel->checkModeSet(it->mode) == true && it->mode != 'i' && it->mode != 't')
 				{
 					t_params_set_add.push_back(it->mode_param);
 				}
