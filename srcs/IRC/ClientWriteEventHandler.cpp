@@ -10,12 +10,6 @@ ClientWriteEventHandler::~ClientWriteEventHandler()
 
 void	ClientWriteEventHandler::interpretEvent(IRC& server, const struct kevent& event)
 {
-	struct stat	statbuf;
-	if (fstat(event.ident, &statbuf) == -1)
-	{
-		return;
-	}
-
 	Client*	client = server.searchClient((int)event.ident);
 	Assert(client != NULL);
 

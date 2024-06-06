@@ -61,12 +61,10 @@ void	IRC::run() throw(Signal, FatalError)
 		for (int i = 0; i < real_events; i++)
 		{
 			IEventHandler*	handler = static_cast< IEventHandler* >(_eventlist[i].udata);
-			if (handler == NULL)
+			if (handler != NULL)
 			{
-				continue;
+				handler->interpretEvent(*this, _eventlist[i]);
 			}
-
-			handler->interpretEvent(*this, _eventlist[i]);
 		}
 	}
 }
