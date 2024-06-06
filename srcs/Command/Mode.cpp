@@ -20,7 +20,6 @@ struct Command::Mode	Parser::mode(const std::vector< std::string >& params) thro
 
 	data.channel = params[0];
 
-	// 함수로 뺀 거 다시 인라인으로 집어넣기.
 	size_t	i = 1;
 	while (i < params_size)
 	{

@@ -19,32 +19,6 @@ void Command::init()
 	Command::cmdFunctions.push_back(Command::part);
 	Command::cmdFunctions.push_back(Command::names);
 }
-//
-//int Command::getType(std::string& command)
-//{
-//	// command 인자를 대문자로 변환한 값을 담기위한 임시변수.
-//	std::string t_str(command);
-//	size_t	t_str_size = t_str.size();
-//
-//	for (size_t i = 0; i < t_str_size; i++)
-//	{
-//		t_str[i] = std::toupper(t_str[i]);
-//	}
-//
-//	size_t	cmdlist_size = sizeof(Command::CmdList) / sizeof(Command::CmdList[0]);
-//	for (size_t i = 0; i < cmdlist_size; i++)
-//	{
-//		if (Command::CmdList[i] == t_str)
-//		{
-//			// command 인자를 대문자 버전으로 덮어쓴다.
-//			command = t_str;
-//			return (i);
-//		}
-//	}
-//	// 찾을 수 없는 명령이라면 command 인자를 원본 그대로 둔다.
-//	// enum UNKNOWNCOMMAND 를 반환한다.
-//	return Command::UNKNOWNCOMMAND;
-//}
 
 // execute command with trimmed data
 void Command::execute(IRC& server, Client& client, struct Parser::Data& data)
