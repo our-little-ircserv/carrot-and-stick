@@ -20,6 +20,7 @@ struct Command::Mode	Parser::mode(const std::vector< std::string >& params) thro
 
 	data.channel = params[0];
 
+	// 함수로 뺀 거 다시 인라인으로 집어넣기.
 	size_t	i = 1;
 	while (i < params_size)
 	{
@@ -60,7 +61,8 @@ void	Command::mode(IRC& server, Client& client, const struct Parser::Data& data)
 		r_params.push_back(p_data.channel);
 		r_params.push_back(channel->getCurrentMode());
 		r_params.push_back(channel->getCurrentModeParam(channel->isMember(client)));
-		throw Reply(Reply::RPL_CHANNELMODEIS, r_params);
+		server.deliverMsg(&client, Reply(Reply::RPL_CHANNELMODEIS, r_params).getReplyMessage(client));
+		return;
 	}
 	// 3. 모드 변경 (채널 오퍼레이터 권한 확인)
 	if (channel->isOperator(client) == false)

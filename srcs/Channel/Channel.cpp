@@ -101,7 +101,7 @@ const std::string& Channel::getTopic() const
 }
 
 // oitkl
-void	Channel::setMode(struct Command::ModeWithParams& mode_data)
+void	Channel::setMode(const struct Command::ModeWithParams& mode_data)
 {
 	size_t						shift = 0;
 	std::vector< std::string >	r_params;
@@ -186,7 +186,7 @@ bool	Channel::checkModeSet(const char mode) const
 {
 	size_t	mode_bit = (1 << st_valid_modes.find(mode, 0));
 
-	return mode_bit == (_modes & mode_bit);
+	return (_modes & mode_bit) != 0;
 }
 
 std::map< Client*, bool >::iterator Channel::getMemberBegin()
